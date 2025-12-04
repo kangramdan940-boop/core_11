@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\MasterAgenController;
 use App\Http\Controllers\Admin\MasterAdminController;
 use App\Http\Controllers\Admin\MasterGoldPriceController;
 use App\Http\Controllers\Admin\MasterGoldReadyStockController;
+use App\Http\Controllers\Admin\MasterBrandEmasController;
 use App\Http\Controllers\Admin\MasterMitraKomisiController;
 use App\Http\Controllers\Admin\MasterSettingController;
 use App\Http\Controllers\Admin\TransPaymentLogController;
@@ -192,6 +193,19 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
     Route::delete('/master/admins/{admin}', [MasterAdminController::class, 'destroy'])
         ->name('admin.master.admins.destroy');
+
+    Route::get('/master/brand-emas', [MasterBrandEmasController::class, 'index'])
+        ->name('admin.master.brand-emas.index');
+    Route::get('/master/brand-emas/create', [MasterBrandEmasController::class, 'create'])
+        ->name('admin.master.brand-emas.create');
+    Route::post('/master/brand-emas', [MasterBrandEmasController::class, 'store'])
+        ->name('admin.master.brand-emas.store');
+    Route::get('/master/brand-emas/{brand}/edit', [MasterBrandEmasController::class, 'edit'])
+        ->name('admin.master.brand-emas.edit');
+    Route::put('/master/brand-emas/{brand}', [MasterBrandEmasController::class, 'update'])
+        ->name('admin.master.brand-emas.update');
+    Route::delete('/master/brand-emas/{brand}', [MasterBrandEmasController::class, 'destroy'])
+        ->name('admin.master.brand-emas.destroy');
 
     Route::get('/master/gold-prices', [MasterGoldPriceController::class, 'index'])
         ->name('admin.master.gold-prices.index');
