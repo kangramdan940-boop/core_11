@@ -1,0 +1,67 @@
+@use "../abstracts/index" as *;
+.progress {
+    height: 12px;
+    border-radius: 99px;
+    background-color: var(--line);
+    border-color: transparent;
+    .progress-bar {
+        background-color: var(--blue);
+        border-radius: 99px;
+        &.success {
+            background-color: var(--success);
+            border-color: var(--success);
+        }
+        &.danger {
+            background-color: var(--error);
+            border-color: var(--error);
+        }
+        &.warning {
+            background-color: var(--warning);
+            border-color: var(--warning);
+        }
+        &.info {
+            background-color: var(--info);
+            border-color: var(--info);
+        }
+        &.dark {
+            background-color: var(--dark);
+            border-color: var(--dark);
+        }
+        &.liner-primary{
+          background: var(--gradient);  
+        }
+    }
+    &.h-2 {
+        height: 2px;
+    }
+    &.h-4 {
+        height: 4px;
+    }
+    &.h-5 {
+        height: 5px;
+        border-radius: 6px;
+        .progress-bar {
+            border-radius: 6px;
+        }
+    }
+    &.h-6 {
+        height: 6px;
+    }
+    &.h-8 {
+        height: 8px;
+    }
+    &.h-10 {
+        height: 10px;
+    }
+    .progress-animated {
+        animation-duration: 5s;
+        animation-name: scrollanimated;
+        transition: all 0.3s ease 0s;
+    }
+}
+
+@keyframes scrollanimated {
+    0% {
+        width: 0;
+    }
+}

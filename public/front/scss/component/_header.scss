@@ -1,0 +1,303 @@
+@use "../abstracts/index" as *;
+.header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    padding-top: 16px;
+    height: 70px;
+    position: relative;
+    .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 10px;
+        border: 1.5px solid var(--black);
+        font-size: 8px;
+        opacity: 0.7;
+    }
+
+    .left {
+        position: absolute;
+        left: 24px;
+        top: 16px;
+        .icon {
+        }
+        .icon-close {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--black);
+        }
+    }
+    .right {
+        position: absolute;
+        right: 24px;
+        top: 16px;
+        display: flex;
+        gap: 12px;
+        .icon {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--black);
+            transition: none;
+            &.active {
+                svg {
+                    path {
+                        stroke: var(--blue);
+                    }
+                }
+                border-color: var(--blue);
+            }
+        }
+        // .icon-home {
+        //     font-size: 24px;
+        // }
+    }
+    .search-box {
+        border-color: transparent;
+        width: 34px;
+        height: 34px;
+        background-color: var(--rgba-black-11);
+        opacity: 1;
+        svg {
+            opacity: 0.7;
+        }
+    }
+    .noti-box {
+        border-color: transparent;
+        width: 40px;
+        height: 40px;
+        background-color: var(--rgba-black-11);
+    }
+    .icon-noline {
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        opacity: 0.7;
+    }
+    &.absolute {
+        position: absolute;
+        width: 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        max-width: 1024px;
+        margin: 0 auto;
+        background: transparent;
+        z-index: 5;
+        .left,
+        .right {
+            .icon {
+                color: var(--white);
+            }
+        }
+    }
+    &.header-white {
+        background: transparent;
+        .icon {
+            border-color: $white;
+            color: $white;
+        }
+        .title {
+            color: $white;
+        }
+    }
+    .box-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    &.header-st2 {
+        .icon {
+            opacity: 1;
+            color: var(--black);
+            font-size: 14px;
+        }
+    }
+}
+.header-avt {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    padding-top: 20px;
+    position: relative;
+    gap: 12px;
+    .box-avt {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        .avt {
+            border-radius: 10px;
+            border: 1px solid var(--blue);
+            width: 40px;
+            height: 40px;
+            overflow: hidden;
+        }
+        .content {
+            display: grid;
+            gap: 2px;
+            .name {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+            .icon {
+                width: 16px;
+                height: 16px;
+            }
+        }
+    }
+    .right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .box-icon {
+        width: 40px;
+        height: 40px;
+        background-color: var(--bg-black);
+        border-radius: 10px;
+        @include transition3;
+        &:hover {
+            background-color: var(--blue-2);
+            svg path {
+                stroke: $white;
+            }
+        }
+    }
+}
+.fixed-top {
+    position: fixed;
+    top: 0;
+    z-index: 100;
+    max-width: 1024px;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    background: var(--white);
+}
+.header-white {
+    &.is-fixed {
+        background: var(--pest-1);
+    }
+}
+
+.header-profile {
+    padding: 22px 24px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+    .right {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        .avt {
+            img {
+                border-radius: 50%;
+            }
+            .dot-danger {
+                top: 0px;
+                right: 0px;
+            }
+        }
+    }
+    .avt {
+        max-width: 36px;
+        height: 36px;
+        position: relative;
+        img {
+            border-radius: 6px;
+        }
+        .dot-danger {
+            top: -3px;
+            right: -3px;
+            position: absolute;
+            border: 1px solid --white;
+        }
+    }
+
+    &.style-1 {
+        padding: 20px 24px;
+        max-width: 100%;
+        .left {
+            // gap: 16px;
+            gap: 8px;
+        }
+        .avt {
+            max-width: 52px;
+            height: 52px;
+            img {
+                border-radius: 50px;
+            }
+        }
+        .dot-status {
+            width: 12px;
+            height: 12px;
+            top: 0px;
+            right: 2px;
+            position: absolute;
+            border: 1px solid --blue;
+        }
+        .content {
+            p {
+                opacity: 0.7;
+            }
+        }
+    }
+}
+
+.header-mess {
+    justify-content: flex-start;
+    gap: 18px;
+    height: auto;
+    .back-btn {
+        width: 23px;
+        height: 23px;
+        border-radius: 8px;
+    }
+    .content {
+        flex-grow: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .box-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .box-avt {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        .avatar {
+            border: 1px solid var(--blue);
+            .status {
+                border-width: 2px;
+                width: 12px;
+                min-width: 12px;
+                height: 12px;
+                right: 0;
+            }
+        }
+        .info {
+            display: grid;
+            gap: 2px;
+        }
+    }
+}

@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use App\Models\MasterCustomer;
 use App\Models\MasterGoldReadyStock;
+use App\Models\MasterProdukDanLayanan;
+use App\Models\MasterGramasiEmas;
 use App\Models\TransReady;
 use App\Models\TransPaymentLog;
 use App\Models\TransReadyLog;
@@ -47,16 +49,17 @@ class CustomerReadyController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'ready_stock_id'      => ['required', 'integer', 'exists:master_gold_ready_stock,id'],
-            'qty'                 => ['required', 'integer', 'min:1'],
-            'delivery_type'       => ['required', Rule::in(['ship','pickup','titip_agen'])],
-            'shipping_name'       => ['nullable', 'string', 'max:150'],
-            'shipping_phone'      => ['nullable', 'string', 'max:50'],
-            'shipping_address'    => ['nullable', 'string', 'max:255'],
-            'shipping_city'       => ['nullable', 'string', 'max:100'],
-            'shipping_province'   => ['nullable', 'string', 'max:100'],
-            'shipping_postal_code'=> ['nullable', 'string', 'max:10'],
-            'catatan'             => ['nullable', 'string'],
+            'ready_stock_id'               => ['required', 'integer', 'exists:master_gold_ready_stock,id'],
+            'id_master_produk_dan_layanan' => ['nullable', 'integer', 'exists:master_produk_dan_layanan,id'],
+            'qty'                          => ['required', 'integer', 'min:1'],
+            'delivery_type'                => ['required', Rule::in(['ship','pickup','titip_agen'])],
+            'shipping_name'                => ['nullable', 'string', 'max:150'],
+            'shipping_phone'               => ['nullable', 'string', 'max:50'],
+            'shipping_address'             => ['nullable', 'string', 'max:255'],
+            'shipping_city'                => ['nullable', 'string', 'max:100'],
+            'shipping_province'            => ['nullable', 'string', 'max:100'],
+            'shipping_postal_code'         => ['nullable', 'string', 'max:10'],
+            'catatan'                      => ['nullable', 'string'],
         ]);
 
         if ($data['delivery_type'] !== 'ship') {
@@ -89,9 +92,21 @@ class CustomerReadyController extends Controller
             'postal_code' => $data['shipping_postal_code'],
         ];
 
+        $produkId = isset($data['id_master_produk_dan_layanan']) ? (int) $data['id_master_produk_dan_layanan'] : null;
+        if (!$produkId) {
+            $gramasi = MasterGramasiEmas::where('gramasi', $stock->gramasi)->first();
+            if ($gramasi) {
+                $produk = MasterProdukDanLayanan::where('id_gramasi', (int) $gramasi->id)
+                    ->where('status', 'active')
+                    ->first();
+                $produkId = $produk?->id ? (int) $produk->id : null;
+            }
+        }
+
         $attrs = TransReady::buildAttributesForDraft(
             customerId: (int) $customer->id,
             agenId: $stock->master_agen_id ? (int) $stock->master_agen_id : null,
+            produkId: $produkId,
             readyStockId: (int) $stock->id,
             qty: (int) $data['qty'],
             hargaJualSatuan: (float) $hargaJualSatuan,

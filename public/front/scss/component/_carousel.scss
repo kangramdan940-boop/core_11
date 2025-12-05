@@ -1,0 +1,78 @@
+@use "../abstracts/index" as *;
+.dots-tes {
+    .swiper-pagination-bullet {
+        margin: 0px 2px !important;
+        width: 6px;
+        height: 6px;
+        opacity: 0.3;
+        border-radius: 50px;
+        background-color: var(--blue);
+    }
+    .swiper-pagination-bullet-active {
+        opacity: 1;
+    }
+    &.style-2 {
+        .swiper-pagination-bullet {
+            background-color: var(--white);
+        }
+    }
+}
+.swiper {
+    &.sw-auto {
+        .swiper-slide {
+            width: auto;
+        }
+    }
+}
+.img-banner-slider {
+    width: 275px;
+    height: 275px;
+    display: inline-block;
+    border-radius: 20px;
+    overflow: hidden;
+    &.style-2 {
+        width: 307px;
+        height: 173px;
+    }
+}
+.sw-lr {
+    margin-right: -24px;
+    padding-right: 24px;
+}
+
+.dots-tes {
+}
+
+.sw-box-shadow {
+    .tf-swiper {
+        padding: 24px;
+        margin: -24px;
+    }
+}
+.swiper-pagination-bullet {
+    width: 10px;
+    height: 10px;
+    background-color: var(--white);
+}
+.swiper-horizontal > .swiper-pagination-bullets .swiper-pagination-bullet,
+.swiper-pagination-horizontal.swiper-pagination-bullets .swiper-pagination-bullet {
+    margin: 0px 4px;
+}
+.line-tes {
+    position: unset;
+    margin-top: 30px;
+    display: inline-flex;
+    justify-content: center;
+    .swiper-pagination-bullet {
+        @include transition3;
+        width: 32px;
+        height: 6px;
+        display: block;
+        background-color: var(--rgba-black-4);
+        opacity: 1;
+        border-radius: 5px;
+    }
+    .swiper-pagination-bullet-active {
+        background-color: var(--blue);
+    }
+}

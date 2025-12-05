@@ -1,0 +1,51 @@
+
+/* ---------------------------------------------------------
+    * Name: Jobko
+    * Version: 1.0.1
+    * Author: Themesflat
+    * Author URI: http://themesflat.com 
+
+	* Abstracts variable
+    
+    * Reset css styles
+
+    * Settings
+   
+    * Components
+        * alert
+        * avatar
+        * badge
+        * button
+        * card
+        * carousel
+        * chart
+        * dropdown
+        * form
+        * header
+        * modal
+        * preloader
+        * progressbar
+        * radio button
+        * range slider
+        * spinner
+        * stepper
+        * switch
+        * tabs
+	
+    * widget
+
+/*--------- Abstracts variable ---------- */
+@use "./abstracts/index" as abstract;
+
+/*---------- Reset css styles ----------- */
+@use "reset";
+
+/*------------ Settings ----------------- */
+@use "./setting/index" as setting;
+
+/*------------ Components ---------------- */
+@use "./component/index" as component;
+
+/*--------------- widget ---------------- */
+@use "widgets";
+

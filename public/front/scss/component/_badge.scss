@@ -1,0 +1,169 @@
+@use "../abstracts/index" as *;
+.badge {
+    border-radius: 12px;
+    border: 1px solid transparent;
+    padding: 10px;
+
+    &.badge-lg {
+        font-size: 13px;
+        font-weight: 600;
+        padding: 8px 20px;
+    }
+    &.badge-md {
+        font-size: 12px;
+        font-weight: 500;
+        padding: 6px 10px;
+    }
+    &.badge-sm {
+        font-size: 10px;
+        font-weight: 500;
+        padding: 4px 10px;
+    }
+    &.primary {
+        background: var(--blue);
+        border-color: var(--blue);
+        color: $white;
+    }
+    &.secondary {
+        background-color: var(--violet);
+        border-color: var(--violet);
+        color: $white;
+    }
+    &.success {
+        background-color: var(--success);
+        border-color: var(--success);
+        color: $white;
+    }
+    &.danger {
+        background: var(--error);
+        border-color: var(--error);
+        color: $white;
+    }
+    &.warning {
+        background: var(--warning);
+        border-color: var(--warning);
+        color: $white;
+    }
+    &.info {
+        background: var(--info);
+        border-color: var(--info);
+        color: $white;
+    }
+    &.light-primary {
+        background: rgba(40, 105, 254, 0.3);
+        color: var(--blue);
+    }
+    &.light-secondary{
+        background: rgba(165, 95, 255, 0.3);
+        color: var(--violet);
+    }
+    &.light-success {
+        background: rgba(39, 174, 96, 0.3);
+        color: var(--success);
+    }
+    &.light-danger {
+        background: rgba(235, 87, 87, 0.3);
+        color: var(--error);
+    }
+    &.light-warning {
+        background: rgba(226, 185, 59, 0.3);
+        color: var(--warning);
+    }
+    &.light-info {
+        background: rgba(47, 128, 237, 0.3);
+        color: var(--info);
+    }
+    &.light-badge {
+        background: var(--light);
+        color: var(--black);
+    }
+    &.light-dark {
+        background: var(--rgba-dark);
+        color: var(--dark);
+    }
+    &.badge-circle {
+        border-radius: 50%;
+        padding: 0;
+        width: 30px;
+        min-width: 30px;
+        display: inline-flex;
+        height: 30px;
+        justify-content: center;
+        line-height: 30px;
+        &.primary {
+            background-color: var(--white);
+            color: var(--blue);
+        }
+        &.success {
+            background-color: var(--white);
+            color: var(--success);
+        }
+        &.danger {
+            border-color: var(--danger);
+
+            background-color: var(--white);
+            color: var(--danger);
+        }
+        &.warning {
+            border-color: var(--warning);
+
+            background-color: var(--white);
+            color: var(--warning);
+        }
+        &.info {
+            border-color: var(--info);
+            background-color: var(--white);
+            color: var(--info);
+        }
+        &.light {
+            border-color: var(--light);
+            background-color: var(--white);
+            color: var(--black);
+        }
+        &.dark {
+            border-color: var(--dark);
+            background-color: var(--white);
+            color: var(--dark);
+        }
+    }
+    &.badge-round {
+        border-radius: 50%;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        &.round-22 {
+            width: 22px;
+            min-width: 22px;
+            height: 22px;
+            line-height: 22px;
+        }
+    }
+}
+
+.tf-btn {
+    .badge {
+        position: absolute;
+        right: -8px;
+        top: -5px;
+        width: 24px;
+        height: 24px;
+        @include flex(center, center);
+    }
+}
+.badge-icon {
+    position: relative;
+    .badge {
+        position: absolute;
+        right: -6px;
+        top: -5px;
+        width: 14px;
+        height: 14px;
+        font-size: 10px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 13px;
+        padding: 0;
+        @include flex(center, center);
+    }
+}

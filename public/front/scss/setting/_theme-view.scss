@@ -1,0 +1,365 @@
+@use "../abstracts/index" as *;
+.dark-theme {
+    --black: #ffffff;
+    --white: #111d39;
+    --rgba-black-1: #ffffff;
+    --bg-black: rgba(255, 255, 255, 0.04);
+    --line: rgba(255, 255, 255, 0.12);
+    --line-2: rgba(255, 255, 255, 0.12);
+    --line-3: rgba(255, 255, 255, 0.08);
+    --shadow-1: 0px 3px 40px 0px rgba(26, 21, 40, 0.04);
+    --rgba-blue: rgba(255, 255, 255, 0.2);
+    // --rgba-blue-4: rgba(18, 25, 39, 0.96);
+    --rgba-black: rgba(255, 255, 255, 0.7);
+    --rgba-black-2: rgba(255, 255, 255, 0.5);
+    --rgba-black-3: rgba(255, 255, 255, 0.5);
+    --rgba-black-4: rgba(255, 255, 255, 0.15);
+    --rgba-black-5: rgba(255, 255, 255, 0.7);
+    --rgba-black-6: rgba(255, 255, 255, 0.32);
+    --rgba-black-7: rgba(255, 255, 255, 0.92);
+    --rgba-black-8: rgba(255, 255, 255, 0.2);
+    --rgba-black-10: rgba(255, 255, 255, 0.2);
+    --rgba-black-11: rgba(255, 255, 255, 0.04);
+    --rgba-primary: rgba(255, 255, 255, 0.12);
+
+    --backdrop: rgba(127, 82, 255, 0.2);
+    .box-view-hide {
+        .icon-pass {
+            svg path {
+                stroke: var(--black);
+            }
+        }
+    }
+    .boarding-img {
+        .img {
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+    }
+    .bubble.bubble-you {
+        .text-item {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.92);
+        }
+    }
+    .box-bubble-you .box-file .file-name {
+        color: rgba(255, 255, 255, 0.92);
+    }
+    .message-box-bottom {
+        .box-left {
+            svg path {
+                stroke: #ffffff;
+            }
+            svg circle {
+                stroke: #ffffff;
+            }
+        }
+        .btn-message {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    }
+    .box-question-answer {
+        &::before {
+            background-color: #323474;
+        }
+        &::after {
+            background-color: rgba(17, 29, 57, 0.4);
+        }
+    }
+    .canvas-attachment {
+        .close-popup {
+            svg path {
+                stroke: #ffffff;
+            }
+        }
+    }
+    .tf-btn {
+        &.disabled-primary,
+        &.disabled-primary2 {
+            background-color: rgba(255, 255, 255, 0.15);
+            box-shadow: none;
+        }
+    }
+    .header {
+        svg path {
+            stroke: #ffffff;
+        }
+    }
+    .header-avt {
+        .box-icon {
+            svg path {
+                stroke: #ffffff;
+            }
+        }
+    }
+    .search-box {
+        .icon-left {
+            svg path {
+                stroke: #ffffff;
+            }
+        }
+    }
+    .footer-fixed {
+        background-color: var(--blue);
+    }
+    .menubar-footer {
+        .inner-bar {
+            .action-add {
+                background-color: #111d39;
+            }
+        }
+        li:not(.active) {
+            svg path {
+                stroke: #ffffff;
+            }
+        }
+        .active {
+            svg path {
+                fill: #ffffff;
+            }
+        }
+    }
+    .box-app {
+        background-color: rgba(255, 255, 255, 0.08);
+        .box-top {
+            svg path {
+                stroke: #ffffff;
+            }
+        }
+        .btn-app {
+            background-color: rgba(255, 255, 255, 0.06);
+        }
+    }
+    .list-jobs {
+        .job-item {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+    }
+    .message-box {
+        background-color: rgba(255, 255, 255, 0.08);
+        .check-disable {
+            svg path {
+                stroke: #ffffff;
+            }
+        }
+    }
+    .card-review {
+        background-color: rgba(255, 255, 255, 0.08);
+        .bar {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    }
+    .card {
+        background-color: rgba(255, 255, 255, 0.08);
+    }
+    .job-item {
+        .more {
+            svg path {
+                stroke: #ffffff;
+            }
+        }
+    }
+    .box-noti {
+        background-color: rgba(255, 255, 255, 0.08);
+        .more svg path {
+            stroke: #ffffff;
+        }
+    }
+    .box-interest {
+        background-color: rgba(255, 255, 255, 0.08);
+        .check {
+            opacity: 1;
+            path {
+                stroke: #ffffff;
+            }
+        }
+    }
+    .menu-tab-job .tab-link {
+        color: rgba(255, 255, 255, 0.7);
+    }
+    .select-wrapper {
+        svg path {
+            stroke: #ffffff;
+        }
+    }
+    .list-review {
+        .review-item {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+    }
+    .box-uploadfile {
+        svg path {
+            stroke: #ffffff;
+        }
+    }
+    .box-success {
+        background-color: rgba(255, 255, 255, 0.08);
+    }
+    .input-icon,
+    .ip-select {
+        .icon {
+            svg path {
+                stroke: #ffffff;
+            }
+        }
+    }
+    .noUi-base {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+    .salary-chart {
+        span {
+            background: rgba(255, 255, 255, 0.1);
+            &.active {
+                background: linear-gradient(180deg, #2869fe 0%, rgba(40, 105, 254, 0) 100%);
+            }
+        }
+    }
+    .list-recent-search {
+        .item {
+            svg path {
+                stroke: #ffffff;
+            }
+        }
+    }
+}
+
+.rtl {
+    .noUi-horizontal .noUi-handle {
+        left: auto;
+        right: -8px;
+    }
+    #salary-chart {
+        flex-direction: row-reverse;
+    }
+    .nav-link-item::after {
+        left: 0;
+        right: auto;
+        transform: rotate(-180deg);
+    }
+    .header {
+        .left {
+            left: auto;
+            right: 24px;
+            svg,
+            .icon-arr-left {
+                transform: rotate(-180deg);
+            }
+        }
+        .right {
+            left: 24px;
+            right: auto;
+        }
+        .back-btn {
+            svg {
+                transform: rotate(-180deg);
+            }
+        }
+    }
+    .search-box {
+        .icon-left {
+            left: auto;
+            right: 20px;
+        }
+        .right-icon {
+            left: 10px;
+            right: auto;
+        }
+    }
+    .banner-box {
+        .img-box {
+            left: 20px;
+            right: auto;
+        }
+        .circle {
+            left: -160px;
+            right: auto;
+        }
+    }
+    .ip-select {
+        .tf-select {
+            padding-right: 52px;
+            padding-left: 26px;
+        }
+        .icon {
+            right: 20px;
+            left: auto;
+        }
+        .icon-right {
+            left: 20px;
+            right: auto;
+        }
+    }
+    .box-noti {
+        padding-left: 32px;
+        padding-right: 16px;
+        .more {
+            left: 16px;
+            right: auto;
+        }
+    }
+    .card-job-2 {
+        .circle-box {
+            left: -43px;
+            right: auto;
+        }
+    }
+    .list-skill .item-skill {
+        padding-left: 0;
+        padding-right: 20px;
+        &::before {
+            right: 0;
+            left: auto;
+        }
+    }
+    .card-review {
+        .bar {
+            margin-left: 0;
+            margin-right: 8px;
+        }
+    }
+    .form-field {
+        &.form-2 {
+            .label {
+                padding-left: 0;
+                padding-right: 12px;
+                &::after {
+                    right: auto;
+                    left: -8px;
+                }
+            }
+        }
+    }
+    .list-profile {
+        .item {
+            svg {
+                transform: rotate(-180deg);
+            }
+        }
+    }
+    .input-icon {
+        .form-control {
+            padding-left: 20px;
+            padding-right: 52px;
+        }
+        .icon {
+            left: auto;
+            right: 20px;
+        }
+        .icon-right{
+            left: 20px;
+            right: auto;
+        }
+    }
+    .box-view-hide {
+        .show-pass2,
+        .show-pass{
+            left: 20px;
+            right: auto;
+        }
+    }
+    .card-job{
+        direction: rtl;
+        .btn-apply svg {
+            transform: rotate(-180deg);
+        }
+    }
+}

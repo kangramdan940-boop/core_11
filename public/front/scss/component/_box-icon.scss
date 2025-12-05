@@ -1,0 +1,152 @@
+@use "../abstracts/index" as *;
+.box-icon {
+    @include flex(center, center);
+    @include transition3;
+    cursor: pointer;
+    &.w-28 {
+        width: 28px;
+        height: 28px;
+        .icon {
+            font-size: 14px;
+        }
+    }
+    &.w-32 {
+        width: 32px;
+        height: 32px;
+    }
+    &.w-36 {
+        width: 36px;
+        height: 36px;
+    }
+    &.w-40 {
+        width: 40px;
+        height: 40px;
+    }
+    &.w-48 {
+        width: 48px;
+        height: 48px;
+        .icon {
+            font-size: 24px;
+        }
+    }
+    &.w-52 {
+        width: 52px;
+        height: 52px;
+    }
+
+    &.round {
+        border-radius: 50%;
+    }
+
+    &.primary {
+        background-color: var(--rgba-primary);
+    }
+    &.orange {
+        background-color: var(--rgba-orange);
+    }
+    &.green {
+        background-color: var(--rgba-green);
+    }
+    &.blue {
+        background-color: var(--rgba-blue);
+    }
+    &.error {
+        background-color: var(--rgba-error);
+    }
+    &.social {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        .icon {
+            font-size: 28px;
+            color: var(--white);
+        }
+    }
+    &.website {
+        background-color: rgb(26, 21, 40, 0.7);
+    }
+    &.twitter {
+        background-color: #1d9bf0;
+    }
+    &.discord {
+        background-color: #5865f2;
+    }
+    &.instagram {
+        background: radial-gradient(126.96% 126.96% at 6.47% 97.81%, #fa8f21 9%, #d82d7e 78%);
+    }
+    &.telegram {
+        background-color: #25a3e1;
+    }
+    &.medium {
+        background-color: #1a1528;
+    }
+    &.massage {
+        background: linear-gradient(180deg, #5af575 0%, #13bd2c 100%);
+    }
+    &.skype {
+        background: linear-gradient(129.81deg, #58d3ee 14.9%, #0b66d1 84.22%);
+    }
+    &.twitter-2 {
+        background: linear-gradient(129.81deg, #3a6eff 14.9%, #06adff 84.22%);
+    }
+    &.messenger {
+        background: linear-gradient(210.73deg, #fd607a 10.09%, #913bff 46.91%, #1a7bff 89.52%);
+    }
+    &.facebook {
+        background: linear-gradient(180deg, #18acfe 0%, #0163e0 99.7%);
+    }
+    &.whatsApp {
+        background: linear-gradient(226.97deg, #5bd066 9.27%, #27b43e 100%);
+    }
+    &.copyLink {
+        background-color: #efe9e9;
+    }
+}
+.bg-icon-1 {
+    background-color: var(--rgba-black-4);
+}
+
+.box-share-social {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    column-gap: 30px;
+    row-gap: 20px;
+    flex-wrap: wrap;
+   
+}
+.social-share-item {
+   
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    .box-icon{
+        border-radius: 12px;
+    }
+    span{
+        font-size:12px;
+        line-height: 20px;
+        color: var( --rgba-black-1);
+    }
+    &.whatsApp {
+        box-shadow: 0px 6px 12px 0px #3dc04f33;
+    }
+    &.facebook {
+        box-shadow: 0px 6px 12px 0px #0672e733;
+    }
+    &.messenger {
+        box-shadow: 0px 6px 12px 0px #7b48ff33;
+    }
+    &.twitter-2 {
+        box-shadow: 0px 6px 12px 0px #10a1ff33;
+    }
+    &.instagram {
+        box-shadow: 0px 6px 12px 0px #e1425d33;
+    }
+    &.skype {
+        box-shadow: 0px 6px 12px 0px #1d7fd833;
+    }
+    &.massage {
+        box-shadow: 0px 6px 12px 0px #1dc53633;
+    }
+}

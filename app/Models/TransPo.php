@@ -15,6 +15,7 @@ class TransPo extends Model
         'kode_po',
         'master_customer_id',
         'master_agen_id',
+        'id_master_produk_dan_layanan',
         'harga_per_gram',
         'total_gram',
         'total_amount',
@@ -36,6 +37,7 @@ class TransPo extends Model
         'payment_method',
         'payment_reference',
         'catatan',
+        'estimasi_emas_diterima',
     ];
 
     protected $casts = [
@@ -49,6 +51,7 @@ class TransPo extends Model
         'shipped_at'     => 'datetime',
         'completed_at'   => 'datetime',
         'cancelled_at'   => 'datetime',
+        'estimasi_emas_diterima' => 'date',
     ];
 
     public function customer()
@@ -61,9 +64,14 @@ class TransPo extends Model
         return $this->belongsTo(MasterAgen::class, 'master_agen_id');
     }
 
-    public static function calculateAmount(float $hargaPerGram, float $totalGram): float
+    public function produk()
     {
-        $amount = $hargaPerGram * $totalGram;
+        return $this->belongsTo(MasterProdukDanLayanan::class, 'id_master_produk_dan_layanan');
+    }
+
+    public static function calculateAmount(float $hargaPerGram, float $jasa): float
+    {
+        $amount = $hargaPerGram + $jasa + mt_rand(100, 999);
         return (float) number_format($amount, 2, '.', '');
     }
 
@@ -75,30 +83,33 @@ class TransPo extends Model
     public static function buildAttributesForDraft(
         int $customerId,
         ?int $agenId,
+        ?int $produkId,
         float $hargaPerGram,
+        float $jasa,
         float $totalGram,
         string $deliveryType = 'ship',
         array $shipping = [],
         ?string $catatan = null
     ): array {
-        $totalAmount = self::calculateAmount($hargaPerGram, $totalGram);
+        $totalAmount = self::calculateAmount($hargaPerGram, jasa: $jasa);
 
         return [
-            'kode_po'            => self::generateKodePo(),
-            'master_customer_id' => $customerId,
-            'master_agen_id'     => $agenId,
-            'harga_per_gram'     => $hargaPerGram,
-            'total_gram'         => $totalGram,
-            'total_amount'       => $totalAmount,
-            'status'             => 'pending_payment',
-            'delivery_type'      => $deliveryType,
-            'shipping_name'      => $shipping['name'] ?? null,
-            'shipping_phone'     => $shipping['phone'] ?? null,
-            'shipping_address'   => $shipping['address'] ?? null,
-            'shipping_city'      => $shipping['city'] ?? null,
-            'shipping_province'  => $shipping['province'] ?? null,
-            'shipping_postal_code' => $shipping['postal_code'] ?? null,
-            'catatan'            => $catatan,
+            'kode_po'                     => self::generateKodePo(),
+            'master_customer_id'          => $customerId,
+            'master_agen_id'              => $agenId,
+            'id_master_produk_dan_layanan'=> $produkId,
+            'harga_per_gram'              => $hargaPerGram,
+            'total_gram'                  => $totalGram,
+            'total_amount'                => $totalAmount,
+            'status'                      => 'pending_payment',
+            'delivery_type'               => $deliveryType,
+            'shipping_name'               => $shipping['name'] ?? null,
+            'shipping_phone'              => $shipping['phone'] ?? null,
+            'shipping_address'            => $shipping['address'] ?? null,
+            'shipping_city'               => $shipping['city'] ?? null,
+            'shipping_province'           => $shipping['province'] ?? null,
+            'shipping_postal_code'        => $shipping['postal_code'] ?? null,
+            'catatan'                     => $catatan,
         ];
     }
 }

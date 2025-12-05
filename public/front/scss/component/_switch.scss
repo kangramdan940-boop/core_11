@@ -1,0 +1,54 @@
+@use "../abstracts/index" as *;
+.tf-switch-check {
+    position: relative;
+    width: 17px;
+    height: 14px;
+    -webkit-appearance: none;
+    background-color: var(--rgba-black-10);
+    border-radius: 4px;
+    transition: 0.2s;
+    margin-right: 0;
+
+    &::before {
+        content: "";
+        border-radius: 2px;
+        width: 7px;
+        height: 7px;
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        background: var(--white);
+        transition: 0.2s;
+    }
+    &:checked {
+        background: var(--blue);
+        &::before {
+            left: 6px;
+        }
+    }
+    &.lg {
+        width: 24px;
+        height: 17px;
+        &::before {
+            width: 10px;
+            height: 10px;
+            left: 4px;
+        }
+        &:checked {
+            &::before {
+                left: 10px;
+            }
+        }
+    }
+}
+.fieldset-sw {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    label {
+        cursor: pointer;
+    }
+}
+.sw-disabled {
+    opacity: 0.5;
+}

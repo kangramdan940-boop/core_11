@@ -68,8 +68,9 @@ class CustomerAuthController extends Controller
         $data = $request->validate([
             'name' => ['string', 'max:100'],
             'email' => ['email', 'max:150', 'unique:sys_user,email'],
-            'password' => ['min:6'],
-            'phone_wa' => ['nullable', 'string', 'max:30'],
+            'password' => ['min:6', 'confirmed'],
+            'password_confirmation' => ['required'],
+            'phone_wa' => ['nullable', 'string', 'max:30', 'unique:master_customer,phone_wa'],
             'address_line' => ['nullable', 'string', 'max:255'],
         ]);
 

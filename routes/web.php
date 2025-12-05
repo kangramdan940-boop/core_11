@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\MasterBrandEmasController;
 use App\Http\Controllers\Admin\MasterHomeSliderController;
 use App\Http\Controllers\Admin\MasterMitraKomisiController;
 use App\Http\Controllers\Admin\MasterSettingController;
+use App\Http\Controllers\Admin\MasterMenuHomeCustomerController;
 use App\Http\Controllers\Admin\MasterProdukDanLayananController;
 use App\Http\Controllers\Admin\MasterGramasiEmasController;
 use App\Http\Controllers\Admin\TransPaymentLogController;
@@ -24,10 +25,9 @@ use App\Http\Controllers\Front\MitraAuthController;
 use App\Http\Controllers\Front\CustomerPoController;
 use App\Http\Controllers\Front\CustomerReadyController;
 use App\Http\Controllers\Front\CustomerCicilanController;
+use App\Http\Controllers\Front\FrontController;
 
-Route::get('/', function () {
-    return view('front.home');
-});
+Route::get('/', [FrontController::class, 'home']);
 
 Route::get('/customer/login', [CustomerAuthController::class, 'showLoginForm'])
     ->name('customer.login');
@@ -45,24 +45,18 @@ Route::post('/customer/register', [CustomerAuthController::class, 'register'])
     ->name('customer.register.submit');
 
 Route::middleware('auth')->prefix('customer')->group(function () {
-    Route::get('/dashboard', function () {
-        $customer = \App\Models\MasterCustomer::where('sys_user_id', auth()->id())->first();
-        $orders = $customer
-            ? \App\Models\TransPo::where('master_customer_id', $customer->id)->orderByDesc('id')->limit(10)->get()
-            : collect();
-        $readyOrders = $customer
-            ? \App\Models\TransReady::where('master_customer_id', $customer->id)->orderByDesc('id')->limit(10)->get()
-            : collect();
-        $contracts = $customer
-            ? \App\Models\TransCicilan::where('master_customer_id', $customer->id)->orderByDesc('id')->limit(10)->get()
-            : collect();
-        return view('front.customer.dashboard', compact('orders', 'readyOrders', 'contracts'));
-    })->name('customer.dashboard');
+    Route::get('/dashboard', [FrontController::class, 'customerDashboard'])->name('customer.dashboard');
+    Route::get('/product-dan-layanan', [FrontController::class, 'customerProductDanLayanan'])->name('customer.product-dan-layanan');
+    Route::get('/profile', [FrontController::class, 'customerProfile'])->name('customer.profile');
+    Route::put('/profile', [FrontController::class, 'updateCustomerProfile'])->name('customer.profile.update');
+    Route::get('/all-order', [FrontController::class, 'customerAllOrders'])->name('customer.all-order');
 
-    Route::get('/po/create', function () {
-        $customer = \App\Models\MasterCustomer::where('sys_user_id', auth()->id())->first();
-        return view('front.customer.po.create', compact('customer'));
-    })->name('customer.po.create');
+    Route::get('/po/create', [FrontController::class, 'customerPoCreate'])
+        ->name('customer.po.create');
+
+    Route::get('/pre-order-emas', [FrontController::class, 'customerPoCreate'])
+        ->name('customer.pre-order-emas');
+
 
     Route::post('/po', [CustomerPoController::class, 'store'])
         ->name('customer.po.store');
@@ -222,6 +216,19 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         ->name('admin.master.home-slider.update');
     Route::delete('/master/home-sliders/{slider}', [MasterHomeSliderController::class, 'destroy'])
         ->name('admin.master.home-slider.destroy');
+
+    Route::get('/master/menu-home-customer', [MasterMenuHomeCustomerController::class, 'index'])
+        ->name('admin.master.menu-home-customer.index');
+    Route::get('/master/menu-home-customer/create', [MasterMenuHomeCustomerController::class, 'create'])
+        ->name('admin.master.menu-home-customer.create');
+    Route::post('/master/menu-home-customer', [MasterMenuHomeCustomerController::class, 'store'])
+        ->name('admin.master.menu-home-customer.store');
+    Route::get('/master/menu-home-customer/{menu}/edit', [MasterMenuHomeCustomerController::class, 'edit'])
+        ->name('admin.master.menu-home-customer.edit');
+    Route::put('/master/menu-home-customer/{menu}', [MasterMenuHomeCustomerController::class, 'update'])
+        ->name('admin.master.menu-home-customer.update');
+    Route::delete('/master/menu-home-customer/{menu}', [MasterMenuHomeCustomerController::class, 'destroy'])
+        ->name('admin.master.menu-home-customer.destroy');
 
     Route::get('/master/produk-layanan', [MasterProdukDanLayananController::class, 'index'])
         ->name('admin.master.produk-layanan.index');

@@ -1,0 +1,23 @@
+@use "../abstracts/index" as *;
+.menu-tab-job {
+    display: flex;
+    border-radius: 18px;
+    padding: 8px;
+    background-color: var(--rgba-blue);
+    gap: 12px;
+    .tab-link {
+        background-color: var(--white);
+        padding: 8px 14px;
+        border-radius: 12px;
+        font-size: 14px;
+        line-height: 24px;
+        font-weight: 600;
+        color: var(--rgba-blue-2);
+        display: block;
+        text-transform: capitalize;
+        &.active {
+            background-color: var(--blue);
+            color: $white;
+        }
+    }
+}

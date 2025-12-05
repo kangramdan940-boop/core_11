@@ -1,0 +1,95 @@
+@use "../abstracts/index" as *;
+.modal {
+    .modal-header {
+        border-color: var(--line);
+    }
+    .modal-dialog {
+        .modal-content {
+            border-radius: 32px;
+            border: 0;
+            background: var(--white);
+            color: var(--black);
+            padding: 24px;
+        }
+    }
+    &.modalRight {
+        .modal-dialog {
+            transform: translate(100%, 0) !important;
+            min-width: 100%;
+            height: 100%;
+            margin: 0;
+            transition: 0.5s all !important;
+            .modal-content {
+                border-radius: 0;
+                border: 0;
+                margin: auto;
+                overflow: hidden;
+                position: absolute;
+                right: 0;
+                bottom: 0;
+                top: 0;
+                padding: 0;
+                .modal-body {
+                    overflow: auto;
+                    padding: 0;
+                    padding-bottom: 30px;
+                }
+            }
+        }
+
+        &.show {
+            .modal-dialog {
+                transform: translate(0, 0) !important;
+            }
+        }
+    }
+    &.modalLeft {
+        .modal-dialog {
+            transform: translate(-100%, 0) !important;
+            min-width: 100%;
+            height: 100%;
+            margin: 0;
+            transition: 0.5s all !important;
+            .modal-content {
+                border-radius: 0;
+                border: 0;
+                margin: auto;
+                overflow: hidden;
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                top: 0;
+                padding: 0;
+                .modal-body {
+                    overflow: auto;
+                    padding: 0;
+                    padding-bottom: 30px;
+                }
+            }
+        }
+
+        &.show {
+            .modal-dialog {
+                transform: translate(0, 0) !important;
+            }
+        }
+    }
+
+    .modal-dialog-centered {
+        margin: 24px;
+        justify-content: center;
+        max-width: 100% !important;
+    }
+
+    &.fade {
+        transition: opacity 0.3s linear;
+    }
+}
+.modal-backdrop {
+    background-color: var(--backdrop);
+    &.show {
+        -webkit-backdrop-filter: blur(2px);
+        backdrop-filter: blur(2px);
+        opacity: 1;
+    }
+}

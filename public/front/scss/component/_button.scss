@@ -1,0 +1,402 @@
+@use "../abstracts/index" as *;
+.tf-btn {
+    padding: 16px;
+    border-radius: 16px;
+    @include flex(center, center);
+    width: 100%;
+    font-size: 16px;
+    line-height: 26px;
+    font-weight: 700;
+    border: 1px solid transparent;
+    @include transition3;
+    text-transform: capitalize;
+    box-shadow: 0px 6px 22px 0px rgba(40, 105, 254, 0.4);
+    &.inline {
+        width: auto;
+    }
+
+    &.btn-lg {
+        border-radius: 18px;
+    }
+    &.btn-md {
+        padding: 14px;
+    }
+    &.btn-sm {
+        font-size: 14px;
+        line-height: 24px;
+        padding: 8px;
+        border-radius: 12px;
+    }
+    // color
+    &.primary {
+        background-color: var(--blue);
+        color: $white;
+        box-shadow: none;
+        &:hover {
+            background-color: var(--blue-2);
+        }
+    }
+    &.disabled-primary {
+        background-color: rgba(40, 105, 254, 0.15);
+        color: var(--blue);
+        &:hover {
+            background-color: var(--blue);
+            color: $white;
+        }
+    }
+    &.disabled-primary2 {
+        background-color: rgba(40, 105, 254, 0.1);
+        color: var(--blue);
+        box-shadow: var(--shadow-8);
+        &:hover {
+            background-color: var(--blue);
+            color: var(--white);
+        }
+    }
+    &.secondary {
+        background: var(--violet);
+        border: 1px solid var(--violet);
+        color: $white;
+        box-shadow: none;
+        &:hover {
+            background: var(--pest-1);
+            border-color: var(--pest-1);
+        }
+    }
+    &.success {
+        background: var(--success);
+        border: 1px solid var(--success);
+        color: $white;
+        box-shadow: none;
+        &:hover {
+            background: var(--bright-green);
+            border-color: var(--bright-green);
+        }
+    }
+    &.danger {
+        background: var(--error);
+        border: 1px solid var(--error);
+        color: $white;
+        box-shadow: none;
+        &:hover {
+            background: var(--red);
+        }
+    }
+    &.warning {
+        background: var(--warning);
+        border: 1px solid var(--warning);
+        color: $white;
+        box-shadow: none;
+        &:hover {
+            background: var(--yellow);
+        }
+    }
+    &.info {
+        background: var(--info);
+        border: 1px solid var(--info);
+        color: $white;
+        box-shadow: none;
+        &:hover {
+            background: var(--info);
+        }
+    }
+
+    &.light-btn-primary {
+        background: rgba(40, 105, 254, 0.3);
+        border: 1px solid transparent;
+        color: var(--blue);
+        box-shadow: none;
+        &:hover {
+            background: var(--blue);
+            color: var(--white);
+        }
+    }
+    &.light-btn-secondary {
+        background: rgba(165, 95, 255, 0.3);
+        border: 1px solid transparent;
+        color: var(--violet);
+        box-shadow: none;
+        &:hover {
+            background: var(--violet);
+            color: var(--white);
+        }
+    }
+    &.light-btn-success {
+        background: rgba(39, 174, 96, 0.3);
+        border: 1px solid transparent;
+        color: var(--success);
+        box-shadow: none;
+        &:hover {
+            background: var(--success);
+            color: var(--white);
+        }
+    }
+    &.light-btn-danger {
+        background: rgba(235, 87, 87, 0.3);
+        border: 1px solid transparent;
+        color: var(--error);
+        box-shadow: none;
+        &:hover {
+            background: var(--error);
+            color: var(--white);
+        }
+    }
+    &.light-btn-warning {
+        background: rgba(226, 185, 59, 0.3);
+        border: 1px solid transparent;
+        color: var(--warning);
+        box-shadow: none;
+        &:hover {
+            background: var(--warning);
+            color: var(--white);
+        }
+    }
+    &.light-btn-info {
+        background: rgba(47, 128, 237, 0.3);
+        border: 1px solid transparent;
+        color: var(--info);
+        box-shadow: none;
+        &:hover {
+            background: var(--info);
+            color: var(--white);
+        }
+    }
+    &.outline-btn-primary {
+        background: var(--white);
+        border: 1px solid var(--blue);
+        color: var(--blue);
+        box-shadow: none;
+        &:hover {
+            background: var(--blue);
+            color: var(--white);
+            svg path {
+                fill: var(--white);
+            }
+        }
+    }
+    &.outline-btn-secondary {
+        background: var(--white);
+        border: 1px solid var(--violet);
+        color: var(--violet);
+        box-shadow: none;
+        &:hover {
+            background: var(--violet);
+            color: var(--white);
+            svg path {
+                fill: var(--white);
+            }
+        }
+    }
+    &.outline-btn-success {
+        background: var(--white);
+        border: 1px solid var(--success);
+        color: var(--success);
+        box-shadow: none;
+        &:hover {
+            background: var(--success);
+            color: var(--white);
+        }
+    }
+    &.outline-btn-danger {
+        background: var(--white);
+        border: 1px solid var(--error);
+        color: var(--error);
+        box-shadow: none;
+        &:hover {
+            background: var(--danger);
+            color: var(--white);
+        }
+    }
+    &.outline-btn-warning {
+        background: var(--white);
+        border: 1px solid var(--warning);
+        color: var(--warning);
+        box-shadow: none;
+        &:hover {
+            background: var(--warning);
+            color: var(--white);
+        }
+    }
+    &.outline-btn-info {
+        background: var(--white);
+        border: 1px solid var(--info);
+        color: var(--info);
+        box-shadow: none;
+        &:hover {
+            background: var(--info);
+            color: var(--white);
+        }
+    }
+
+
+    &.btn-square {
+        border-radius: 0;
+    }
+
+    &.line {
+        border: 1px solid var(--line);
+    }
+
+    &.btn-icon {
+        gap: 8px;
+        .icon {
+            font-size: 20px;
+        }
+    }
+    &.style-1 {
+        padding-top: 14px;
+        padding-bottom: 14px;
+    }
+}
+.lg-zoom-in {
+    display: none;
+}
+
+.btn-social {
+    @include flex(center, center);
+    color: var(--white);
+    &:hover {
+        color: var(--white);
+    }
+    &.twitter {
+        background: #03a9f4;
+    }
+    &.x-social {
+        background: var(--main);
+    }
+    &.instagram {
+        background: linear-gradient(
+                45deg,
+                #fee411 11.93%,
+                #fedb16 15.62%,
+                #fec125 21.73%,
+                #fe983d 29.55%,
+                #fe5f5e 38.65%,
+                #fe2181 47.46%,
+                #9000dc 82.98%
+            ),
+            #03a9f4;
+    }
+    &.telegram {
+        background: #039be5;
+    }
+    &.line {
+        background: #00c200;
+    }
+
+    &.sm {
+        width: 34px;
+        height: 34px;
+        font-size: 16px;
+    }
+    &.md {
+        width: 38px;
+        height: 38px;
+        font-size: 16px;
+    }
+    &.lg {
+        width: 42px;
+        height: 42px;
+        font-size: 20px;
+    }
+    &.rounded {
+        border-radius: 10px !important;
+    }
+    &.circle {
+        border-radius: 999px !important;
+    }
+}
+
+.tf-loading {
+    width: auto;
+    display: inline-flex;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 21px;
+    // color: var(--text-5);
+    .spinner-circle {
+        .spinner-child {
+            &::before {
+                // background-color: var(--text-5);
+            }
+        }
+    }
+}
+
+.btn-invite {
+    padding: 5px 15px;
+    color: var(--rgba-black-3);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    font-size: 12px;
+    line-height: 24px;
+    font-weight: 600;
+    &.active {
+        background-color: var(--blue);
+        border-color: var(--blue);
+        color: var(--white);
+    }
+}
+
+$bgColor: #3a3d55;
+$slideBgColor: rgba(255, 255, 255, 0.3);
+$slideBallColor: white;
+$slideBallIconColor: black;
+$slideTextColor: #ffffff;
+
+@mixin center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@mixin nonselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+
+#button-background {
+    position: relative;
+    background-image: radial-gradient(circle at 100% 46%, #21d2a3, #15adaf 102%);
+    width: 335px;
+    height: 54px;
+    border: white;
+    border-radius: 40px;
+    @include center;
+    &.bg-converted {
+        background: white;
+    }
+}
+
+.btn-swipe {
+    transition:
+        width 0.3s,
+        border-radius 0.3s,
+        height 0.3s;
+    position: absolute;
+    left: 8px;
+    background-color: $slideBallColor;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    @include center;
+}
+
+.fixed-button {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 24px;
+    background-color: var(--white);
+    max-width: 1024px;
+    margin-left: auto;
+    margin-right: auto;
+    z-index: 1;
+}

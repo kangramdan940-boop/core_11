@@ -15,6 +15,7 @@ class TransReady extends Model
         'kode_trans',
         'master_customer_id',
         'master_agen_id',
+        'id_master_produk_dan_layanan',
         'master_gold_ready_stock_id',
         'qty',
         'harga_jual_satuan',
@@ -62,6 +63,11 @@ class TransReady extends Model
         return $this->belongsTo(MasterGoldReadyStock::class, 'master_gold_ready_stock_id');
     }
 
+    public function produk()
+    {
+        return $this->belongsTo(MasterProdukDanLayanan::class, 'id_master_produk_dan_layanan');
+    }
+
     public static function calculateAmount(float $hargaJualSatuan, int $qty): float
     {
         $amount = $hargaJualSatuan * $qty;
@@ -76,6 +82,7 @@ class TransReady extends Model
     public static function buildAttributesForDraft(
         int $customerId,
         ?int $agenId,
+        ?int $produkId,
         int $readyStockId,
         int $qty,
         float $hargaJualSatuan,
@@ -86,22 +93,23 @@ class TransReady extends Model
         $totalAmount = self::calculateAmount($hargaJualSatuan, $qty);
 
         return [
-            'kode_trans'             => self::generateKodeTrans(),
-            'master_customer_id'     => $customerId,
-            'master_agen_id'         => $agenId,
-            'master_gold_ready_stock_id' => $readyStockId,
-            'qty'                    => $qty,
-            'harga_jual_satuan'      => $hargaJualSatuan,
-            'total_amount'           => $totalAmount,
-            'status'                 => 'pending_payment',
-            'delivery_type'          => $deliveryType,
-            'shipping_name'          => $shipping['name'] ?? null,
-            'shipping_phone'         => $shipping['phone'] ?? null,
-            'shipping_address'       => $shipping['address'] ?? null,
-            'shipping_city'          => $shipping['city'] ?? null,
-            'shipping_province'      => $shipping['province'] ?? null,
-            'shipping_postal_code'   => $shipping['postal_code'] ?? null,
-            'catatan'                => $catatan,
+            'kode_trans'                  => self::generateKodeTrans(),
+            'master_customer_id'          => $customerId,
+            'master_agen_id'              => $agenId,
+            'id_master_produk_dan_layanan'=> $produkId,
+            'master_gold_ready_stock_id'  => $readyStockId,
+            'qty'                         => $qty,
+            'harga_jual_satuan'           => $hargaJualSatuan,
+            'total_amount'                => $totalAmount,
+            'status'                      => 'pending_payment',
+            'delivery_type'               => $deliveryType,
+            'shipping_name'               => $shipping['name'] ?? null,
+            'shipping_phone'              => $shipping['phone'] ?? null,
+            'shipping_address'            => $shipping['address'] ?? null,
+            'shipping_city'               => $shipping['city'] ?? null,
+            'shipping_province'           => $shipping['province'] ?? null,
+            'shipping_postal_code'        => $shipping['postal_code'] ?? null,
+            'catatan'                     => $catatan,
         ];
     }
 }
