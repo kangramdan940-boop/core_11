@@ -9,8 +9,11 @@ use App\Http\Controllers\Admin\MasterAdminController;
 use App\Http\Controllers\Admin\MasterGoldPriceController;
 use App\Http\Controllers\Admin\MasterGoldReadyStockController;
 use App\Http\Controllers\Admin\MasterBrandEmasController;
+use App\Http\Controllers\Admin\MasterHomeSliderController;
 use App\Http\Controllers\Admin\MasterMitraKomisiController;
 use App\Http\Controllers\Admin\MasterSettingController;
+use App\Http\Controllers\Admin\MasterProdukDanLayananController;
+use App\Http\Controllers\Admin\MasterGramasiEmasController;
 use App\Http\Controllers\Admin\TransPaymentLogController;
 use App\Http\Controllers\Admin\TransPoController;
 use App\Http\Controllers\Admin\TransCicilanController;
@@ -206,6 +209,45 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         ->name('admin.master.brand-emas.update');
     Route::delete('/master/brand-emas/{brand}', [MasterBrandEmasController::class, 'destroy'])
         ->name('admin.master.brand-emas.destroy');
+
+    Route::get('/master/home-sliders', [MasterHomeSliderController::class, 'index'])
+        ->name('admin.master.home-slider.index');
+    Route::get('/master/home-sliders/create', [MasterHomeSliderController::class, 'create'])
+        ->name('admin.master.home-slider.create');
+    Route::post('/master/home-sliders', [MasterHomeSliderController::class, 'store'])
+        ->name('admin.master.home-slider.store');
+    Route::get('/master/home-sliders/{slider}/edit', [MasterHomeSliderController::class, 'edit'])
+        ->name('admin.master.home-slider.edit');
+    Route::put('/master/home-sliders/{slider}', [MasterHomeSliderController::class, 'update'])
+        ->name('admin.master.home-slider.update');
+    Route::delete('/master/home-sliders/{slider}', [MasterHomeSliderController::class, 'destroy'])
+        ->name('admin.master.home-slider.destroy');
+
+    Route::get('/master/produk-layanan', [MasterProdukDanLayananController::class, 'index'])
+        ->name('admin.master.produk-layanan.index');
+    Route::get('/master/produk-layanan/create', [MasterProdukDanLayananController::class, 'create'])
+        ->name('admin.master.produk-layanan.create');
+    Route::post('/master/produk-layanan', [MasterProdukDanLayananController::class, 'store'])
+        ->name('admin.master.produk-layanan.store');
+    Route::get('/master/produk-layanan/{item}/edit', [MasterProdukDanLayananController::class, 'edit'])
+        ->name('admin.master.produk-layanan.edit');
+    Route::put('/master/produk-layanan/{item}', [MasterProdukDanLayananController::class, 'update'])
+        ->name('admin.master.produk-layanan.update');
+    Route::delete('/master/produk-layanan/{item}', [MasterProdukDanLayananController::class, 'destroy'])
+        ->name('admin.master.produk-layanan.destroy');
+
+    Route::get('/master/gramasi-emas', [MasterGramasiEmasController::class, 'index'])
+        ->name('admin.master.gramasi-emas.index');
+    Route::get('/master/gramasi-emas/create', [MasterGramasiEmasController::class, 'create'])
+        ->name('admin.master.gramasi-emas.create');
+    Route::post('/master/gramasi-emas', [MasterGramasiEmasController::class, 'store'])
+        ->name('admin.master.gramasi-emas.store');
+    Route::get('/master/gramasi-emas/{item}/edit', [MasterGramasiEmasController::class, 'edit'])
+        ->name('admin.master.gramasi-emas.edit');
+    Route::put('/master/gramasi-emas/{item}', [MasterGramasiEmasController::class, 'update'])
+        ->name('admin.master.gramasi-emas.update');
+    Route::delete('/master/gramasi-emas/{item}', [MasterGramasiEmasController::class, 'destroy'])
+        ->name('admin.master.gramasi-emas.destroy');
 
     Route::get('/master/gold-prices', [MasterGoldPriceController::class, 'index'])
         ->name('admin.master.gold-prices.index');

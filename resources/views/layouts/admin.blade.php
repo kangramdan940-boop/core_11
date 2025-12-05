@@ -86,10 +86,14 @@
 
         <div class="menu-title">Main</div>
         <a href="{{ route('admin.dashboard') }}">🏠 Dashboard</a>
+        
 
         <div class="menu-title">Master</div>
         <a href="{{ route('admin.master.customers.index') }}">👤 Customer</a>
         <a href="{{ route('admin.master.brand-emas.index') }}">🏷️ Brand Emas</a>
+        <a href="{{ route('admin.master.gramasi-emas.index') }}">⚖️ Gramasi Emas</a>
+        <a href="{{ route('admin.master.produk-layanan.index') }}">🛍️ Produk & Layanan</a>
+        <a href="{{ route('admin.master.home-slider.index') }}">🖼️ Home Slider</a>
         <a href="{{ route('admin.master.agens.index') }}">🧑‍💼 Agen</a>
         <a href="{{ route('admin.master.mitra-brankas.index') }}">🏦 Mitra Brankas</a>
         <a href="{{ route('admin.master.admins.index') }}">🛡️ Admin</a>
