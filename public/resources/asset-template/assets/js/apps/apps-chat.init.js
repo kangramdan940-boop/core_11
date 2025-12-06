@@ -1,0 +1,1 @@
+document.addEventListener("DOMContentLoaded",(function(){new Choices("#default-choice",{searchEnabled:!1,placeholder:!1,itemSelectText:!1}),document.getElementsByClassName(".lightbox")&&GLightbox({selector:".lightbox",title:!1})}));

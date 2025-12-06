@@ -7,23 +7,32 @@
 
     <div class="col-md-6">
         <label class="form-label">URL Path Gambar (opsional jika upload)</label>
-        <input type="text" name="image_url" class="form-control @error('image_url') is-invalid @enderror"
-               value="{{ old('image_url', $menu->image ?? '') }}">
+        <div class="input-group">
+            <span class="input-group-text"><i class="ri-link-m"></i></span>
+            <input type="text" name="image_url" class="form-control @error('image_url') is-invalid @enderror"
+                   value="{{ old('image_url', $menu->image ?? '') }}">
+        </div>
         @error('image_url')<div class="invalid-feedback">{{ $message }}</div>@enderror
         <small class="text-muted">Wajib diisi jika tidak upload gambar.</small>
     </div>
 
     <div class="col-md-6">
         <label class="form-label">Label</label>
-        <input type="text" name="label" class="form-control @error('label') is-invalid @enderror"
-               value="{{ old('label', $menu->label ?? '') }}" required>
+        <div class="input-group">
+            <span class="input-group-text"><i class="ri-price-tag-3-line"></i></span>
+            <input type="text" name="label" class="form-control @error('label') is-invalid @enderror"
+                   value="{{ old('label', $menu->label ?? '') }}" required>
+        </div>
         @error('label')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
 
     <div class="col-md-6">
         <label class="form-label">Path URL (opsional)</label>
-        <input type="text" name="path_url" class="form-control @error('path_url') is-invalid @enderror"
-               value="{{ old('path_url', $menu->path_url ?? '') }}">
+        <div class="input-group">
+            <span class="input-group-text"><i class="ri-route-line"></i></span>
+            <input type="text" name="path_url" class="form-control @error('path_url') is-invalid @enderror"
+                   value="{{ old('path_url', $menu->path_url ?? '') }}">
+        </div>
         @error('path_url')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
 

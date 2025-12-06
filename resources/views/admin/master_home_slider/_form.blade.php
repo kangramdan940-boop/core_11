@@ -7,16 +7,22 @@
 
     <div class="col-md-6">
         <label class="form-label">URL Path Gambar (opsional jika upload)</label>
-        <input type="text" name="image_url" class="form-control @error('image_url') is-invalid @enderror"
-               value="{{ old('image_url', $slider->image_url ?? '') }}">
+        <div class="input-group">
+            <span class="input-group-text"><i class="ri-link-m"></i></span>
+            <input type="text" name="image_url" class="form-control @error('image_url') is-invalid @enderror"
+                   value="{{ old('image_url', $slider->image_url ?? '') }}">
+        </div>
         @error('image_url')<div class="invalid-feedback">{{ $message }}</div>@enderror
         <small class="text-muted">Wajib diisi jika tidak upload gambar.</small>
     </div>
 
     <div class="col-md-6">
         <label class="form-label">Judul</label>
-        <input type="text" name="title" class="form-control @error('title') is-invalid @enderror"
-               value="{{ old('title', $slider->title ?? '') }}" required>
+        <div class="input-group">
+            <span class="input-group-text"><i class="ri-heading"></i></span>
+            <input type="text" name="title" class="form-control @error('title') is-invalid @enderror"
+                   value="{{ old('title', $slider->title ?? '') }}" required>
+        </div>
         @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
 
