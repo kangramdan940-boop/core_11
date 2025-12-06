@@ -19,12 +19,14 @@ class CustomerPoController extends Controller
 {
     public function store(Request $request)
     {
+
         $request['id_master_produk_dan_layanan'] = decrypt($request->id_master_produk_dan_layanan);
         $data = $request->validate([
             'id_master_produk_dan_layanan' => ['required', 'integer', 'exists:master_produk_dan_layanan,id'],
             'shipping_name'                => ['nullable', 'string', 'max:150'],
             'shipping_phone'               => ['nullable', 'string', 'max:50'],
             'shipping_address'             => ['nullable', 'string', 'max:255'],
+            'qty'                           => ['required', 'integer', 'min:1'],
             'shipping_city'                => ['nullable', 'string', 'max:100'],
             'shipping_province'            => ['nullable', 'string', 'max:100'],
             'shipping_postal_code'         => ['nullable', 'string', 'max:10'],
@@ -34,6 +36,15 @@ class CustomerPoController extends Controller
         $data['delivery_type'] = 'ship';
 
         $customer = MasterCustomer::where('sys_user_id', Auth::id())->firstOrFail();
+
+        $pendingCount = TransPo::where('master_customer_id', (int) $customer->id)
+            ->where('status', 'pending_payment')
+            ->count();
+        if ($pendingCount >= 2) {
+            return back()->withErrors([
+                'limit' => 'Maaf, Anda masih memiliki ' . $pendingCount . ' PO yang menunggu pembayaran. Untuk menjaga keteraturan, mohon selesaikan atau batalkan salah satu terlebih dahulu sebelum membuat PO baru. <a href="' . route('customer.all-order') . '">Klik di sini untuk melihat daftar pesanan Anda</a>.'
+            ])->withInput();
+        }
 
         $shipping = [
             'name'        => $data['shipping_name'] ?? null,
@@ -53,6 +64,7 @@ class CustomerPoController extends Controller
             agenId: null,
             produkId: (int) $produk->id,
             jasa: $jasa,
+            qty: (float)$data['qty'],
             hargaPerGram: $hargaPerGram,
             totalGram: (float) $mgramasi->gramasi,
             deliveryType: $data['delivery_type'],
@@ -67,6 +79,7 @@ class CustomerPoController extends Controller
                 agenId: null,
                 produkId: (int) $produk->id,
                 jasa: $jasa,
+                qty: (float)$data['qty'],
                 hargaPerGram: $hargaPerGram,
                 totalGram: (float) $mgramasi->gramasi,
                 deliveryType: $data['delivery_type'],
@@ -75,7 +88,6 @@ class CustomerPoController extends Controller
             );
             $attempts++;
         }
-
         $po = TransPo::create($attrs);
         return redirect()
             ->route('customer.po.show', encrypt($po->id))

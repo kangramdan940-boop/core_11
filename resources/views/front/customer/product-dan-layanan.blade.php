@@ -81,13 +81,13 @@
                     @foreach($produk as $p)
                         <div class="box-app">
                             <div class="info-box">
-                                <a href="{{ ($p->is_allow_po ? route('customer.po.create') : ($p->is_allow_ready ? route('customer.ready.index') : '#')) }}" class="logo">
+                                <a href="{{ ($p->is_allow_po ? route('customer.po.create', ['pid' => encrypt((string)$p->id)]) : ($p->is_allow_ready ? route('customer.ready.index') : '#')) }}" class="logo">
                                     @php $img = $p->image_produk; @endphp
                                     <img src="{{ empty($img) ? asset('front/images/golds/antam_1.jpg') : (Str::startsWith($img, ['http://','https://','/']) ? $img : asset('storage/' . ltrim($img, '/'))) }}" alt="logo">
                                 </a>
                                 <div class="content">
                                     <div class="h7 text-dark">
-                                        <a href="{{ ($p->is_allow_po ? route('customer.po.create') : ($p->is_allow_ready ? route('customer.ready.index') : '#')) }}">
+                                        <a href="{{ ($p->is_allow_po ? route('customer.po.create', ['pid' => encrypt((string)$p->id)]) : ($p->is_allow_ready ? route('customer.ready.index') : '#')) }}">
                                             {{ $p->gramasi?->nama ?? 'Produk' }} {{ number_format((float) ($p->gramasi?->gramasi ?? 0), 3) }} gr
                                         </a>
                                         <span class="dot"></span>
@@ -107,7 +107,7 @@
                             </div>
                             <div class="box-btn">
                                 @if($p->is_allow_po)
-                                    <a href="{{ route('customer.po.create') }}" class="btn-app button-1">Jastip Emas</a>
+                                    <a href="{{ route('customer.po.create', ['pid' => encrypt((string)$p->id)]) }}" class="btn-app button-1">Jastip Emas</a>
                                 @endif
                                 @if($p->is_allow_ready)
                                     <a href="{{ route('customer.ready.index') }}" class="btn-app button-1 view-app">Emas Ready</a>

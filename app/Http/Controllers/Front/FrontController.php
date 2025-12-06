@@ -146,4 +146,9 @@ class FrontController extends Controller
         $produkPo = MasterProdukDanLayanan::with('gramasi')->where('is_allow_po', true)->where('status', 'active')->orderBy('urutan')->get();
         return view('front.customer.po.create', compact('customer', 'produkPo'));
     }
+
+    public function customerForgotPassword(): View
+    {
+        return view('front.customer.forget-pass');
+    }
 }

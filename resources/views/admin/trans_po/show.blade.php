@@ -48,6 +48,7 @@
                 @endphp
                 <div class="col-md-3"><strong>Status</strong><br><span class="badge rounded-pill {{ $badge }}">{{ strtoupper($s) }}</span></div>
                 <div class="col-md-3"><strong>Total Gram</strong><br>{{ number_format((float)$po->total_gram, 3, ',', '.') }} g</div>
+                <div class="col-md-3"><strong>Qty</strong><br>{{ (int)($po->qty ?? 1) }} pcs</div>
                 <div class="col-md-3"><strong>Total Amount</strong><br>{{ number_format((float)$po->total_amount, 2, ',', '.') }}</div>
 
                 <div class="col-md-3"><strong>Customer</strong><br>{{ optional($po->customer)->full_name ?? '-' }}</div>

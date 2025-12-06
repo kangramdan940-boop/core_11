@@ -48,7 +48,7 @@
      
     <div class="header fixed-top">
         <div class="left">
-            <a href="{{ asset('front/javascript:void(0);" class="icon back-btn')}}">
+            <a href="{{ route('customer.dashboard') }}" class="icon back-btn">
                 <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M6.88986 12.2951L1.60986 7.00008L6.88986 1.70508" stroke="#121927" stroke-width="1.5"
                         stroke-linecap="round" stroke-linejoin="round" />
@@ -62,11 +62,11 @@
             <form action="{{ route('customer.po.store') }}" method="POST" class="mt-10">
                 @csrf
                 @if ($errors->any())
-                    <div class="alert alert-danger fade show mb-12" role="alert">
+                    <div class="alert alert-info light alert-dismissible fade show mb-3" role="alert">
                         <strong>Terjadi kesalahan.</strong>
                         <ul class="mb-0 mt-8">
                             @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
+                                <li>{!! $error !!}</li>
                             @endforeach
                         </ul>
                     </div>

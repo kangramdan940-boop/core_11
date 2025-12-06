@@ -7717,3 +7717,8 @@ html:not([dir=rtl]) .slider-salary .noUi-handle-upper {
     display: inline-block; 
     color: #fff;
 }
+.agen-wa{
+      border: 1px solid green;
+    border-radius: 5px;
+    background: #00800017;
+}

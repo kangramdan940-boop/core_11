@@ -17,6 +17,7 @@ return new class extends Migration {
 
             // snapshot harga saat akad
             $table->decimal('harga_per_gram', 15, 2);
+            $table->decimal('harga_per_keping', 15, 2);
             $table->decimal('total_gram', 10, 3);
             $table->decimal('total_amount', 15, 2);
 

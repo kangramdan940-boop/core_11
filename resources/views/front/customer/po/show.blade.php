@@ -34,7 +34,7 @@
         <div class="card-body">
             <h6 class="mb-3">Ringkasan PO</h6>
             <div class="row g-3">
-                <div class="col-md-3"><strong>Kode PO</strong><br>{{ $po->kode_po }}</div>
+                <div class="col-md-6"><strong>Kode PO</strong><br>{{ $po->kode_po }}</div>
                 @php
                     $s = $po->status;
                     $badge = 'text-bg-secondary';
@@ -44,12 +44,38 @@
                     elseif ($s === 'processing') { $badge = 'text-bg-info'; }
                     elseif ($s === 'ready_at_agen' || $s === 'shipped') { $badge = 'text-bg-primary'; }
                 @endphp
-                <div class="col-md-3"><strong>Status</strong><br><span class="badge rounded-pill {{ $badge }}">{{ strtoupper($s) }}</span></div>
-                <div class="col-md-3"><strong>Harga</strong><br>{{ number_format((float)$po->harga_per_gram, 2, ',', '.') }}</div>
-                <div class="col-md-3"><strong>Total Gram</strong><br>{{ number_format((float)$po->total_gram, 0, ',', '.') }} g</div>
-                <div class="col-md-3"><strong>Biaya Jasa</strong><br>{{ number_format((float)$po->total_amount - $po->harga_per_gram , 0, ',', '.') }} g</div>
-                <div class="col-md-3"><strong>Total Amount</strong><br>{{ number_format((float)$po->total_amount, 2, ',', '.') }}</div>
-                <div class="col-md-3"><strong>Tipe Penerimaan</strong><br>{{ $po->delivery_type }}</div>
+                <div class="col-md-6"><strong>Status</strong><br><span class="badge rounded-pill {{ $badge }}">{{ strtoupper($s) }}</span></div>
+                @php
+                    $rawWa = optional($po->agen)->phone_wa;
+                    $waPhone = preg_replace('/\D+/', '', (string)$rawWa);
+                    if (\Illuminate\Support\Str::startsWith($waPhone, '0')) {
+                        $waPhone = '62' . substr($waPhone, 1);
+                    }
+                    $userName = optional(Auth::user())->name;
+                    $waText = 'KODE PO: ' . $po->kode_po . ', Halo saya ' . ($userName ?? '-') . ', yang memiliki order, dan saya ingin bicara.';
+                    $waUrl = ($waPhone && $po->status !== 'pending_payment') ? ('https://wa.me/' . $waPhone . '?text=' . rawurlencode($waText)) : null;
+                @endphp
+                <div class="col-md-6 agen-wa @if($po->status === 'pending_payment') alert alert-warning light @endif">
+                    @if ($po->status === 'pending_payment')
+                        <strong>Agen (JE)</strong><br>
+                        {{ optional($po->agen)->name ?? '-' }} • <span class="text-muted small">Nomor agen JE akan tampil setelah Anda melakukan pembayaran.</span>
+                    @else
+                        <strong>Agen (JE)</strong>
+                        @if ($waUrl)
+                            <a href="{{ $waUrl }}" target="_blank" rel="noopener" class="ms-2" title="Chat via WhatsApp">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#25D366"><path d="M12 0a12 12 0 0 0-10.6 17.9L0 24l6.2-1.6A12 12 0 1 0 12 0zm5.7 17.1c-.2.6-1.2 1.2-1.7 1.3c-.4.1-.9.2-1.5.1c-1.7-.2-3.1-1.1-4.3-2.3c-1.1-1.1-2-2.5-2.3-4.1c-.2-.8 0-1.4.3-1.9c.2-.3.5-.6.8-.6c.2 0 .4 0 .6.1c.2.1.4.5.5.8c.1.3.3.8.2 1c-.1.3-.2.5-.4.7c-.2.3-.5.6-.2 1.1c.3.6.7 1.2 1.2 1.7c.5.5 1 .9 1.6 1.2c.5.3.8.2 1.1-.1c.3-.3.6-.7.9-.9c.3-.2.6-.2 1-.1c.3.1.8.4 1 .6c.3.2.5.5.6.8c.1.3 0 .6-.1.8z"/></svg>
+                            </a>
+                        @endif<br>
+                        {{ optional($po->agen)->name ?? '-' }} • {{ optional($po->agen)->phone_wa ?? '-' }}
+                    @endif
+                </div>
+                <div class="col-md-6"><strong>Harga saat ini</strong><br>{{ number_format((float)$po->harga_per_gram, 2, ',', '.') }}</div>
+                <div class="col-md-6"><strong>Total Gram</strong><br>{{ number_format((float)$po->total_gram, 1, ',', '.') }} g</div>
+                <div class="col-md-6"><strong>Qty</strong><br>{{ (int)($po->qty ?? 1) }} pcs</div>
+                @php $biayaJasa = (float) optional($po->produk)->harga_jasa * (int) ($po->qty ?? 1); @endphp
+                <div class="col-md-6"><strong>Biaya Jasa</strong><br>{{ number_format((float)$biayaJasa, 2, ',', '.') }} IDR</div>
+                <div class="col-md-6"><strong>Total Amount</strong><br>{{ number_format((float)$po->total_amount, 2, ',', '.') }}</div>
+                <div class="col-md-6"><strong>Tipe Penerimaan</strong><br>{{ $po->delivery_type }}</div>
             </div>
         </div>
     </div>
@@ -75,7 +101,7 @@
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
             @php $hasLogs = ($paymentLogs ?? collect())->count() > 0; @endphp
-            @if (!$hasLogs && ($pendingManual ?? 0) === 0 && !session('success'))
+            @if (!$hasLogs && ($pendingManual ?? 0) === 0)
             <form action="{{ route('customer.po.confirm-payment', $po) }}" method="POST" enctype="multipart/form-data" class="mt-10">
                 @csrf
                 <div class="form-field form-2">
@@ -143,7 +169,7 @@
                     ->groupBy('status')
                     ->pluck('total','status');
                 $styles = [
-                    'pending_payment' => ['label' => 'Menunggu Pembayaran', 'box' => 'bg-rgba-pink',   'text' => 'text-secondary-pink'],
+                    'pending_payment' => ['label' => 'Menunggu_Pembayaran', 'box' => 'bg-rgba-pink',   'text' => 'text-secondary-pink'],
                     'paid'            => ['label' => 'Dibayar',              'box' => 'bg-rgba-green-2','text' => 'text-secondary-green'],
                     'processing'      => ['label' => 'Diproses',             'box' => 'bg-rgba-violet', 'text' => 'text-secondary-violet'],
                     'ready_at_agen'   => ['label' => 'Siap di Agen',         'box' => 'bg-rgba-violet', 'text' => 'text-secondary-violet'],

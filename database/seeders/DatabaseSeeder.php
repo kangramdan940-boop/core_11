@@ -15,7 +15,11 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 $this->call([
+        MasterGramasiEmasSeeder::class,
+        MasterBrandEmasSeeder::class,
         SuperAdminSeeder::class,
+        MasterHomeSliderSeeder::class,
+        MasterMenuSeeder::class,
     ]);
         User::factory()->create([
             'name' => 'Test User',

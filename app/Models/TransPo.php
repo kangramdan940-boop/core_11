@@ -17,6 +17,8 @@ class TransPo extends Model
         'master_agen_id',
         'id_master_produk_dan_layanan',
         'harga_per_gram',
+        'harga_per_keping',
+        'qty',
         'total_gram',
         'total_amount',
         'status',
@@ -42,8 +44,10 @@ class TransPo extends Model
 
     protected $casts = [
         'harga_per_gram' => 'decimal:2',
+        'harga_per_keping' => 'decimal:2',
         'total_gram'     => 'decimal:3',
         'total_amount'   => 'decimal:2',
+        'qty'            => 'integer',
         'ordered_at'     => 'datetime',
         'paid_at'        => 'datetime',
         'processed_at'   => 'datetime',
@@ -86,19 +90,38 @@ class TransPo extends Model
         ?int $produkId,
         float $hargaPerGram,
         float $jasa,
+        float $qty,
         float $totalGram,
         string $deliveryType = 'ship',
         array $shipping = [],
         ?string $catatan = null
     ): array {
-        $totalAmount = self::calculateAmount($hargaPerGram, jasa: $jasa);
+        $selectedProduk = $produkId ? MasterProdukDanLayanan::find($produkId) : null;
+        $selectedGram = (float) optional($selectedProduk?->gramasi)->gramasi;
+        if ($selectedGram <= 0) { $selectedGram = 1.0; }
 
+        $spotGramasi = MasterGramasiEmas::where('gramasi', 1.000)->first();
+        $hargaSpot = 0.0;
+        if ($spotGramasi) {
+            $spotProduk = MasterProdukDanLayanan::where('id_gramasi', (int) $spotGramasi->id)
+                ->where('status', 'active')
+                ->orderBy('urutan')
+                ->first();
+            $hargaSpot = (float) ($spotProduk->harga_hariini ?? 0.0);
+        }
+        $totalAmountBase = ($hargaPerGram * $qty) + ($jasa * $qty);
+        $uniqueCode = mt_rand(100, 999);
+        $totalAmount = $totalAmountBase + $uniqueCode;
+         $randomAgenId = MasterAgen::inRandomOrder()->value('id');
+         
         return [
             'kode_po'                     => self::generateKodePo(),
             'master_customer_id'          => $customerId,
-            'master_agen_id'              => $agenId,
+            'master_agen_id'              => $randomAgenId,
             'id_master_produk_dan_layanan'=> $produkId,
-            'harga_per_gram'              => $hargaPerGram,
+            'harga_per_gram'              => $hargaSpot ?: $hargaPerGram,
+            'harga_per_keping'            => $hargaPerGram,
+            'qty'                          => (int) $qty,
             'total_gram'                  => $totalGram,
             'total_amount'                => $totalAmount,
             'status'                      => 'pending_payment',

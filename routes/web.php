@@ -44,6 +44,9 @@ Route::get('/customer/register', [CustomerAuthController::class, 'showRegisterFo
 Route::post('/customer/register', [CustomerAuthController::class, 'register'])
     ->name('customer.register.submit');
 
+Route::get('/customer/forgot-password', [FrontController::class, 'customerForgotPassword'])
+    ->name('customer.forgot-password');
+
 Route::middleware('auth')->prefix('customer')->group(function () {
     Route::get('/dashboard', [FrontController::class, 'customerDashboard'])->name('customer.dashboard');
     Route::get('/product-dan-layanan', [FrontController::class, 'customerProductDanLayanan'])->name('customer.product-dan-layanan');
