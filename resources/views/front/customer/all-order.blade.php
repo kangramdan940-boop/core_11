@@ -90,14 +90,14 @@
                     @foreach($readyOrders as $r)
                         <div class="box-app">
                             <div class="info-box mb-0">
-                                <a href="{{ route('customer.ready.show', $r) }}" class="logo">
+                                <a href="{{ route('customer.ready.show', ['ready' => encrypt((string)$r->id)]) }}" class="logo">
                                     <img src="{{ asset('front/images/golds/antam_2.jpg') }}" alt="logo">
                                 </a>
                                 <div class="content">
                                     <div class="box-top">
                                         <div class="info">
-                                            <span class="body-6">Jastip</span>
-                                            <div class="h7 text-dark"><a href="{{ route('customer.ready.show', $r) }}">{{ $r->readyStock?->brand ?? 'Emas Ready' }} {{ number_format((float) ($r->readyStock?->gramasi ?? 0), 3) }} gr {{ $r->qty }}(pcs)</a></div>
+                                            <span class="body-6">Emas Ready</span>
+                                            <div class="h7 text-dark"><a href="{{ route('customer.ready.show', ['ready' => encrypt((string)$r->id)]) }}">Ready {{ $r->kode_trans }} - {{ $r->readyStock?->brand ?? 'Emas Ready' }} {{ number_format((float) ($r->readyStock?->gramasi ?? 0), 3) }} gr {{ $r->qty }}(pcs)</a></div>
                                         </div>
                                         <div class="check-icon">
                                             @php $s = $r->status; $cls = 'bg-info'; if ($s === 'pending_payment') { $cls = 'bg-warning text-dark'; } elseif ($s === 'completed') { $cls = 'bg-success'; } elseif ($s === 'cancelled') { $cls = 'bg-danger'; } @endphp

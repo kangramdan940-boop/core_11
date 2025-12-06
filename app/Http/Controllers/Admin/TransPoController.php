@@ -51,6 +51,18 @@ class TransPoController extends Controller
         $po->payment_method = 'manual_transfer';
         $po->payment_reference = $pending->kode_payment;
         $po->paid_at = now();
+
+        if (!$po->estimasi_emas_diterima) {
+            $aheadGrams = \App\Models\TransPo::whereIn('status', ['paid','processing'])
+                ->where('id', '<>', $po->id)
+                ->sum('total_gram');
+            $dailyCap = (float) \App\Models\MasterMitraBrankas::where('is_active', true)->sum('harian_limit_gram');
+            $extraDays = $dailyCap > 0 ? (int) ceil($aheadGrams / $dailyCap) : 0;
+            $baseDate = now()->addWeeks(3);
+            $computed = $baseDate->copy()->addDays($extraDays);
+            $po->estimasi_emas_diterima = $computed->toDateString();
+        }
+
         $po->save();
 
         TransPoLog::create([

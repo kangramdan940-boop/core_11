@@ -28,8 +28,10 @@ class CustomerReadyController extends Controller
         return view('front.customer.ready.index', compact('stocks'));
     }
 
-    public function buy(MasterGoldReadyStock $stock)
+    public function buy(string $stock)
     {
+        $id = (int) decrypt($stock);
+        $stock = MasterGoldReadyStock::findOrFail($id);
         if (!$stock->is_active || $stock->status !== 'available') {
             abort(404);
         }
@@ -37,8 +39,10 @@ class CustomerReadyController extends Controller
         return view('front.customer.ready.buy', compact('stock', 'customer'));
     }
 
-    public function stock(MasterGoldReadyStock $stock)
+    public function stock(string $stock)
     {
+        $id = (int) decrypt($stock);
+        $stock = MasterGoldReadyStock::findOrFail($id);
         if (!$stock->is_active || $stock->status !== 'available') {
             abort(404);
         }
@@ -49,9 +53,9 @@ class CustomerReadyController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'ready_stock_id'               => ['required', 'integer', 'exists:master_gold_ready_stock,id'],
+            'ready_stock_id'               => ['required', 'string'],
             'id_master_produk_dan_layanan' => ['nullable', 'integer', 'exists:master_produk_dan_layanan,id'],
-            'qty'                          => ['required', 'integer', 'min:1'],
+            'qty'                          => ['nullable', 'integer', 'min:1'],
             'delivery_type'                => ['required', Rule::in(['ship','pickup','titip_agen'])],
             'shipping_name'                => ['nullable', 'string', 'max:150'],
             'shipping_phone'               => ['nullable', 'string', 'max:50'],
@@ -61,6 +65,8 @@ class CustomerReadyController extends Controller
             'shipping_postal_code'         => ['nullable', 'string', 'max:10'],
             'catatan'                      => ['nullable', 'string'],
         ]);
+
+        $data['qty'] = isset($data['qty']) ? (int)$data['qty'] : 1;
 
         if ($data['delivery_type'] !== 'ship') {
             $data['shipping_name'] = null;
@@ -72,7 +78,7 @@ class CustomerReadyController extends Controller
         }
 
         $customer = MasterCustomer::where('sys_user_id', Auth::id())->firstOrFail();
-        $stock = MasterGoldReadyStock::findOrFail((int) $data['ready_stock_id']);
+        $stock = MasterGoldReadyStock::findOrFail((int) decrypt($data['ready_stock_id']));
 
         if (!$stock->is_active || $stock->status !== 'available') {
             return back()->withErrors(['ready_stock_id' => 'Stok tidak tersedia.']);
@@ -114,16 +120,26 @@ class CustomerReadyController extends Controller
             shipping: $shipping,
             catatan: $data['catatan'] ?? null
         );
+        $attrs['id_master_gold_ready_stock'] = (int) $stock->id;
+
+        $baseInt = (int) floor((float) ($attrs['total_amount'] ?? 0));
+        $attempts = 0;
+        do {
+            $unique = mt_rand(100, 999);
+            $attrs['total_amount'] = (float) number_format($baseInt + $unique, 2, '.', '');
+            $attempts++;
+        } while ($attempts < 5 && TransReady::where('total_amount', $attrs['total_amount'])->exists());
 
         $ready = TransReady::create($attrs);
-
         return redirect()
-            ->route('customer.ready.show', $ready)
+            ->route('customer.ready.show', ['ready' => encrypt((string) $ready->id)])
             ->with('success', 'Transaksi emas ready dibuat, status: pending_payment.');
     }
 
-    public function show(TransReady $ready)
+    public function show(string $ready)
     {
+        $id = (int) decrypt($ready);
+        $ready = TransReady::findOrFail($id);
         $customer = MasterCustomer::where('sys_user_id', Auth::id())->firstOrFail();
         if ((int) $ready->master_customer_id !== (int) $customer->id) {
             abort(404);
@@ -140,8 +156,10 @@ class CustomerReadyController extends Controller
         return view('front.customer.ready.show', compact('ready', 'paymentLogs', 'logs'));
     }
 
-    public function confirmPayment(Request $request, TransReady $ready)
+    public function confirmPayment(Request $request, string $ready)
     {
+        $id = (int) decrypt($ready);
+        $ready = TransReady::findOrFail($id);
         $customer = MasterCustomer::where('sys_user_id', Auth::id())->firstOrFail();
         if ((int) $ready->master_customer_id !== (int) $customer->id) {
             abort(404);
@@ -172,7 +190,7 @@ class CustomerReadyController extends Controller
         ]);
 
         return redirect()
-            ->route('customer.ready.show', $ready)
+            ->route('customer.ready.show', ['ready' => encrypt((string) $ready->id)])
             ->with('success', 'Konfirmasi pembayaran terkirim. Menunggu verifikasi agen.');
     }
 }

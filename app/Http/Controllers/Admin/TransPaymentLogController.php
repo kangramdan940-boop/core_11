@@ -40,6 +40,18 @@ class TransPaymentLogController extends Controller
                 $po->payment_method = 'manual_transfer';
                 $po->payment_reference = $log->kode_payment;
                 $po->paid_at = now();
+
+                if (!$po->estimasi_emas_diterima) {
+                    $aheadGrams = \App\Models\TransPo::whereIn('status', ['paid','processing'])
+                        ->where('id', '<>', $po->id)
+                        ->sum('total_gram');
+                    $dailyCap = (float) \App\Models\MasterMitraBrankas::where('is_active', true)->sum('harian_limit_gram');
+                    $extraDays = $dailyCap > 0 ? (int) ceil($aheadGrams / $dailyCap) : 0;
+                    $baseDate = now()->addWeeks(3);
+                    $computed = $baseDate->copy()->addDays($extraDays);
+                    $po->estimasi_emas_diterima = $computed->toDateString();
+                }
+
                 $po->save();
 
                 TransPoLog::create([
@@ -58,6 +70,11 @@ class TransPaymentLogController extends Controller
                 $ready->payment_reference = $log->kode_payment;
                 $ready->paid_at = now();
                 $ready->save();
+                \App\Models\TransReadyLog::create([
+                    'trans_ready_id' => $ready->id,
+                    'status'         => $ready->status,
+                    'description'    => 'Pembayaran manual disetujui admin pada ' . now(),
+                ]);
                 return redirect()->route('admin.trans.ready.show', $ready)->with('success', 'Pembayaran disetujui dan status transaksi Ready diperbarui.');
             }
         } elseif ($log->ref_type === 'cicilan_payment' && $log->ref_id) {
@@ -99,6 +116,11 @@ class TransPaymentLogController extends Controller
         } elseif ($log->ref_type === 'ready' && $log->ref_id) {
             $ready = \App\Models\TransReady::find($log->ref_id);
             if ($ready) {
+                \App\Models\TransReadyLog::create([
+                    'trans_ready_id' => $ready->id,
+                    'status'         => $ready->status,
+                    'description'    => 'Pembayaran manual ditolak admin pada ' . now(),
+                ]);
                 return redirect()->route('admin.trans.ready.show', $ready)->with('success', 'Pembayaran ditolak.');
             }
         } elseif ($log->ref_type === 'cicilan_payment' && $log->ref_id) {

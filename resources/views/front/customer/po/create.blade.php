@@ -55,7 +55,7 @@
                 </svg>
             </a>
         </div>
-        <h3>Cicil Emas</h3>
+        <h3>Pre Order Emas</h3>
     </div>
     <div class="app-content style-3">
         <div class="tf-container">
@@ -141,10 +141,7 @@
         </div>
 
     </div>
-@include('front.customer.partials.menubar-footer', ['active' => 'pre-order-emas'])>
-
-
-
+    @include('front.customer.partials.menubar-footer', ['active' => 'pre-order-emas'])
     <script type="text/javascript" src="{{ asset('front/js/bootstrap.min.js')}}"></script>
     <script type="text/javascript" src="{{ asset('front/js/jquery.min.js')}}"></script>
     <script type="text/javascript" src="{{ asset('front/js/lazysize.min.js')}}"></script>

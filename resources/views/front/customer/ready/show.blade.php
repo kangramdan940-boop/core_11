@@ -2,15 +2,29 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Detail Transaksi Emas Ready - Customer</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, viewport-fit=cover">
+    <link rel="stylesheet" href="{{ asset('front/fonts/fonts.css')}}">
+    <link rel="stylesheet" href="{{ asset('front/fonts/font-icons.css')}}">
+    <link rel="stylesheet" href="{{ asset('front/css/bootstrap.min.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('front/css/nouislider.min.css')}}" />
+    <link rel="stylesheet" href="{{ asset('front/css/swiper-bundle.min.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('front/css/styles.css')}}" />
+    <link rel="shortcut icon" href="{{ asset('front/images/logo/168.png')}}" />
+    <link rel="apple-touch-icon-precomposed" href="{{ asset('front/images/logo/168.png')}}" />
+    <title>Detail Ready || Jajan Emas</title>
+    <script>if (localStorage.toggled === "dark-theme") { document.documentElement.classList.add('dark-theme'); }</script>
 </head>
-<body class="bg-light">
-<div class="container py-4">
-    <div class="mb-3 d-flex gap-2">
-        <a href="{{ route('customer.dashboard') }}" class="btn btn-secondary btn-sm">← Kembali</a>
+<body>
+    <div class="header fixed-top">
+        <div class="left">
+            <a href="{{ route('customer.dashboard') }}" class="icon back-btn">
+                <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.88986 12.2951L1.60986 7.00008L6.88986 1.70508" stroke="#121927" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            </a>
+        </div>
+        <h3>Detail Ready</h3>
     </div>
+    <div class="app-content style-3">
+        <div class="tf-container">
 
     @if(session('success'))
         <div class="alert alert-success py-2">{{ session('success') }}</div>
@@ -34,7 +48,15 @@
             <h6 class="mb-3">Ringkasan Transaksi</h6>
             <div class="row g-3">
                 <div class="col-md-4"><strong>Kode Transaksi</strong><br>{{ $ready->kode_trans }}</div>
-                <div class="col-md-4"><strong>Status</strong><br>{{ strtoupper($ready->status) }}</div>
+                @php
+                    $s = $ready->status;
+                    $badge = 'text-bg-secondary';
+                    if ($s === 'paid' || $s === 'completed') { $badge = 'text-bg-success'; }
+                    elseif ($s === 'cancelled') { $badge = 'text-bg-danger'; }
+                    elseif ($s === 'pending_payment') { $badge = 'text-bg-warning'; }
+                    elseif ($s === 'shipped') { $badge = 'text-bg-primary'; }
+                @endphp
+                <div class="col-md-4"><strong>Status</strong><br><span class="badge rounded-pill {{ $badge }}">{{ strtoupper($s) }}</span></div>
                 <div class="col-md-4"><strong>Total (IDR)</strong><br>{{ number_format((float)$ready->total_amount, 2, ',', '.') }}</div>
                 <div class="col-md-4"><strong>Qty</strong><br>{{ $ready->qty }}</div>
                 <div class="col-md-4"><strong>Harga Satuan</strong><br>{{ number_format((float)$ready->harga_jual_satuan, 2, ',', '.') }}</div>
@@ -86,30 +108,62 @@
             ->count();
     @endphp
 
-    @if ($ready->status === 'pending_payment' && $pendingManual === 0)
+    @if ($ready->status === 'pending_payment')
         <div class="card shadow-sm mb-3">
             <div class="card-body">
                 <h6 class="mb-3">Konfirmasi Pembayaran Manual</h6>
-                <form action="{{ route('customer.ready.confirm-payment', $ready) }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label">Nominal Transfer (IDR)</label>
-                            <input type="number" name="nominal_transfer" step="0.01" class="form-control">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Nama Pengirim</label>
-                            <input type="text" name="nama_pengirim" class="form-control">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Bukti Transfer</label>
-                            <input type="file" name="bukti_transfer" class="form-control">
-                        </div>
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <div class="fw-semibold mb-2">Terjadi kesalahan:</div>
+                        <ul class="mb-0 ps-3">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
-                    <div class="mt-3">
-                        <button class="btn btn-primary btn-sm">Kirim Konfirmasi</button>
+                @endif
+                @if (session('error'))
+                    <div class="alert alert-danger">{{ session('error') }}</div>
+                @endif
+                @php $hasLogs = ($paymentLogs ?? collect())->count() > 0; $hasFailed = ($paymentLogs ?? collect())->where('status','failed')->count() > 0; @endphp
+                @if ((!$hasLogs && ($pendingManual ?? 0) === 0) || $hasFailed)
+                <form action="{{ route('customer.ready.confirm-payment', ['ready' => encrypt((string)$ready->id)]) }}" method="POST" enctype="multipart/form-data" class="mt-10">
+                    @csrf
+                    <div class="form-field form-2">
+                        <div class="label h7">Nominal Transfer (IDR)</div>
+                        <fieldset class="mt-12">
+                            <input type="number" name="nominal_transfer" step="0.01" class="form-control @error('nominal_transfer') is-invalid @enderror" value="{{ old('nominal_transfer', number_format((float)$ready->total_amount, 0, '.', '')) }}">
+                            @error('nominal_transfer')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </fieldset>
+                    </div>
+                    <div class="form-field form-2 mt-24">
+                        <div class="label h7">Nama Pengirim</div>
+                        <fieldset class="mt-12">
+                            <input type="text" name="nama_pengirim" class="form-control @error('nama_pengirim') is-invalid @enderror" placeholder="Nama sesuai rekening" value="{{ old('nama_pengirim') }}">
+                            @error('nama_pengirim')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </fieldset>
+                    </div>
+                    <div class="form-field form-2 mt-24">
+                        <div class="label h7">Bukti Transfer</div>
+                        <fieldset class="mt-12">
+                            <input type="file" name="bukti_transfer" accept="image/*" class="form-control @error('bukti_transfer') is-invalid @enderror">
+                            @error('bukti_transfer')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </fieldset>
+                        <div class="small text-muted mt-8">Unggah gambar struk/transfer. Format: JPG/PNG.</div>
+                    </div>
+                    <div class="mt-24">
+                        <button type="submit" class="tf-btn primary">Kirim Konfirmasi</button>
                     </div>
                 </form>
+                @else
+                    <div class="alert alert-info light mt-10">Konfirmasi pembayaran manual sudah dikirim atau payment log sudah tercatat. Anda tidak perlu mengirim struk lagi.</div>
+                @endif
             </div>
         </div>
     @endif
@@ -117,31 +171,65 @@
     @if(($paymentLogs ?? collect())->count() > 0)
         <div class="card shadow-sm mb-3">
             <div class="card-body">
-                <h6 class="mb-3">Log Pembayaran</h6>
+                <h6 class="mb-3">Payment Logs</h6>
                 <div class="table-responsive">
-                    <table class="table table-sm table-hover mb-0">
+                    <table class="table table-sm mb-0">
                         <thead class="table-light">
                             <tr>
                                 <th>Kode</th>
-                                <th>Metode</th>
-                                <th>Nominal</th>
                                 <th>Status</th>
-                                <th>Dibuat</th>
+                                <th>Jumlah</th>
+                                <th>Metode</th>
+                                <th>Dibayar</th>
+                                <th>Bukti</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($paymentLogs as $pl)
+                            @forelse ($paymentLogs as $pl)
+                                @php $ps = $pl->status; $pbadge = 'text-bg-secondary'; if ($ps === 'paid') { $pbadge = 'text-bg-success'; } elseif ($ps === 'pending') { $pbadge = 'text-bg-warning'; } elseif ($ps === 'failed') { $pbadge = 'text-bg-danger'; } $payload = json_decode($pl->request_payload, true); $proof = $payload['proof_path'] ?? null; @endphp
                                 <tr>
                                     <td>{{ $pl->kode_payment }}</td>
-                                    <td>{{ $pl->payment_method }}</td>
-                                    <td>{{ number_format((float)$pl->amount, 2, ',', '.') }}</td>
-                                    <td>{{ strtoupper($pl->status) }}</td>
-                                    <td>{{ optional($pl->created_at)->format('Y-m-d H:i') ?? '-' }}</td>
+                                    <td><span class="badge rounded-pill {{ $pbadge }}">{{ strtoupper($ps) }}</span></td>
+                                    <td>{{ number_format((float)$pl->amount, 2, ',', '.') }} {{ $pl->currency }}</td>
+                                    <td>{{ $pl->payment_method ?? '-' }}</td>
+                                    <td>{{ optional($pl->paid_at)->format('Y-m-d H:i') ?? '-' }}</td>
+                                    <td>
+                                        @if ($proof)
+                                            <img src="{{ asset('storage/' . $proof) }}" class="img-thumbnail js-proof" style="height:48px;cursor:pointer" alt="Bukti Transfer" data-src="{{ asset('storage/' . $proof) }}">
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center py-3">Belum ada payment log.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
+                <div class="modal fade" id="proofModal" tabindex="-1" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                      <div class="modal-body p-0">
+                        <img id="proofModalImg" src="" alt="Bukti Transfer" class="w-100">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <script>
+                (function($){
+                  $(function(){
+                    $('.js-proof').on('click', function(){
+                      var src = $(this).data('src');
+                      $('#proofModalImg').attr('src', src);
+                      var modal = new bootstrap.Modal(document.getElementById('proofModal'));
+                      modal.show();
+                    });
+                  });
+                })(jQuery);
+                </script>
             </div>
         </div>
     @endif
@@ -173,6 +261,13 @@
             </div>
         </div>
     @endif
-</div>
+        </div>
+    </div>
+    @include('front.customer.partials.menubar-footer', ['active' => 'dashboard'])
+    <script type="text/javascript" src="{{ asset('front/js/bootstrap.min.js')}}"></script>
+    <script type="text/javascript" src="{{ asset('front/js/jquery.min.js')}}"></script>
+    <script type="text/javascript" src="{{ asset('front/js/lazysize.min.js')}}"></script>
+    <script type="text/javascript" src="{{ asset('front/js/jquery.nice-select.min.js')}}"></script>
+    <script type="text/javascript" src="{{ asset('front/js/main.js')}}"></script>
 </body>
 </html>

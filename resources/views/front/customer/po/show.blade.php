@@ -76,6 +76,18 @@
                 <div class="col-md-6"><strong>Biaya Jasa</strong><br>{{ number_format((float)$biayaJasa, 2, ',', '.') }} IDR</div>
                 <div class="col-md-6"><strong>Total Amount</strong><br>{{ number_format((float)$po->total_amount, 2, ',', '.') }}</div>
                 <div class="col-md-6"><strong>Tipe Penerimaan</strong><br>{{ $po->delivery_type }}</div>
+                @php
+                    $estimasiDisplay = $po->estimasi_emas_diterima;
+                    if (!$estimasiDisplay) {
+                        $aheadGrams = \App\Models\TransPo::whereIn('status', ['paid','processing'])->sum('total_gram');
+                        $dailyCap = (float) \App\Models\MasterMitraBrankas::where('is_active', true)->sum('harian_limit_gram');
+                        $extraDays = $dailyCap > 0 ? (int) ceil($aheadGrams / $dailyCap) : 0;
+                        $baseDate = now()->addWeeks(3);
+                        $computed = $baseDate->copy()->addDays($extraDays);
+                        $estimasiDisplay = $computed->format('Y-m-d');
+                    }
+                @endphp
+                <div class="col-md-6"><strong>Estimasi Diterima</strong><br>{{ $estimasiDisplay }}</div>
             </div>
         </div>
     </div>
