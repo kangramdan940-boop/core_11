@@ -64,9 +64,6 @@
                                     </div>
                                 </td>
                             </tr>
-                        @empty
-                            <tr><td colspan="7" class="text-center py-3">Belum ada data produk & layanan.</td></tr>
-                        @endforelse
                     </tbody>
                 </table>
             </div>

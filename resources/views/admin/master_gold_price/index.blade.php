@@ -34,7 +34,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($prices as $p)
+                        @foreach ($prices as $p)
                             <tr>
                                 <td class="text-center">{{ $p->id }}</td>
                                 <td>{{ optional($p->price_date)->format('Y-m-d') }}</td>
@@ -60,13 +60,7 @@
                                     </div>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="8" class="text-center py-3">
-                                    Belum ada data harga emas.
-                                </td>
-                            </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -98,7 +92,7 @@ $(function(){
       { width: '120px', orderable: false },
       { width: '160px', orderable: false }
     ],
-    language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' },
+    language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/id.json', emptyTable: 'Belum ada data harga emas.' }
     responsive: true
   });
 });

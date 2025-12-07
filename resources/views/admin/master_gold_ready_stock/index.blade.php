@@ -64,13 +64,6 @@
                                     </div>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="9" class="text-center py-3">
-                                    Belum ada data stok emas ready.
-                                </td>
-                            </tr>
-                        @endforelse
                     </tbody>
                 </table>
             </div>

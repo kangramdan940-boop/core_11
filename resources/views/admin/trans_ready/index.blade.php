@@ -59,11 +59,6 @@
                                     </div>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="10" class="text-center py-3">Belum ada transaksi ready.</td>
-                            </tr>
-                        @endforelse
                     </tbody>
                 </table>
             </div>
