@@ -26,7 +26,7 @@
 
                 @if($brand->image_url)
                     <div class="mb-3">
-                        <img src="{{ Str::startsWith($brand->image_url, ['http://','https://']) ? $brand->image_url : asset('storage/' . $brand->image_url) }}" alt="logo" class="rounded" style="height:48px;width:48px;object-fit:cover;background:#fff;border:1px solid #e5e7eb;">
+                        <img src="{{ Str::startsWith($brand->image_url, ['http://','https://']) ? $brand->image_url : asset($brand->image_url) }}" alt="logo" class="rounded" style="height:48px;width:48px;object-fit:cover;background:#fff;border:1px solid #e5e7eb;">
                     </div>
                 @endif
 

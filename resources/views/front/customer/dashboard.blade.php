@@ -130,7 +130,7 @@
                                 <div class="category-job">
                                     <a href="{{ $m->path_url ?? '#' }}" class="box-img">
                                         @php $img = $m->image; @endphp
-                                        <img src="{{ empty($img) ? asset('front/images/category/company.png') : (Str::startsWith($img, ['http://','https://','/']) ? $img : asset('storage/' . ltrim($img, '/'))) }}" alt="img">
+                                        <img src="{{ empty($img) ? asset('front/images/category/company.png') : (Str::startsWith($img, ['http://','https://','/']) ? $img : asset(ltrim($img, '/'))) }}" alt="img">
                                     </a>
                                     <a class="title" href="{{ $m->path_url ?? '#' }}">{{ $m->label }}</a>
                                 </div>
@@ -156,7 +156,7 @@
                             <div class="info-box">
                                 <a href="{{ ($p->is_allow_po ? route('customer.po.create', ['pid' => encrypt((string)$p->id)]) : ($p->is_allow_ready ? route('customer.ready.index') : '#')) }}" class="logo">
                                     @php $img = $p->image_produk; @endphp
-                                    <img src="{{ empty($img) ? asset('front/images/golds/antam_1.jpg') : (Str::startsWith($img, ['http://','https://','/']) ? $img : asset('storage/' . ltrim($img, '/'))) }}" alt="logo">
+                                    <img src="{{ empty($img) ? asset('front/images/golds/antam_1.jpg') : (Str::startsWith($img, ['http://','https://','/']) ? $img : asset(ltrim($img, '/'))) }}" alt="logo">
                                 </a>
                                 <div class="content">
                                     <div class="h7 text-dark">

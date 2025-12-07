@@ -40,8 +40,12 @@ class MasterProdukDanLayananController extends Controller
         $data['is_allow_po']    = $request->has('is_allow_po');
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('produk_images', 'public');
-            $data['image_produk'] = $path;
+            $dir = public_path('uploads/produk_images');
+            \Illuminate\Support\Facades\File::ensureDirectoryExists($dir);
+            $file = $request->file('image');
+            $filename = uniqid('produk_', true) . '.' . $file->getClientOriginalExtension();
+            $file->move($dir, $filename);
+            $data['image_produk'] = 'uploads/produk_images/' . $filename;
         }
 
         MasterProdukDanLayanan::create($data);
@@ -76,8 +80,12 @@ class MasterProdukDanLayananController extends Controller
         $data['is_allow_po']    = $request->has('is_allow_po');
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('produk_images', 'public');
-            $data['image_produk'] = $path;
+            $dir = public_path('uploads/produk_images');
+            \Illuminate\Support\Facades\File::ensureDirectoryExists($dir);
+            $file = $request->file('image');
+            $filename = uniqid('produk_', true) . '.' . $file->getClientOriginalExtension();
+            $file->move($dir, $filename);
+            $data['image_produk'] = 'uploads/produk_images/' . $filename;
         }
 
         $item->update($data);

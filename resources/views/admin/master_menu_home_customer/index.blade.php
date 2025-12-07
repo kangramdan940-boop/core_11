@@ -32,7 +32,7 @@
                                 <td>{{ $m->id }}</td>
                                 <td>
                                     @if($m->image)
-                                        <img src="{{ Str::startsWith($m->image, ['http://','https://']) ? $m->image : asset('storage/' . $m->image) }}"
+                                        <img src="{{ Str::startsWith($m->image, ['http://','https://']) ? $m->image : asset($m->image) }}"
                                              alt="menu" style="height:48px;object-fit:cover;">
                                     @else
                                         -

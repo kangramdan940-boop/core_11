@@ -196,7 +196,7 @@
                         <div class="border rounded p-2 d-flex align-items-start gap-3">
                             <div style="width:140px;">
                                 @if ($payload && !empty($payload['proof_path']))
-                                    <img src="{{ asset('storage/' . $payload['proof_path']) }}" alt="Bukti Transfer" class="img-fluid rounded border">
+                                    <img src="{{ asset($payload['proof_path']) }}" alt="Bukti Transfer" class="img-fluid rounded border">
                                 @else
                                     <div class="text-muted small">Tidak ada bukti</div>
                                 @endif

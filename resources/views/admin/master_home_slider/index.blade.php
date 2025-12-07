@@ -31,7 +31,7 @@
                                 <td>{{ $s->id }}</td>
                                 <td>
                                     @if($s->image_url)
-                                        <img src="{{ Str::startsWith($s->image_url, ['http://','https://']) ? $s->image_url : asset('storage/' . $s->image_url) }}"
+                                        <img src="{{ Str::startsWith($s->image_url, ['http://','https://']) ? $s->image_url : asset($s->image_url) }}"
                                              alt="slider" style="height:48px;object-fit:cover;">
                                     @else
                                         -

@@ -195,7 +195,7 @@
                                     <td>{{ optional($pl->paid_at)->format('Y-m-d H:i') ?? '-' }}</td>
                                     <td>
                                         @if ($proof)
-                                            <img src="{{ asset('storage/' . $proof) }}" class="img-thumbnail js-proof" style="height:48px;cursor:pointer" alt="Bukti Transfer" data-src="{{ asset('storage/' . $proof) }}">
+                                            <img src="{{ asset($proof) }}" class="img-thumbnail js-proof" style="height:48px;cursor:pointer" alt="Bukti Transfer" data-src="{{ asset($proof) }}">
                                         @else
                                             -
                                         @endif

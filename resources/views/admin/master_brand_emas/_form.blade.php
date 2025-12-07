@@ -43,7 +43,7 @@
     @if(!empty($brand?->image_url))
         <div class="col-md-12">
             <label class="form-label d-block">Preview</label>
-            <img src="{{ Str::startsWith($brand->image_url, ['http://','https://']) ? $brand->image_url : asset('storage/' . $brand->image_url) }}"
+            <img src="{{ Str::startsWith($brand->image_url, ['http://','https://']) ? $brand->image_url : asset($brand->image_url) }}"
                  alt="brand" style="height:60px;object-fit:contain;">
         </div>
     @endif

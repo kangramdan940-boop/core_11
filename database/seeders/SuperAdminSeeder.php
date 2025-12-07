@@ -16,7 +16,7 @@ class SuperAdminSeeder extends Seeder
             ['email' => 'admin@example.com'],
             [
                 'name'           => 'Super Admin',
-                'phone_wa'       => '081234567890',
+                'phone_wa'       => '082126357645',
                 'jabatan'        => 'Super Admin',
                 'is_super_admin' => true,
                 'is_active'      => true,

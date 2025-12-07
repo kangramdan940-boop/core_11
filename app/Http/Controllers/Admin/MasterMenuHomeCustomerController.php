@@ -29,8 +29,12 @@ class MasterMenuHomeCustomerController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('menu_home_customer', 'public');
-            $data['image'] = $path;
+            $dir = public_path('uploads/menu_home_customer');
+            \Illuminate\Support\Facades\File::ensureDirectoryExists($dir);
+            $file = $request->file('image');
+            $filename = uniqid('menu_', true) . '.' . $file->getClientOriginalExtension();
+            $file->move($dir, $filename);
+            $data['image'] = 'uploads/menu_home_customer/' . $filename;
         } else {
             $data['image'] = $data['image_url'];
         }
@@ -59,8 +63,12 @@ class MasterMenuHomeCustomerController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('menu_home_customer', 'public');
-            $data['image'] = $path;
+            $dir = public_path('uploads/menu_home_customer');
+            \Illuminate\Support\Facades\File::ensureDirectoryExists($dir);
+            $file = $request->file('image');
+            $filename = uniqid('menu_', true) . '.' . $file->getClientOriginalExtension();
+            $file->move($dir, $filename);
+            $data['image'] = 'uploads/menu_home_customer/' . $filename;
         } else {
             $data['image'] = $data['image_url'];
         }

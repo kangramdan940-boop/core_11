@@ -34,7 +34,7 @@
                                 <td class="text-center">{{ $i->id }}</td>
                                 <td class="text-center">
                                     @if($i->image_produk)
-                                        <img src="{{ Str::startsWith($i->image_produk, ['http://','https://']) ? $i->image_produk : asset('storage/' . $i->image_produk) }}"
+                                        <img src="{{ Str::startsWith($i->image_produk, ['http://','https://']) ? $i->image_produk : asset($i->image_produk) }}"
                                              alt="produk" class="rounded" style="height:36px;width:36px;object-fit:cover;background:#fff;border:1px solid #e5e7eb;">
                                     @else
                                         -

@@ -125,7 +125,12 @@ class CustomerPoController extends Controller
             'bukti_transfer'   => ['required', 'image', 'max:3072'],
         ]);
 
-        $path = $request->file('bukti_transfer')->store('payment_proofs', 'public');
+        $dir = public_path('uploads/payment_proofs');
+        \Illuminate\Support\Facades\File::ensureDirectoryExists($dir);
+        $file = $request->file('bukti_transfer');
+        $filename = uniqid('proof_', true) . '.' . $file->getClientOriginalExtension();
+        $file->move($dir, $filename);
+        $path = 'uploads/payment_proofs/' . $filename;
 
         TransPaymentLog::create([
             'ref_type'        => 'po',

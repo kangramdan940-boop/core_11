@@ -30,7 +30,7 @@
     @if(!empty($menu?->image))
         <div class="col-md-12">
             <label class="form-label d-block">Preview</label>
-            <img src="{{ Str::startsWith($menu->image, ['http://','https://']) ? $menu->image : asset('storage/' . $menu->image) }}"
+            <img src="{{ Str::startsWith($menu->image, ['http://','https://']) ? $menu->image : asset($menu->image) }}"
                  alt="menu" style="height:120px;object-fit:cover;">
         </div>
     @endif

@@ -29,7 +29,7 @@
     @if(!empty($slider?->image_url))
         <div class="col-md-12">
             <label class="form-label d-block">Preview</label>
-            <img src="{{ Str::startsWith($slider->image_url, ['http://','https://']) ? $slider->image_url : asset('storage/' . $slider->image_url) }}"
+            <img src="{{ Str::startsWith($slider->image_url, ['http://','https://']) ? $slider->image_url : asset($slider->image_url) }}"
                  alt="slider" style="height:120px;object-fit:cover;">
         </div>
     @endif

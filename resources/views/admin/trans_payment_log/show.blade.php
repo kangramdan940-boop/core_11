@@ -56,7 +56,7 @@
                 <div class="row g-3">
                     <div class="col-md-4">
                         @if ($payloadReq && !empty($payloadReq['proof_path']))
-                            <img src="{{ asset('storage/' . $payloadReq['proof_path']) }}"
+                            <img src="{{ asset($payloadReq['proof_path']) }}"
                                  alt="Bukti Transfer"
                                  class="img-fluid rounded border">
                         @else

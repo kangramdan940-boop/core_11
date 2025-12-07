@@ -79,7 +79,7 @@
     @if(!empty($item?->image_produk))
         <div class="col-md-12">
             <label class="form-label d-block">Preview</label>
-            <img src="{{ Str::startsWith($item->image_produk, ['http://','https://']) ? $item->image_produk : asset('storage/' . $item->image_produk) }}"
+            <img src="{{ Str::startsWith($item->image_produk, ['http://','https://']) ? $item->image_produk : asset($item->image_produk) }}"
                  alt="produk" style="height:60px;object-fit:contain;">
         </div>
     @endif

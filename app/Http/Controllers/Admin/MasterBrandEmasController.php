@@ -33,8 +33,12 @@ class MasterBrandEmasController extends Controller
         $data['is_active'] = $request->has('is_active');
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('brand_images', 'public');
-            $data['image_url'] = $path;
+            $dir = public_path('uploads/brand_images');
+            \Illuminate\Support\Facades\File::ensureDirectoryExists($dir);
+            $file = $request->file('image');
+            $filename = uniqid('brand_', true) . '.' . $file->getClientOriginalExtension();
+            $file->move($dir, $filename);
+            $data['image_url'] = 'uploads/brand_images/' . $filename;
         }
 
         MasterBrandEmas::create($data);
@@ -63,8 +67,12 @@ class MasterBrandEmasController extends Controller
         $data['is_active'] = $request->has('is_active');
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('brand_images', 'public');
-            $data['image_url'] = $path;
+            $dir = public_path('uploads/brand_images');
+            \Illuminate\Support\Facades\File::ensureDirectoryExists($dir);
+            $file = $request->file('image');
+            $filename = uniqid('brand_', true) . '.' . $file->getClientOriginalExtension();
+            $file->move($dir, $filename);
+            $data['image_url'] = 'uploads/brand_images/' . $filename;
         }
 
         $brand->update($data);

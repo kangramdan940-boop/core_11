@@ -29,8 +29,12 @@ class MasterHomeSliderController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('home_slider', 'public');
-            $data['image_url'] = $path;
+            $dir = public_path('uploads/home_slider');
+            \Illuminate\Support\Facades\File::ensureDirectoryExists($dir);
+            $file = $request->file('image');
+            $filename = uniqid('slider_', true) . '.' . $file->getClientOriginalExtension();
+            $file->move($dir, $filename);
+            $data['image_url'] = 'uploads/home_slider/' . $filename;
         }
 
         MasterHomeSlider::create($data);
@@ -55,8 +59,12 @@ class MasterHomeSliderController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('home_slider', 'public');
-            $data['image_url'] = $path;
+            $dir = public_path('uploads/home_slider');
+            \Illuminate\Support\Facades\File::ensureDirectoryExists($dir);
+            $file = $request->file('image');
+            $filename = uniqid('slider_', true) . '.' . $file->getClientOriginalExtension();
+            $file->move($dir, $filename);
+            $data['image_url'] = 'uploads/home_slider/' . $filename;
         }
 
         $slider->update($data);

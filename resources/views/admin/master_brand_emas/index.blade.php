@@ -33,7 +33,7 @@
                                 <td class="text-center">{{ $b->id }}</td>
                                 <td class="text-center">
                                     @if($b->image_url)
-                                        <img src="{{ Str::startsWith($b->image_url, ['http://','https://']) ? $b->image_url : asset('storage/' . $b->image_url) }}" alt="logo" class="rounded" style="height:36px;width:36px;object-fit:cover;background:#fff;border:1px solid #e5e7eb;">
+                                        <img src="{{ Str::startsWith($b->image_url, ['http://','https://']) ? $b->image_url : asset($b->image_url) }}" alt="logo" class="rounded" style="height:36px;width:36px;object-fit:cover;background:#fff;border:1px solid #e5e7eb;">
                                     @else
                                         <div class="d-inline-flex align-items-center justify-content-center rounded" style="height:36px;width:36px;background:#e5e7eb;color:#111827;font-weight:600;">
                                             {{ Str::upper(Str::substr($b->nama_brand ?? $b->kode_brand, 0, 2)) }}
