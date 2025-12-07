@@ -186,7 +186,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->names('home-slider')
                 ->parameters([
                     'home-slider' => 'slider',
-                ]);
+                ])->middleware('admin');
 
             // Menu Home Customer — param {menu}
             Route::resource('menu-home-customer', MasterMenuHomeCustomerController::class)
@@ -194,7 +194,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->names('menu-home-customer')
                 ->parameters([
                     'menu-home-customer' => 'menu',
-                ]);
+                ])->middleware('admin');
 
             // Produk & Layanan — param {item}
             Route::resource('produk-layanan', MasterProdukDanLayananController::class)

@@ -44,15 +44,17 @@
         <div class="menu-title">Main</div>
         <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">🏠 Dashboard</a>
         <div class="menu-title">Transaksi</div>
+        <a class="nav-link {{ request()->routeIs('admin.master.produk-layanan.*') ? 'active' : '' }}" href="{{ route('admin.master.produk-layanan.index') }}">🛍️ Produk & Layanan</a>
         <a class="nav-link {{ request()->routeIs('admin.trans.po.*') ? 'active' : '' }}" href="{{ route('admin.trans.po.index') }}">📜 PO Emas</a>
         <a class="nav-link {{ request()->routeIs('admin.trans.ready.*') ? 'active' : '' }}" href="{{ route('admin.trans.ready.index') }}">⚡ Emas Ready</a>
         <a class="nav-link {{ request()->routeIs('admin.trans.cicilan.*') ? 'active' : '' }}" href="{{ route('admin.trans.cicilan.index') }}">📆 Cicilan Emas</a>
         <a class="nav-link {{ request()->routeIs('admin.trans.cicilan-payments.*') ? 'active' : '' }}" href="{{ route('admin.trans.cicilan-payments.index') }}">💳 Pembayaran Cicilan</a>
         <a class="nav-link {{ request()->routeIs('admin.trans.payment-logs.*') ? 'active' : '' }}" href="{{ route('admin.trans.payment-logs.index') }}">📑 Payment Log</a>
  <div class="menu-title">Emas</div>
-        <a class="nav-link {{ request()->routeIs('admin.master.gold-prices.*') ? 'active' : '' }}" href="{{ route('admin.master.gold-prices.index') }}">📊 Harga Emas</a>
         <a class="nav-link {{ request()->routeIs('admin.master.ready-stocks.*') ? 'active' : '' }}" href="{{ route('admin.master.ready-stocks.index') }}">📦 Stok Emas Ready</a>
+
         @if(auth()->user() && auth()->user()->role === 'admin')
+        <a class="nav-link {{ request()->routeIs('admin.master.gold-prices.*') ? 'active' : '' }}" href="{{ route('admin.master.gold-prices.index') }}">📊 Harga Emas</a>
         <a class="nav-link {{ request()->routeIs('admin.master.mitra-komisi.*') ? 'active' : '' }}" href="{{ route('admin.master.mitra-komisi.index') }}">💰 Komisi Mitra</a>
         @endif
 
@@ -60,9 +62,10 @@
         <a class="nav-link {{ request()->routeIs('admin.master.customers.*') ? 'active' : '' }}" href="{{ route('admin.master.customers.index') }}">👤 Customer</a>
         <a class="nav-link {{ request()->routeIs('admin.master.brand-emas.*') ? 'active' : '' }}" href="{{ route('admin.master.brand-emas.index') }}">🏷️ Brand Emas</a>
         <a class="nav-link {{ request()->routeIs('admin.master.gramasi-emas.*') ? 'active' : '' }}" href="{{ route('admin.master.gramasi-emas.index') }}">⚖️ Gramasi Emas</a>
-        <a class="nav-link {{ request()->routeIs('admin.master.produk-layanan.*') ? 'active' : '' }}" href="{{ route('admin.master.produk-layanan.index') }}">🛍️ Produk & Layanan</a>
+        @if(auth()->user() && auth()->user()->role === 'admin')
         <a class="nav-link {{ request()->routeIs('admin.master.home-slider.*') ? 'active' : '' }}" href="{{ route('admin.master.home-slider.index') }}">🖼️ Home Slider</a>
         <a class="nav-link {{ request()->routeIs('admin.master.menu-home-customer.*') ? 'active' : '' }}" href="{{ route('admin.master.menu-home-customer.index') }}">📱 Menu Home Customer</a>
+        @endif
         @if(auth()->user() && auth()->user()->role === 'admin')
             <a class="nav-link {{ request()->routeIs('admin.master.agens.*') ? 'active' : '' }}" href="{{ route('admin.master.agens.index') }}">🧑‍💼 Agen</a>
             <a class="nav-link {{ request()->routeIs('admin.master.admins.*') ? 'active' : '' }}" href="{{ route('admin.master.admins.index') }}">🛡️ Admin</a>
