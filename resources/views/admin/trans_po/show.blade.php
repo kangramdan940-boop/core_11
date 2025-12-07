@@ -82,6 +82,58 @@
             </div>
         </div>
     </div>
+
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <h6 class="mb-3">Pembagian Komisi Mitra (Assign)</h6>
+            @php
+                $mitras = \App\Models\MasterMitraBrankas::where('is_active', true)->orderBy('nama_lengkap')->get();
+                $allocated = (float) (\App\Models\TransPoMitraKomisi::where('trans_po_id', $po->id)->sum('jumlah_gram') ?? 0);
+                $remainingPo = max(0, (float)$po->total_gram - $allocated);
+            @endphp
+            <div class="row g-3 mb-3">
+                <div class="col-md-3"><strong>Total Gram PO</strong><br>{{ number_format((float)$po->total_gram, 3, ',', '.') }} g</div>
+                <div class="col-md-3"><strong>Sudah Dialokasikan</strong><br>{{ number_format($allocated, 3, ',', '.') }} g</div>
+                <div class="col-md-3"><strong>Sisa Gram PO</strong><br>{{ number_format($remainingPo, 3, ',', '.') }} g</div>
+                <div class="col-md-3"><strong>Status</strong><br>{{ strtoupper($po->status) }}</div>
+            </div>
+
+            @if (in_array($po->status, ['paid','processing','ready_at_agen','shipped','completed']))
+            @if ($remainingPo > 0)
+            <form action="{{ route('admin.trans.po.mitra-komisi.store', $po) }}" method="POST" class="row g-3">
+                @csrf
+                <div class="col-md-4">
+                    <label class="form-label">Pilih Mitra</label>
+                    <select name="master_mitra_brankas_id" class="form-select" required>
+                        <option value="">-- Pilih Mitra --</option>
+                        @foreach ($mitras as $m)
+                            <option value="{{ $m->id }}">{{ $m->nama_lengkap }} ({{ $m->kode_mitra }}) — Limit Harian: {{ number_format((float)$m->harian_limit_gram, 3, ',', '.') }} g</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Tanggal Komisi</label>
+                    <input type="date" name="tanggal_komisi" class="form-control" value="{{ date('Y-m-d') }}" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Jumlah Gram</label>
+                    <input type="number" name="jumlah_gram" step="0.001" min="0.001" class="form-control" placeholder="0.001" value="{{ number_format($remainingPo, 3, '.', '') }}" required>
+                    <div class="form-text">Maks sesuai sisa gram PO dan limit harian mitra.</div>
+                </div>
+                <div class="col-md-12">
+                    <label class="form-label">Catatan</label>
+                    <textarea name="catatan" rows="2" class="form-control" placeholder="Opsional"></textarea>
+                </div>
+                <div class="col-md-12 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary">Assign Komisi</button>
+                </div>
+            </form>
+            @endif
+            @else
+                <div class="alert alert-info mb-0">Assign komisi hanya tersedia jika status PO minimal <strong>PAID</strong>.</div>
+            @endif
+        </div>
+    </div>
      
     <div class="card shadow-sm">
         <div class="card-body">

@@ -27,6 +27,7 @@
                             <th>Mitra</th>
                             <th>Tipe Transaksi</th>
                             <th>Komisi (%)</th>
+                            <th>Komisi Bulan Ini (IDR)</th>
                             <th>Periode</th>
                             <th>Status</th>
                             <th style="width: 180px;">Aksi</th>
@@ -39,6 +40,7 @@
                                 <td>{{ optional($k->mitra)->nama_lengkap ?? '-' }}</td>
                                 <td>{{ strtoupper($k->tipe_transaksi) }}</td>
                                 <td>{{ number_format((float)$k->komisi_persen, 2, ',', '.') }}</td>
+                                <td>{{ number_format((float)($monthSummaries[optional($k->mitra)->id] ?? 0), 2, ',', '.') }}</td>
                                 <td>
                                     @php
                                         $mulai = $k->berlaku_mulai ? $k->berlaku_mulai->format('Y-m-d') : '-';

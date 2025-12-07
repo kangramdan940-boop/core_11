@@ -31,9 +31,11 @@ class MitraBrankasController extends Controller
             'harian_limit_gram'  => ['required', 'numeric', 'min:0'],
             'komisi_persen'      => ['required', 'numeric', 'min:0', 'max:100'],
             'is_active'          => ['sometimes', 'accepted'],
+            'is_edit'            => ['sometimes', 'accepted'],
         ]);
 
         $data['is_active'] = $request->has('is_active');
+        $data['is_edit']   = $request->has('is_edit');
 
         MasterMitraBrankas::create($data);
 
@@ -59,9 +61,11 @@ class MitraBrankasController extends Controller
             'harian_limit_gram'  => ['required', 'numeric', 'min:0'],
             'komisi_persen'      => ['required', 'numeric', 'min:0', 'max:100'],
             'is_active'          => ['sometimes', 'accepted'],
+            'is_edit'            => ['sometimes', 'accepted'],
         ]);
 
         $data['is_active'] = $request->has('is_active');
+        $data['is_edit']   = $request->has('is_edit');
         $mitra->update($data);
 
         return redirect()

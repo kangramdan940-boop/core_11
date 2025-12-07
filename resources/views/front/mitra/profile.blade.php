@@ -103,6 +103,11 @@
                 <div class="alert alert-success mt-16">{{ session('success') }}</div>
             @endif
 
+            @php $canEdit = (bool)($mitra->is_edit ?? false); @endphp
+            @unless($canEdit)
+                <div class="alert alert-warning light alert-dismissible fade show mb-10">Profil tidak dapat diedit saat ini.</div>
+            @endunless
+
             <form action="{{ route('mitra.profile.update') }}" method="POST" class="mt-24 mb-100">
                 @csrf
                 @method('PUT')
@@ -110,14 +115,14 @@
                 <div class="form-field">
                     <h6 class="label text-dark-4">Nama Lengkap</h6>
                     <fieldset class="mt-12">
-                        <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap', $mitra->nama_lengkap ?? '') }}" placeholder="Tulis nama lengkap" class="form-control line-dark">
+                        <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap', $mitra->nama_lengkap ?? '') }}" placeholder="Tulis nama lengkap" class="form-control line-dark" {{ $canEdit ? '' : 'disabled' }}>
                     </fieldset>
                 </div>
 
                 <div class="mt-20 form-field">
                     <h6 class="label text-dark-4">WhatsApp</h6>
                     <fieldset class="mt-12">
-                        <input type="text" name="phone_wa" value="{{ old('phone_wa', $mitra->phone_wa ?? '') }}" placeholder="Contoh: 0812xxxxxxx" class="form-control line-dark">
+                        <input type="text" name="phone_wa" value="{{ old('phone_wa', $mitra->phone_wa ?? '') }}" placeholder="Contoh: 0812xxxxxxx" class="form-control line-dark" {{ $canEdit ? '' : 'disabled' }}>
                     </fieldset>
                     <div class="small text-muted mt-8">Format akan dinormalisasi ke awalan 0 (contoh: +62xxx → 0xxx).</div>
                 </div>
@@ -125,19 +130,19 @@
                 <div class="mt-20 form-field">
                     <h6 class="label text-dark-4">Platform</h6>
                     <fieldset class="mt-12">
-                        <input type="text" name="platform" value="{{ old('platform', $mitra->platform ?? '') }}" placeholder="Contoh: Tokopedia, Shopee, IG" class="form-control line-dark">
+                        <input type="text" name="platform" value="{{ old('platform', $mitra->platform ?? '') }}" placeholder="Contoh: Tokopedia, Shopee, IG" class="form-control line-dark" {{ $canEdit ? '' : 'disabled' }}>
                     </fieldset>
                 </div>
 
                 <div class="mt-20 form-field">
                     <h6 class="label text-dark-4">Nomor Brankas</h6>
                     <fieldset class="mt-12">
-                        <input type="text" name="account_no" value="{{ old('account_no', $mitra->account_no ?? '') }}" placeholder="Nomor akun/platform" class="form-control line-dark">
+                        <input type="text" name="account_no" value="{{ old('account_no', $mitra->account_no ?? '') }}" placeholder="Nomor akun/platform" class="form-control line-dark" {{ $canEdit ? '' : 'disabled' }}>
                     </fieldset>
                 </div>
 
                 <div class="mt-24">
-                    <button type="submit" class="tf-btn primary">Update Profil</button>
+                    <button type="submit" class="tf-btn primary" {{ $canEdit ? '' : 'disabled' }}>Update Profil</button>
                 </div>
             </form>
         </div>

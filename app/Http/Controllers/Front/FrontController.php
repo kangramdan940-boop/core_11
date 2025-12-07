@@ -163,8 +163,23 @@ class FrontController extends Controller
             : collect();
         $latestPrice = \App\Models\MasterGoldPrice::where('is_active', true)->orderByDesc('price_date')->first();
         $hargaPerGram = (float) ($latestPrice->price_sell ?? 0);
-        $saldoKomisi = 0.0;
-        return view('front.mitra.dashboard', compact('mitra', 'komisiList', 'hargaPerGram', 'saldoKomisi'));
+        $assignments = $mitra
+            ? \App\Models\TransPoMitraKomisi::with('po')
+                ->where('master_mitra_brankas_id', $mitra->id)
+                ->orderByDesc('id')
+                ->limit(10)
+                ->get()
+            : collect();
+        $todayAllocated = $mitra
+            ? (float) \App\Models\TransPoMitraKomisi::where('master_mitra_brankas_id', $mitra->id)
+                ->where('tanggal_komisi', date('Y-m-d'))
+                ->sum('jumlah_gram')
+            : 0.0;
+        $limitHarian = (float) ($mitra->harian_limit_gram ?? 0.0);
+        $saldoKomisi = $mitra
+            ? (float) \App\Models\TransPoMitraKomisi::where('master_mitra_brankas_id', $mitra->id)->sum('komisi_amount')
+            : 0.0;
+        return view('front.mitra.dashboard', compact('mitra', 'komisiList', 'hargaPerGram', 'saldoKomisi', 'assignments', 'todayAllocated', 'limitHarian'));
     }
 
     public function mitraKomisiIndex(): View
@@ -173,7 +188,12 @@ class FrontController extends Controller
         $komisiList = \App\Models\MasterMitraKomisi::where('master_mitra_brankas_id', $mitra->id)
             ->orderByDesc('id')
             ->get();
-        return view('front.mitra.komisi.index', compact('mitra', 'komisiList'));
+        $assignments = \App\Models\TransPoMitraKomisi::with('po')
+            ->where('master_mitra_brankas_id', $mitra->id)
+            ->orderByDesc('id')
+            ->limit(20)
+            ->get();
+        return view('front.mitra.komisi.index', compact('mitra', 'komisiList', 'assignments'));
     }
 
     public function mitraProfile(): View

@@ -16,7 +16,14 @@ class MasterMitraKomisiController extends Controller
             ->orderByDesc('id')
             ->paginate(20);
 
-        return view('admin.master_mitra_komisi.index', compact('komisis'));
+        $start = now()->startOfMonth()->toDateString();
+        $end = now()->endOfMonth()->toDateString();
+        $monthSummaries = \App\Models\TransPoMitraKomisi::selectRaw('master_mitra_brankas_id, SUM(komisi_amount) as total')
+            ->whereBetween('tanggal_komisi', [$start, $end])
+            ->groupBy('master_mitra_brankas_id')
+            ->pluck('total', 'master_mitra_brankas_id');
+
+        return view('admin.master_mitra_komisi.index', compact('komisis', 'monthSummaries'));
     }
 
     public function create()

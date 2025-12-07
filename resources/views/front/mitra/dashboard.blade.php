@@ -78,7 +78,7 @@
                             </div>
                         </div>
                         <div style="margin-top:8px;border-top:1px solid rgba(255,255,255,.4);padding-top:10px;display:flex;align-items:center;justify-content:space-between;">
-                            <div style="font-size:16px;font-weight:600;">Saldo Komisi Rp.2,000,000</div>
+                            <div style="font-size:16px;font-weight:600;">Saldo Komisi Rp {{ number_format((float)($saldoKomisi ?? 0), 2, ',', '.') }}</div>
                         </div>
                     </div>
                     <div style="width:40%;background:linear-gradient(135deg,#c89b3c,#f2d47a);position:relative;">
@@ -104,44 +104,41 @@
                         </div>
                     </div>
                 @else
-                    <p class="text-muted">Konten dashboard mitra dapat dikembangkan sesuai kebutuhan (statistik, menu operasional, dsb.).</p>
                 @endif
 
-                <div id="komisi" class="card shadow-sm p-3 mt-16">
-                    <h5 class="mb-2">Komisi Aktif</h5>
-                    <div class="table-responsive">
-                        <table class="table table-sm mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Tipe</th>
-                                    <th>Komisi (%)</th>
-                                    <th>Estimasi (IDR/gram)</th>
-                                    <th>Berlaku</th>
-                                    <th>Catatan</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse(($komisiList ?? []) as $k)
-                                    @php $idrPerGram = (float)($hargaPerGram ?? 0); $estIdr = $idrPerGram * ((float)$k->komisi_persen) / 100.0; @endphp
-                                    <tr>
-                                        <td>{{ strtoupper($k->tipe_transaksi) }}</td>
-                                        <td>{{ number_format((float)$k->komisi_persen, 2, ',', '.') }}</td>
-                                        <td>{{ 'Rp ' . number_format($estIdr, 2, ',', '.') }}</td>
-                                        <td>
-                                            {{ optional($k->berlaku_mulai)->format('Y-m-d') ?? '-' }}
-                                            @if($k->berlaku_sampai) s/d {{ optional($k->berlaku_sampai)->format('Y-m-d') }} @endif
-                                        </td>
-                                        <td>{{ $k->catatan ?? '-' }}</td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="text-center py-3">Belum ada komisi aktif.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                <div id="alokasi-komisi" class="card shadow-sm p-3 mt-16">
+                    <h5 class="mb-2">Komisi Saya (Terbaru)</h5>
+                    <div class="row g-3 mb-2">
+                        <div class="col-6"><strong>Limit Harian</strong><br>{{ number_format((float)($limitHarian ?? 0), 3, ',', '.') }} g</div>
+                        <div class="col-6"><strong>Terpakai Hari Ini</strong><br>{{ number_format((float)($todayAllocated ?? 0), 3, ',', '.') }} g</div>
                     </div>
-                </div>
+                    <div class="list-app mt-16">
+                        @forelse(($assignments ?? []) as $a)
+                            <div class="box-app">
+                                <div class="info-box mb-0">
+                                    <a href="javascript:void(0);" class="logo">
+                                        <img src="{{ asset('front/images/golds/antam_1.jpg') }}" alt="logo">
+                                    </a>
+                                    <div class="content">
+                                        <div class="box-top">
+                                            <div class="info">
+                                                <span class="body-6">{{ optional($a->tanggal_komisi)->format('Y-m-d') ?? '-' }}</span>
+                                                <div class="h7 text-dark">
+                                                    <a href="javascript:void(0);">{{ optional($a->po)->kode_po ?? '-' }}</a>
+                                                </div>
+                                                <div class="body-6 text-dark-4">
+                                                    {{ number_format((float)$a->jumlah_gram, 3, ',', '.') }} g • {{ number_format((float)$a->komisi_persen, 2, ',', '.') }}% • Rp {{ number_format((float)$a->komisi_amount, 2, ',', '.') }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="alert alert-secondary light mt-12">Belum ada alokasi komisi.</div>
+                        @endforelse
+                    </div>
+                </div
             </div>
         </div>
     </div>

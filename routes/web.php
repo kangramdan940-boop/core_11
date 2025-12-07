@@ -133,7 +133,12 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('admin.dashboard');
-
+    Route::prefix('trans/po')->name('admin.trans.po.')->group(function () {
+        Route::post('{po}/mitra-komisi', [\App\Http\Controllers\Admin\TransPoMitraKomisiController::class, 'store'])->name('mitra-komisi.store');
+    });
+    Route::prefix('trans/po')->name('admin.trans.po.')->group(function () {
+        Route::delete('mitra-komisi/{assignment}', [\App\Http\Controllers\Admin\TransPoMitraKomisiController::class, 'destroy'])->name('mitra-komisi.destroy');
+    });
     // LIST
     Route::get('/master/customers', [MasterCustomerController::class, 'index'])
         ->name('admin.master.customers.index');

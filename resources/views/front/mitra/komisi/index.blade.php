@@ -48,49 +48,83 @@
 
     <div class="app-content style-3">
         <div class="tf-container">
-            @php $items = ($komisiList ?? collect()); @endphp
-            @if ($items->count() === 0)
+            @php
+                $komisiItems = ($komisiList ?? collect());
+                $assignItems = ($assignments ?? collect());
+            @endphp
+            @if ($komisiItems->count() === 0 && $assignItems->count() === 0)
                 <div class="alert alert-secondary light mt-16">Belum ada komisi yang tercatat untuk akun mitra ini.</div>
             @else
-                @foreach ($items as $o)
-                    @php
-                        $isActive = (bool)($o->is_active ?? false);
-                        $cls = $isActive ? 'bg-success' : 'bg-danger';
-                        $periode = '';
-                        if ($o->berlaku_mulai || $o->berlaku_sampai) {
-                            $mulai = optional($o->berlaku_mulai)->format('Y-m-d') ?? '-';
-                            $sampai = optional($o->berlaku_sampai)->format('Y-m-d') ?? '-';
-                            $periode = $mulai . ' s/d ' . $sampai;
-                        } else {
-                            $periode = 'Berlaku terus';
-                        }
-                    @endphp
-                    <div class="box-app">
-                        <div class="info-box mb-0">
-                            <a href="javascript:void(0);" class="logo">
-                                <img src="{{ asset('front/images/golds/antam_1.jpg') }}" alt="logo">
-                            </a>
-                            <div class="content">
-                                <div class="box-top">
-                                    <div class="info">
-                                        <span class="body-6">Komisi</span>
-                                        <div class="h7 text-dark">
-                                            <a href="javascript:void(0);">
-                                                {{ strtoupper($o->tipe_transaksi ?? 'PO') }} — {{ number_format((float)($o->komisi_persen ?? 0), 2, ',', '.') }}%
-                                            </a>
+                @if ($komisiItems->count() > 0)
+                    <h5 class="mt-16 mb-8">Komisi Aktif</h5>
+                    @foreach ($komisiItems as $o)
+                        @php
+                            $isActive = (bool)($o->is_active ?? false);
+                            $cls = $isActive ? 'bg-success' : 'bg-danger';
+                            $periode = '';
+                            if ($o->berlaku_mulai || $o->berlaku_sampai) {
+                                $mulai = optional($o->berlaku_mulai)->format('Y-m-d') ?? '-';
+                                $sampai = optional($o->berlaku_sampai)->format('Y-m-d') ?? '-';
+                                $periode = $mulai . ' s/d ' . $sampai;
+                            } else {
+                                $periode = 'Berlaku terus';
+                            }
+                        @endphp
+                        <div class="box-app">
+                            <div class="info-box mb-0">
+                                <a href="javascript:void(0);" class="logo">
+                                    <img src="{{ asset('front/images/golds/antam_1.jpg') }}" alt="logo">
+                                </a>
+                                <div class="content">
+                                    <div class="box-top">
+                                        <div class="info">
+                                            <span class="body-6">Komisi</span>
+                                            <div class="h7 text-dark">
+                                                <a href="javascript:void(0);">
+                                                    {{ strtoupper($o->tipe_transaksi ?? 'PO') }} — {{ number_format((float)($o->komisi_persen ?? 0), 2, ',', '.') }}%
+                                                </a>
+                                            </div>
+                                            <div class="body-6 text-dark-4">
+                                                Periode: {{ $periode }}
+                                            </div>
                                         </div>
-                                        <div class="body-6 text-dark-4">
-                                            Periode: {{ $periode }}
+                                        <div class="check-icon">
+                                            <span class="badge {{ $cls }}" style="font-size:.75rem;">{{ $isActive ? 'ACTIVE' : 'NONACTIVE' }}</span>
                                         </div>
-                                    </div>
-                                    <div class="check-icon">
-                                        <span class="badge {{ $cls }}" style="font-size:.75rem;">{{ $isActive ? 'ACTIVE' : 'NONACTIVE' }}</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    @endforeach
+                @endif
+
+                @if ($assignItems->count() > 0)
+                    <h5 class="mt-24 mb-8">Alokasi Komisi Saya</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Kode PO</th>
+                                    <th>Gram</th>
+                                    <th>% Komisi</th>
+                                    <th>Nominal (IDR)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($assignItems as $a)
+                                    <tr>
+                                        <td>{{ optional($a->tanggal_komisi)->format('Y-m-d') ?? '-' }}</td>
+                                        <td>{{ optional($a->po)->kode_po ?? '-' }}</td>
+                                        <td>{{ number_format((float)$a->jumlah_gram, 3, ',', '.') }}</td>
+                                        <td>{{ number_format((float)$a->komisi_persen, 2, ',', '.') }}</td>
+                                        <td>{{ number_format((float)$a->komisi_amount, 2, ',', '.') }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                @endforeach
+                @endif
             @endif
         </div>
     </div>

@@ -22,6 +22,7 @@ class MasterMitraBrankas extends Model
         'harian_limit_gram',
         'komisi_persen',
         'is_active',
+        'is_edit',
         'sys_user_id',
     ];
 
@@ -29,6 +30,7 @@ class MasterMitraBrankas extends Model
         'harian_limit_gram' => 'decimal:3',
         'komisi_persen'     => 'decimal:2',
         'is_active'         => 'boolean',
+        'is_edit'           => 'boolean',
     ];
 
     protected static function boot()

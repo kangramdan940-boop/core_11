@@ -73,12 +73,19 @@
         @enderror
     </div>
 
-    <div class="col-md-12 d-flex align-items-center mt-2">
+    <div class="col-md-12 d-flex align-items-center mt-2" style="gap: 24px;">
         <div class="form-check">
             <input class="form-check-input" type="checkbox" name="is_active" id="is_active"
                    {{ old('is_active', $mitra->is_active ?? true) ? 'checked' : '' }}>
             <label class="form-check-label" for="is_active">
                 Aktif
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="is_edit" id="is_edit"
+                   {{ old('is_edit', $mitra->is_edit ?? false) ? 'checked' : '' }}>
+            <label class="form-check-label" for="is_edit">
+                Boleh di-edit
             </label>
         </div>
     </div>
