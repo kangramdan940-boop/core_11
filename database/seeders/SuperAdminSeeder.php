@@ -13,7 +13,7 @@ class SuperAdminSeeder extends Seeder
     {
         // 1) buat profil master_admin
         $adminProfile = MasterAdmin::firstOrCreate(
-            ['email' => 'admin@example.com'],
+            ['email' => 'admin@gmail.com'],
             [
                 'name'           => 'Super Admin',
                 'phone_wa'       => '082126357645',
