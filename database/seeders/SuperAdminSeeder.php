@@ -28,7 +28,7 @@ class SuperAdminSeeder extends Seeder
             ['email' => $adminProfile->email],
             [
                 'name'            => $adminProfile->name,
-                'password'        => 'password', // auto hash via casts
+                'password'        => 'R4md4nltz!', // auto hash via casts
                 'role'            => 'super_admin',
                 'master_admin_id' => $adminProfile->id,
                 'is_active'       => true,
