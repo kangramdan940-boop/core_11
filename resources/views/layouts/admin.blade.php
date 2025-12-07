@@ -53,7 +53,7 @@
  <div class="menu-title">Emas</div>
         <a class="nav-link {{ request()->routeIs('admin.master.ready-stocks.*') ? 'active' : '' }}" href="{{ route('admin.master.ready-stocks.index') }}">📦 Stok Emas Ready</a>
 
-        @if(auth()->user() && auth()->user()->role === 'admin')
+        @if(auth()->user() && auth()->user()->role === 'super_admin')
         <a class="nav-link {{ request()->routeIs('admin.master.gold-prices.*') ? 'active' : '' }}" href="{{ route('admin.master.gold-prices.index') }}">📊 Harga Emas</a>
         <a class="nav-link {{ request()->routeIs('admin.master.mitra-komisi.*') ? 'active' : '' }}" href="{{ route('admin.master.mitra-komisi.index') }}">💰 Komisi Mitra</a>
         @endif
@@ -62,11 +62,11 @@
         <a class="nav-link {{ request()->routeIs('admin.master.customers.*') ? 'active' : '' }}" href="{{ route('admin.master.customers.index') }}">👤 Customer</a>
         <a class="nav-link {{ request()->routeIs('admin.master.brand-emas.*') ? 'active' : '' }}" href="{{ route('admin.master.brand-emas.index') }}">🏷️ Brand Emas</a>
         <a class="nav-link {{ request()->routeIs('admin.master.gramasi-emas.*') ? 'active' : '' }}" href="{{ route('admin.master.gramasi-emas.index') }}">⚖️ Gramasi Emas</a>
-        @if(auth()->user() && auth()->user()->role === 'admin')
+        @if(auth()->user() && auth()->user()->role === 'super_admin')
         <a class="nav-link {{ request()->routeIs('admin.master.home-slider.*') ? 'active' : '' }}" href="{{ route('admin.master.home-slider.index') }}">🖼️ Home Slider</a>
         <a class="nav-link {{ request()->routeIs('admin.master.menu-home-customer.*') ? 'active' : '' }}" href="{{ route('admin.master.menu-home-customer.index') }}">📱 Menu Home Customer</a>
         @endif
-        @if(auth()->user() && auth()->user()->role === 'admin')
+        @if(auth()->user() && auth()->user()->role === 'super_admin')
             <a class="nav-link {{ request()->routeIs('admin.master.agens.*') ? 'active' : '' }}" href="{{ route('admin.master.agens.index') }}">🧑‍💼 Agen</a>
             <a class="nav-link {{ request()->routeIs('admin.master.admins.*') ? 'active' : '' }}" href="{{ route('admin.master.admins.index') }}">🛡️ Admin</a>
             <a class="nav-link {{ request()->routeIs('admin.master.settings.*') ? 'active' : '' }}" href="{{ route('admin.master.settings.index') }}">⚙️ Setting</a>
@@ -77,7 +77,7 @@
        
 
         <div class="menu-title">System</div>
-        @if(auth()->user() && auth()->user()->role === 'admin')
+        @if(auth()->user() && auth()->user()->role === 'super_admin')
             <a class="nav-link {{ request()->routeIs('admin.permissions.*') ? 'active' : '' }}" href="{{ route('admin.permissions.users.index') }}">🔐 Hak Akses</a>
             <a class="nav-link {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}" href="{{ route('admin.roles.index') }}">🛡️ Roles</a>
         @endif
