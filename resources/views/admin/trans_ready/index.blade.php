@@ -9,55 +9,54 @@
     </div>
 
     <div class="card shadow-sm">
-        <div class="card-body p-0">
+        <div class="card-body p-20">
             <div class="table-responsive">
-                <table class="table table-sm table-hover mb-0">
+                <table id="readyTable" class="table table-sm table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th>ID</th>
-                            <th>Kode Trans</th>
-                            <th>Customer</th>
-                            <th>Agen</th>
-                            <th>Item</th>
-                            <th>Qty</th>
-                            <th>Total (IDR)</th>
-                            <th>Status</th>
-                            <th>Dibuat</th>
-                            <th style="width:140px;">Aksi</th>
+                            <th class="text-center" style="width:64px;">ID</th>
+                            <th class="text-center" style="width:160px;">Kode Trans</th>
+                            <th style="min-width:200px;">Customer</th>
+                            <th style="min-width:160px;">Agen</th>
+                            <th style="min-width:160px;">Item</th>
+                            <th class="text-end" style="width:80px;">Qty</th>
+                            <th class="text-end" style="min-width:160px;">Total (IDR)</th>
+                            <th class="text-center" style="width:120px;">Status</th>
+                            <th style="min-width:160px;">Dibuat</th>
+                            <th class="text-end text-nowrap" style="width:160px;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($readyTrans as $t)
                             <tr>
-                                <td>{{ $t->id }}</td>
-                                <td>{{ $t->kode_trans }}</td>
+                                <td class="text-center">{{ $t->id }}</td>
+                                <td class="text-center"><span class="badge bg-light text-dark border text-uppercase">{{ $t->kode_trans }}</span></td>
                                 <td>{{ optional($t->customer)->full_name ?? '-' }}</td>
                                 <td>{{ optional($t->agen)->name ?? '-' }}</td>
-                                <td>{{ optional($t->readyStock)->kode_item ?? '-' }}</td>
-                                <td>{{ $t->qty }}</td>
-                                <td>{{ number_format((float)$t->total_amount, 2, ',', '.') }}</td>
-                                <td>
+                                <td><span class="badge bg-light text-dark border text-uppercase">{{ optional($t->readyStock)->kode_item ?? '-' }}</span></td>
+                                <td class="text-end">{{ $t->qty }}</td>
+                                <td class="text-end">{{ number_format((float)$t->total_amount, 2, ',', '.') }}</td>
+                                <td class="text-center">
                                     @php($st = $t->status)
                                     @if($st === 'pending_payment')
-                                        <span class="badge bg-warning text-dark">PENDING</span>
+                                        <span class="badge rounded-pill bg-warning text-dark">PENDING</span>
                                     @elseif($st === 'paid')
-                                        <span class="badge bg-success">PAID</span>
+                                        <span class="badge rounded-pill bg-success">PAID</span>
                                     @elseif($st === 'waiting_shipment')
-                                        <span class="badge bg-info text-dark">WAITING SHIPMENT</span>
+                                        <span class="badge rounded-pill bg-info text-dark">WAITING SHIPMENT</span>
                                     @elseif($st === 'shipped')
-                                        <span class="badge bg-primary">SHIPPED</span>
+                                        <span class="badge rounded-pill bg-primary">SHIPPED</span>
                                     @elseif($st === 'completed')
-                                        <span class="badge bg-success">COMPLETED</span>
+                                        <span class="badge rounded-pill bg-success">COMPLETED</span>
                                     @else
-                                        <span class="badge bg-secondary">CANCELLED</span>
+                                        <span class="badge rounded-pill bg-secondary">CANCELLED</span>
                                     @endif
                                 </td>
                                 <td>{{ optional($t->created_at)->format('Y-m-d H:i') }}</td>
-                                <td>
-                                    <a href="{{ route('admin.trans.ready.show', $t) }}"
-                                       class="btn btn-sm btn-outline-primary">
-                                        Detail
-                                    </a>
+                                <td class="text-end text-nowrap">
+                                    <div class="d-flex justify-content-end align-items-center gap-1">
+                                        <a href="{{ route('admin.trans.ready.show', $t) }}" class="btn btn-outline-primary btn-sm px-2 d-inline-flex align-items-center" style="height:28px;">Detail</a>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
@@ -69,11 +68,39 @@
                 </table>
             </div>
 
-            @if ($readyTrans->hasPages())
-                <div class="p-2">
-                    {{ $readyTrans->links() }}
-                </div>
-            @endif
+
         </div>
     </div>
+@push('styles')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+@endpush
+
+@push('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script>
+$(function(){
+  $('#readyTable').DataTable({
+    pageLength: 10,
+    lengthMenu: [10,25,50,100],
+    order: [[0,'desc']],
+    columns: [
+      { width: '64px' },
+      { width: '160px' },
+      { width: '200px' },
+      { width: '160px' },
+      { width: '160px' },
+      { width: '80px' },
+      { width: '160px' },
+      { width: '120px', orderable: false },
+      { width: '160px' },
+      { width: '160px', orderable: false }
+    ],
+    language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' },
+    responsive: true
+  });
+});
+</script>
+@endpush
 @endsection

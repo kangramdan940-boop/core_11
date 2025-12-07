@@ -18,51 +18,46 @@
     </div>
 
     <div class="card shadow-sm">
-        <div class="card-body p-0">
+        <div class="card-body p-20">
             <div class="table-responsive">
-                <table class="table table-sm table-hover mb-0">
+                <table id="pricesTable" class="table table-sm table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th>ID</th>
-                            <th>Tanggal</th>
-                            <th>Source</th>
-                            <th>Beli (IDR/g)</th>
-                            <th>Jual (IDR/g)</th>
-                            <th>Buyback (IDR/g)</th>
-                            <th>Status</th>
-                            <th style="width: 180px;">Aksi</th>
+                            <th class="text-center" style="width:64px;">ID</th>
+                            <th style="min-width:140px;">Tanggal</th>
+                            <th style="min-width:160px;">Source</th>
+                            <th class="text-end" style="min-width:160px;">Beli (IDR/g)</th>
+                            <th class="text-end" style="min-width:160px;">Jual (IDR/g)</th>
+                            <th class="text-end" style="min-width:160px;">Buyback (IDR/g)</th>
+                            <th class="text-center" style="width:120px;">Status</th>
+                            <th class="text-end text-nowrap" style="width:160px;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($prices as $p)
                             <tr>
-                                <td>{{ $p->id }}</td>
+                                <td class="text-center">{{ $p->id }}</td>
                                 <td>{{ optional($p->price_date)->format('Y-m-d') }}</td>
                                 <td>{{ $p->source }}</td>
-                                <td>{{ number_format((float)$p->price_buy, 2, ',', '.') }}</td>
-                                <td>{{ number_format((float)$p->price_sell, 2, ',', '.') }}</td>
-                                <td>{{ $p->price_buyback !== null ? number_format((float)$p->price_buyback, 2, ',', '.') : '-' }}</td>
-                                <td>
+                                <td class="text-end">{{ number_format((float)$p->price_buy, 2, ',', '.') }}</td>
+                                <td class="text-end">{{ number_format((float)$p->price_sell, 2, ',', '.') }}</td>
+                                <td class="text-end">{{ $p->price_buyback !== null ? number_format((float)$p->price_buyback, 2, ',', '.') : '-' }}</td>
+                                <td class="text-center">
                                     @if($p->is_active)
-                                        <span class="badge bg-success">Aktif</span>
+                                        <span class="badge rounded-pill bg-success">Aktif</span>
                                     @else
-                                        <span class="badge bg-secondary">Nonaktif</span>
+                                        <span class="badge rounded-pill bg-secondary">Nonaktif</span>
                                     @endif
                                 </td>
-                                <td>
-                                    <a href="{{ route('admin.master.gold-prices.edit', $p) }}"
-                                       class="btn btn-sm btn-outline-primary">
-                                        Edit
-                                    </a>
-                                    <form action="{{ route('admin.master.gold-prices.destroy', $p) }}"
-                                          method="POST" class="d-inline"
-                                          onsubmit="return confirm('Hapus harga ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-sm btn-outline-danger">
-                                            Hapus
-                                        </button>
-                                    </form>
+                                <td class="text-end text-nowrap">
+                                    <div class="d-flex justify-content-end align-items-center gap-1">
+                                        <a href="{{ route('admin.master.gold-prices.edit', $p) }}" class="btn btn-outline-primary btn-sm px-2 d-inline-flex align-items-center" style="height:28px;">Edit</a>
+                                        <form action="{{ route('admin.master.gold-prices.destroy', $p) }}" method="POST" class="mb-0 d-inline-block" onsubmit="return confirm('Hapus harga ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="btn btn-outline-danger btn-sm px-2 d-inline-flex align-items-center" style="height:28px;">Hapus</button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
@@ -76,11 +71,37 @@
                 </table>
             </div>
 
-            @if ($prices->hasPages())
-                <div class="p-2">
-                    {{ $prices->links() }}
-                </div>
-            @endif
+
         </div>
     </div>
+@push('styles')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+@endpush
+
+@push('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script>
+$(function(){
+  $('#pricesTable').DataTable({
+    pageLength: 10,
+    lengthMenu: [10,25,50,100],
+    order: [[0,'desc']],
+    columns: [
+      { width: '64px' },
+      { width: '140px' },
+      { width: '160px' },
+      { width: '160px' },
+      { width: '160px' },
+      { width: '160px' },
+      { width: '120px', orderable: false },
+      { width: '160px', orderable: false }
+    ],
+    language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' },
+    responsive: true
+  });
+});
+</script>
+@endpush
 @endsection
