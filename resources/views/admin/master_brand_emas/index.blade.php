@@ -62,6 +62,9 @@
                                     </div>
                                 </td>
                             </tr>
+                        @empty
+                            <tr><td colspan="6" class="text-center py-3">Belum ada data brand emas.</td></tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>

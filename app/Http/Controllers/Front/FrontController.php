@@ -38,7 +38,7 @@ class FrontController extends Controller
         if (Str::startsWith($imageUrl, ['http://', 'https://', '/'])) {
             return $imageUrl;
         }
-        return asset('storage/' . ltrim($imageUrl, '/'));
+        return asset(ltrim($imageUrl, '/'));
     }
 
     public function customerDashboard(): View

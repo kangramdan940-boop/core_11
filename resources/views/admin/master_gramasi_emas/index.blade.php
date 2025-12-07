@@ -50,6 +50,9 @@
                                     </div>
                                 </td>
                             </tr>
+                        @empty
+                            <tr><td colspan="5" class="text-center py-3">Belum ada data gramasi emas.</td></tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>

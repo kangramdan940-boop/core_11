@@ -64,6 +64,13 @@
                                     </div>
                                 </td>
                             </tr>
+                        @empty
+                            <tr>
+                                <td colspan="10" class="text-center py-3">
+                                    Belum ada data mitra.
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>

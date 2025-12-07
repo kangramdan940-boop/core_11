@@ -57,6 +57,11 @@
                                     </div>
                                 </td>
                             </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="text-center py-3">Belum ada PO.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
