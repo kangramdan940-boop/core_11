@@ -57,7 +57,7 @@ class TransPaymentLogController extends Controller
                 TransPoLog::create([
                     'trans_po_id' => $po->id,
                     'status'      => $po->status,
-                    'description' => 'Pembayaran manual disetujui admin pada '.now(),
+                    'description' => 'Pembayaran manual disetujui oleh '.($request->user()?->name ?? 'SYSTEM').' pada '.now(),
                 ]);
 
                 return redirect()->route('admin.trans.po.show', $po)->with('success', 'Pembayaran disetujui dan status PO diperbarui.');
@@ -73,7 +73,7 @@ class TransPaymentLogController extends Controller
                 \App\Models\TransReadyLog::create([
                     'trans_ready_id' => $ready->id,
                     'status'         => $ready->status,
-                    'description'    => 'Pembayaran manual disetujui admin pada ' . now(),
+                    'description'    => 'Pembayaran manual disetujui oleh '.($request->user()?->name ?? 'SYSTEM').' pada ' . now(),
                 ]);
                 return redirect()->route('admin.trans.ready.show', $ready)->with('success', 'Pembayaran disetujui dan status transaksi Ready diperbarui.');
             }
@@ -109,7 +109,7 @@ class TransPaymentLogController extends Controller
                 TransPoLog::create([
                     'trans_po_id' => $po->id,
                     'status'      => $po->status,
-                    'description' => 'Pembayaran manual ditolak admin pada '.now(),
+                    'description' => 'Pembayaran manual ditolak oleh '.($request->user()?->name ?? 'SYSTEM').' pada '.now(),
                 ]);
                 return redirect()->route('admin.trans.po.show', $po)->with('success', 'Pembayaran ditolak.');
             }
@@ -119,7 +119,7 @@ class TransPaymentLogController extends Controller
                 \App\Models\TransReadyLog::create([
                     'trans_ready_id' => $ready->id,
                     'status'         => $ready->status,
-                    'description'    => 'Pembayaran manual ditolak admin pada ' . now(),
+                    'description'    => 'Pembayaran manual ditolak oleh '.($request->user()?->name ?? 'SYSTEM').' pada ' . now(),
                 ]);
                 return redirect()->route('admin.trans.ready.show', $ready)->with('success', 'Pembayaran ditolak.');
             }

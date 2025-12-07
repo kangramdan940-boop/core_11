@@ -68,7 +68,7 @@ class TransPoController extends Controller
         TransPoLog::create([
             'trans_po_id' => $po->id,
             'status'      => $po->status,
-            'description' => 'Pembayaran manual disetujui admin pada '.now(),
+            'description' => 'Pembayaran manual disetujui oleh '.($request->user()?->name ?? 'SYSTEM').' pada '.now(),
         ]);
 
         return redirect()->route('admin.trans.po.show', $po)->with('success', 'Pembayaran disetujui dan status PO diperbarui.');
@@ -94,7 +94,7 @@ class TransPoController extends Controller
         TransPoLog::create([
             'trans_po_id' => $po->id,
             'status'      => $po->status,
-            'description' => 'Pembayaran manual ditolak admin pada '.now(),
+            'description' => 'Pembayaran manual ditolak oleh '.($request->user()?->name ?? 'SYSTEM').' pada '.now(),
         ]);
 
         return redirect()->route('admin.trans.po.show', $po)->with('success', 'Konfirmasi pembayaran ditolak.');

@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Login Admin - Jasa Emas</title>
+    <title>Login Admin/Agen - Jasa Emas</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap CDN -->
@@ -31,7 +31,7 @@
     <div class="login-card card shadow border-0">
         <div class="card-body p-4">
             <h4 class="brand-title text-center mb-1">Jasa Emas</h4>
-            <p class="text-center text-muted mb-4">Login Admin</p>
+            <p class="text-center text-muted mb-4">Login Admin/Agen</p>
 
             @if ($errors->any())
                 <div class="alert alert-danger py-2">
@@ -47,7 +47,7 @@
                 @csrf
 
                 <div class="mb-3">
-                    <label for="email" class="form-label">Email Admin</label>
+                    <label for="email" class="form-label">Email</label>
                     <input type="email"
                            class="form-control @error('email') is-invalid @enderror"
                            id="email"
@@ -72,7 +72,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-warning w-100">
-                    Masuk sebagai Admin
+                    Masuk
                 </button>
             </form>
         </div>

@@ -54,12 +54,45 @@
     </div>
 
     <div class="col-md-12 d-flex align-items-center mt-2">
-        <div class="form-check">
+        <div class="form-check me-4">
             <input class="form-check-input" type="checkbox" name="is_active" id="is_active"
                    {{ old('is_active', $agen->is_active ?? true) ? 'checked' : '' }}>
             <label class="form-check-label" for="is_active">
                 Aktif
             </label>
         </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="create_login" id="create_login" {{ old('create_login') ? 'checked' : '' }}>
+            <label class="form-check-label" for="create_login">
+                Buat akun login agen (sys_user)
+            </label>
+        </div>
     </div>
+
+    <div class="col-md-6 mt-3">
+        <label class="form-label">Password Login Agen</label>
+        <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" autocomplete="new-password">
+        @error('password')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+    <div class="col-md-6 mt-3">
+        <label class="form-label">Konfirmasi Password</label>
+        <input type="password" name="password_confirmation" class="form-control" autocomplete="new-password">
+    </div>
+
+    <script>
+    (function(){
+      var cb = document.getElementById('create_login');
+      var pass = document.querySelector('input[name="password"]');
+      var conf = document.querySelector('input[name="password_confirmation"]');
+      function toggle(){
+        var on = cb && cb.checked;
+        if(pass){ pass.disabled = !on; pass.required = on; }
+        if(conf){ conf.disabled = !on; conf.required = on; }
+      }
+      toggle();
+      if(cb){ cb.addEventListener('change', toggle); }
+    })();
+    </script>
 </div>

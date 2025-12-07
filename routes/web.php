@@ -20,6 +20,9 @@ use App\Http\Controllers\Admin\TransPoController;
 use App\Http\Controllers\Admin\TransCicilanController;
 use App\Http\Controllers\Admin\TransReadyController;
 use App\Http\Controllers\Admin\TransCicilanPaymentController;
+use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\RoleController;
+
 use App\Http\Controllers\Front\CustomerAuthController;
 use App\Http\Controllers\Front\MitraAuthController;
 use App\Http\Controllers\Front\CustomerPoController;
@@ -27,381 +30,290 @@ use App\Http\Controllers\Front\CustomerReadyController;
 use App\Http\Controllers\Front\CustomerCicilanController;
 use App\Http\Controllers\Front\FrontController;
 
+// ====================================
+// FRONT HOME
+// ====================================
 Route::get('/', [FrontController::class, 'home']);
 
-Route::get('/customer/login', [CustomerAuthController::class, 'showLoginForm'])
-    ->name('customer.login');
+// ====================================
+// CUSTOMER AREA
+// ====================================
+Route::prefix('customer')->name('customer.')->group(function () {
+    // Auth
+    Route::get('/login', [CustomerAuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [CustomerAuthController::class, 'login'])->name('login.submit');
 
-Route::get('/login', [CustomerAuthController::class, 'showLoginForm'])
-    ->name('login');
+    Route::get('/register', [CustomerAuthController::class, 'showRegisterForm'])->name('register');
+    Route::post('/register', [CustomerAuthController::class, 'register'])->name('register.submit');
 
-Route::post('/customer/login', [CustomerAuthController::class, 'login'])
-    ->name('customer.login.submit');
+    Route::get('/forgot-password', [FrontController::class, 'customerForgotPassword'])
+        ->name('forgot-password');
 
-Route::get('/customer/register', [CustomerAuthController::class, 'showRegisterForm'])
-    ->name('customer.register');
+    // Protected (harus login)
+    Route::middleware('auth')->group(function () {
+        Route::get('/dashboard', [FrontController::class, 'customerDashboard'])->name('dashboard');
+        Route::get('/product-dan-layanan', [FrontController::class, 'customerProductDanLayanan'])->name('product-dan-layanan');
+        Route::get('/profile', [FrontController::class, 'customerProfile'])->name('profile');
+        Route::put('/profile', [FrontController::class, 'updateCustomerProfile'])->name('profile.update');
+        Route::get('/all-order', [FrontController::class, 'customerAllOrders'])->name('all-order');
 
-Route::post('/customer/register', [CustomerAuthController::class, 'register'])
-    ->name('customer.register.submit');
+        // PO / Pre-order emas
+        Route::get('/po/create', [FrontController::class, 'customerPoCreate'])->name('po.create');
+        Route::get('/pre-order-emas', [FrontController::class, 'customerPoCreate'])->name('pre-order-emas');
 
-Route::get('/customer/forgot-password', [FrontController::class, 'customerForgotPassword'])
-    ->name('customer.forgot-password');
+        Route::post('/po', [CustomerPoController::class, 'store'])->name('po.store');
+        Route::get('/po/{po}', [CustomerPoController::class, 'show'])->name('po.show');
+        Route::post('/po/{po}/confirm-payment', [CustomerPoController::class, 'confirmPayment'])->name('po.confirm-payment');
 
-Route::middleware('auth')->prefix('customer')->group(function () {
-    Route::get('/dashboard', [FrontController::class, 'customerDashboard'])->name('customer.dashboard');
-    Route::get('/product-dan-layanan', [FrontController::class, 'customerProductDanLayanan'])->name('customer.product-dan-layanan');
-    Route::get('/profile', [FrontController::class, 'customerProfile'])->name('customer.profile');
-    Route::put('/profile', [FrontController::class, 'updateCustomerProfile'])->name('customer.profile.update');
-    Route::get('/all-order', [FrontController::class, 'customerAllOrders'])->name('customer.all-order');
+        // Ready
+        Route::get('/ready', [CustomerReadyController::class, 'index'])->name('ready.index');
+        Route::get('/ready/{stock}', [CustomerReadyController::class, 'stock'])->name('ready.stock');
+        Route::get('/ready/{stock}/buy', [CustomerReadyController::class, 'buy'])->name('ready.buy');
+        Route::post('/ready', [CustomerReadyController::class, 'store'])->name('ready.store');
+        Route::get('/ready-trans/{ready}', [CustomerReadyController::class, 'show'])->name('ready.show');
+        Route::post('/ready-trans/{ready}/confirm-payment', [CustomerReadyController::class, 'confirmPayment'])->name('ready.confirm-payment');
 
-    Route::get('/po/create', [FrontController::class, 'customerPoCreate'])
-        ->name('customer.po.create');
+        // Cicilan
+        Route::get('/cicilan', [CustomerCicilanController::class, 'index'])->name('cicilan.index');
+        Route::get('/cicilan/{stock}', [CustomerCicilanController::class, 'stock'])->name('cicilan.stock');
+        Route::post('/cicilan', [CustomerCicilanController::class, 'store'])->name('cicilan.store');
+        Route::get('/cicilan-kontrak/{contract}', [CustomerCicilanController::class, 'show'])->name('cicilan.show');
+        Route::post('/cicilan-payment/{payment}/confirm-payment', [CustomerCicilanController::class, 'confirmPayment'])->name('cicilan.confirm-payment');
 
-    Route::get('/pre-order-emas', [FrontController::class, 'customerPoCreate'])
-        ->name('customer.pre-order-emas');
-
-
-    Route::post('/po', [CustomerPoController::class, 'store'])
-        ->name('customer.po.store');
-
-    Route::get('/po/{po}', [CustomerPoController::class, 'show'])
-        ->name('customer.po.show');
-
-    Route::post('/po/{po}/confirm-payment', [CustomerPoController::class, 'confirmPayment'])
-        ->name('customer.po.confirm-payment');
-
-    Route::get('/ready', [CustomerReadyController::class, 'index'])
-        ->name('customer.ready.index');
-    Route::get('/ready/{stock}', [CustomerReadyController::class, 'stock'])
-        ->name('customer.ready.stock');
-    Route::get('/ready/{stock}/buy', [CustomerReadyController::class, 'buy'])
-        ->name('customer.ready.buy');
-    Route::post('/ready', [CustomerReadyController::class, 'store'])
-        ->name('customer.ready.store');
-    Route::get('/ready-trans/{ready}', [CustomerReadyController::class, 'show'])
-        ->name('customer.ready.show');
-    Route::post('/ready-trans/{ready}/confirm-payment', [CustomerReadyController::class, 'confirmPayment'])
-        ->name('customer.ready.confirm-payment');
-
-    Route::get('/cicilan', [CustomerCicilanController::class, 'index'])
-        ->name('customer.cicilan.index');
-    Route::get('/cicilan/{stock}', [CustomerCicilanController::class, 'stock'])
-        ->name('customer.cicilan.stock');
-    Route::post('/cicilan', [CustomerCicilanController::class, 'store'])
-        ->name('customer.cicilan.store');
-    Route::get('/cicilan-kontrak/{contract}', [CustomerCicilanController::class, 'show'])
-        ->name('customer.cicilan.show');
-    Route::post('/cicilan-payment/{payment}/confirm-payment', [CustomerCicilanController::class, 'confirmPayment'])
-        ->name('customer.cicilan.confirm-payment');
-
-    Route::post('/logout', [CustomerAuthController::class, 'logout'])
-        ->name('customer.logout');
+        // Logout
+        Route::post('/logout', [CustomerAuthController::class, 'logout'])->name('logout');
+    });
 });
 
-Route::get('/mitra/login', [MitraAuthController::class, 'showLoginForm'])
-    ->name('mitra.login');
-Route::post('/mitra/login', [MitraAuthController::class, 'login'])
-    ->name('mitra.login.submit');
+// Alias /login → customer login (tetap ada)
+Route::get('/login', [CustomerAuthController::class, 'showLoginForm'])->name('login');
 
-Route::get('/mitra/register', [MitraAuthController::class, 'showRegisterForm'])
-    ->name('mitra.register');
-Route::post('/mitra/register', [MitraAuthController::class, 'register'])
-    ->name('mitra.register.submit');
+// ====================================
+// MITRA AREA
+// ====================================
+Route::prefix('mitra')->name('mitra.')->group(function () {
+    Route::get('/login', [MitraAuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [MitraAuthController::class, 'login'])->name('login.submit');
 
-Route::middleware('auth')->get('/mitra/dashboard', [FrontController::class, 'mitraDashboard'])
-    ->name('mitra.dashboard');
+    Route::get('/register', [MitraAuthController::class, 'showRegisterForm'])->name('register');
+    Route::post('/register', [MitraAuthController::class, 'register'])->name('register.submit');
 
-Route::middleware('auth')->get('/mitra/komisi', [FrontController::class, 'mitraKomisiIndex'])
-    ->name('mitra.komisi.index');
+    Route::middleware('auth')->group(function () {
+        Route::get('/dashboard', [FrontController::class, 'mitraDashboard'])->name('dashboard');
+        Route::get('/komisi', [FrontController::class, 'mitraKomisiIndex'])->name('komisi.index');
+        Route::get('/profile', [FrontController::class, 'mitraProfile'])->name('profile');
+        Route::put('/profile', [FrontController::class, 'updateMitraProfile'])->name('profile.update');
 
-Route::middleware('auth')->get('/mitra/profile', [FrontController::class, 'mitraProfile'])
-    ->name('mitra.profile');
-Route::middleware('auth')->put('/mitra/profile', [FrontController::class, 'updateMitraProfile'])
-    ->name('mitra.profile.update');
-
-Route::middleware('auth')->post('/mitra/logout', [MitraAuthController::class, 'logout'])
-    ->name('mitra.logout');
-
-Route::middleware('guest')->group(function () {
-    Route::get('/admin/login', [AdminAuthController::class, 'showLoginForm'])
-        ->name('admin.login');
-
-    Route::post('/admin/login', [AdminAuthController::class, 'login'])
-        ->name('admin.login.submit');
+        Route::post('/logout', [MitraAuthController::class, 'logout'])->name('logout');
+    });
 });
 
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])
-        ->name('admin.dashboard');
-    Route::prefix('trans/po')->name('admin.trans.po.')->group(function () {
-        Route::post('{po}/mitra-komisi', [\App\Http\Controllers\Admin\TransPoMitraKomisiController::class, 'store'])->name('mitra-komisi.store');
+// ====================================
+// ADMIN AUTH (GUEST)
+// ====================================
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::middleware('guest')->group(function () {
+        Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('login');
+        Route::post('/login', [AdminAuthController::class, 'login'])->name('login.submit');
     });
-    Route::prefix('trans/po')->name('admin.trans.po.')->group(function () {
-        Route::delete('mitra-komisi/{assignment}', [\App\Http\Controllers\Admin\TransPoMitraKomisiController::class, 'destroy'])->name('mitra-komisi.destroy');
+
+    // ====================================
+    // ADMIN DASHBOARD (admin_or_agen)
+    // ====================================
+    Route::middleware(['auth', 'admin_or_agen'])->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard/stats', [DashboardController::class, 'stats'])->name('dashboard.stats');
+        Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
     });
-    // LIST
-    Route::get('/master/customers', [MasterCustomerController::class, 'index'])
-        ->name('admin.master.customers.index');
-
-    // CREATE FORM
-    Route::get('/master/customers/create', [MasterCustomerController::class, 'create'])
-        ->name('admin.master.customers.create');
-
-    // SIMPAN DATA BARU
-    Route::post('/master/customers', [MasterCustomerController::class, 'store'])
-        ->name('admin.master.customers.store');
-
-    // EDIT FORM
-    Route::get('/master/customers/{customer}/edit', [MasterCustomerController::class, 'edit'])
-        ->name('admin.master.customers.edit');
-
-    // UPDATE DATA
-    Route::put('/master/customers/{customer}', [MasterCustomerController::class, 'update'])
-        ->name('admin.master.customers.update');
-
-    // HAPUS DATA
-    Route::delete('/master/customers/{customer}', [MasterCustomerController::class, 'destroy'])
-        ->name('admin.master.customers.destroy');
-
-    Route::get('/master/mitra-brankas', [MitraBrankasController::class, 'index'])
-        ->name('admin.master.mitra-brankas.index');
-
-    Route::get('/master/mitra-brankas/create', [MitraBrankasController::class, 'create'])
-        ->name('admin.master.mitra-brankas.create');
-
-    Route::post('/master/mitra-brankas', [MitraBrankasController::class, 'store'])
-        ->name('admin.master.mitra-brankas.store');
-
-    Route::get('/master/mitra-brankas/{mitra}/edit', [MitraBrankasController::class, 'edit'])
-        ->name('admin.master.mitra-brankas.edit');
-
-    Route::put('/master/mitra-brankas/{mitra}', [MitraBrankasController::class, 'update'])
-        ->name('admin.master.mitra-brankas.update');
-
-    Route::delete('/master/mitra-brankas/{mitra}', [MitraBrankasController::class, 'destroy'])
-        ->name('admin.master.mitra-brankas.destroy');
-
-    Route::get('/master/agens', [MasterAgenController::class, 'index'])
-        ->name('admin.master.agens.index');
-
-    Route::get('/master/agens/create', [MasterAgenController::class, 'create'])
-        ->name('admin.master.agens.create');
-
-    Route::post('/master/agens', [MasterAgenController::class, 'store'])
-        ->name('admin.master.agens.store');
-
-    Route::get('/master/agens/{agen}/edit', [MasterAgenController::class, 'edit'])
-        ->name('admin.master.agens.edit');
-
-    Route::put('/master/agens/{agen}', [MasterAgenController::class, 'update'])
-        ->name('admin.master.agens.update');
-
-    Route::delete('/master/agens/{agen}', [MasterAgenController::class, 'destroy'])
-        ->name('admin.master.agens.destroy');
-
-    Route::get('/master/admins', [MasterAdminController::class, 'index'])
-        ->name('admin.master.admins.index');
-
-    Route::get('/master/admins/create', [MasterAdminController::class, 'create'])
-        ->name('admin.master.admins.create');
-
-    Route::post('/master/admins', [MasterAdminController::class, 'store'])
-        ->name('admin.master.admins.store');
-
-    Route::get('/master/admins/{admin}/edit', [MasterAdminController::class, 'edit'])
-        ->name('admin.master.admins.edit');
-
-    Route::put('/master/admins/{admin}', [MasterAdminController::class, 'update'])
-        ->name('admin.master.admins.update');
-
-    Route::delete('/master/admins/{admin}', [MasterAdminController::class, 'destroy'])
-        ->name('admin.master.admins.destroy');
-
-    Route::get('/master/brand-emas', [MasterBrandEmasController::class, 'index'])
-        ->name('admin.master.brand-emas.index');
-    Route::get('/master/brand-emas/create', [MasterBrandEmasController::class, 'create'])
-        ->name('admin.master.brand-emas.create');
-    Route::post('/master/brand-emas', [MasterBrandEmasController::class, 'store'])
-        ->name('admin.master.brand-emas.store');
-    Route::get('/master/brand-emas/{brand}/edit', [MasterBrandEmasController::class, 'edit'])
-        ->name('admin.master.brand-emas.edit');
-    Route::put('/master/brand-emas/{brand}', [MasterBrandEmasController::class, 'update'])
-        ->name('admin.master.brand-emas.update');
-    Route::delete('/master/brand-emas/{brand}', [MasterBrandEmasController::class, 'destroy'])
-        ->name('admin.master.brand-emas.destroy');
-
-    Route::get('/master/home-sliders', [MasterHomeSliderController::class, 'index'])
-        ->name('admin.master.home-slider.index');
-    Route::get('/master/home-sliders/create', [MasterHomeSliderController::class, 'create'])
-        ->name('admin.master.home-slider.create');
-    Route::post('/master/home-sliders', [MasterHomeSliderController::class, 'store'])
-        ->name('admin.master.home-slider.store');
-    Route::get('/master/home-sliders/{slider}/edit', [MasterHomeSliderController::class, 'edit'])
-        ->name('admin.master.home-slider.edit');
-    Route::put('/master/home-sliders/{slider}', [MasterHomeSliderController::class, 'update'])
-        ->name('admin.master.home-slider.update');
-    Route::delete('/master/home-sliders/{slider}', [MasterHomeSliderController::class, 'destroy'])
-        ->name('admin.master.home-slider.destroy');
-
-    Route::get('/master/menu-home-customer', [MasterMenuHomeCustomerController::class, 'index'])
-        ->name('admin.master.menu-home-customer.index');
-    Route::get('/master/menu-home-customer/create', [MasterMenuHomeCustomerController::class, 'create'])
-        ->name('admin.master.menu-home-customer.create');
-    Route::post('/master/menu-home-customer', [MasterMenuHomeCustomerController::class, 'store'])
-        ->name('admin.master.menu-home-customer.store');
-    Route::get('/master/menu-home-customer/{menu}/edit', [MasterMenuHomeCustomerController::class, 'edit'])
-        ->name('admin.master.menu-home-customer.edit');
-    Route::put('/master/menu-home-customer/{menu}', [MasterMenuHomeCustomerController::class, 'update'])
-        ->name('admin.master.menu-home-customer.update');
-    Route::delete('/master/menu-home-customer/{menu}', [MasterMenuHomeCustomerController::class, 'destroy'])
-        ->name('admin.master.menu-home-customer.destroy');
-
-    Route::get('/master/produk-layanan', [MasterProdukDanLayananController::class, 'index'])
-        ->name('admin.master.produk-layanan.index');
-    Route::get('/master/produk-layanan/create', [MasterProdukDanLayananController::class, 'create'])
-        ->name('admin.master.produk-layanan.create');
-    Route::post('/master/produk-layanan', [MasterProdukDanLayananController::class, 'store'])
-        ->name('admin.master.produk-layanan.store');
-    Route::get('/master/produk-layanan/{item}/edit', [MasterProdukDanLayananController::class, 'edit'])
-        ->name('admin.master.produk-layanan.edit');
-    Route::put('/master/produk-layanan/{item}', [MasterProdukDanLayananController::class, 'update'])
-        ->name('admin.master.produk-layanan.update');
-    Route::delete('/master/produk-layanan/{item}', [MasterProdukDanLayananController::class, 'destroy'])
-        ->name('admin.master.produk-layanan.destroy');
-
-    Route::get('/master/gramasi-emas', [MasterGramasiEmasController::class, 'index'])
-        ->name('admin.master.gramasi-emas.index');
-    Route::get('/master/gramasi-emas/create', [MasterGramasiEmasController::class, 'create'])
-        ->name('admin.master.gramasi-emas.create');
-    Route::post('/master/gramasi-emas', [MasterGramasiEmasController::class, 'store'])
-        ->name('admin.master.gramasi-emas.store');
-    Route::get('/master/gramasi-emas/{item}/edit', [MasterGramasiEmasController::class, 'edit'])
-        ->name('admin.master.gramasi-emas.edit');
-    Route::put('/master/gramasi-emas/{item}', [MasterGramasiEmasController::class, 'update'])
-        ->name('admin.master.gramasi-emas.update');
-    Route::delete('/master/gramasi-emas/{item}', [MasterGramasiEmasController::class, 'destroy'])
-        ->name('admin.master.gramasi-emas.destroy');
 
-    Route::get('/master/gold-prices', [MasterGoldPriceController::class, 'index'])
-        ->name('admin.master.gold-prices.index');
-
-    Route::get('/master/gold-prices/create', [MasterGoldPriceController::class, 'create'])
-        ->name('admin.master.gold-prices.create');
-
-    Route::post('/master/gold-prices', [MasterGoldPriceController::class, 'store'])
-        ->name('admin.master.gold-prices.store');
-
-    Route::get('/master/gold-prices/{price}/edit', [MasterGoldPriceController::class, 'edit'])
-        ->name('admin.master.gold-prices.edit');
-
-    Route::put('/master/gold-prices/{price}', [MasterGoldPriceController::class, 'update'])
-        ->name('admin.master.gold-prices.update');
-
-    Route::delete('/master/gold-prices/{price}', [MasterGoldPriceController::class, 'destroy'])
-        ->name('admin.master.gold-prices.destroy');
-
-    Route::get('/master/ready-stocks', [MasterGoldReadyStockController::class, 'index'])
-        ->name('admin.master.ready-stocks.index');
-
-    Route::get('/master/ready-stocks/create', [MasterGoldReadyStockController::class, 'create'])
-        ->name('admin.master.ready-stocks.create');
-
-    Route::post('/master/ready-stocks', [MasterGoldReadyStockController::class, 'store'])
-        ->name('admin.master.ready-stocks.store');
-
-    Route::get('/master/ready-stocks/{stock}/edit', [MasterGoldReadyStockController::class, 'edit'])
-        ->name('admin.master.ready-stocks.edit');
-
-    Route::put('/master/ready-stocks/{stock}', [MasterGoldReadyStockController::class, 'update'])
-        ->name('admin.master.ready-stocks.update');
-
-    Route::delete('/master/ready-stocks/{stock}', [MasterGoldReadyStockController::class, 'destroy'])
-        ->name('admin.master.ready-stocks.destroy');
-
-    Route::get('/master/mitra-komisi', [MasterMitraKomisiController::class, 'index'])
-        ->name('admin.master.mitra-komisi.index');
-
-    Route::get('/master/mitra-komisi/create', [MasterMitraKomisiController::class, 'create'])
-        ->name('admin.master.mitra-komisi.create');
-
-    Route::post('/master/mitra-komisi', [MasterMitraKomisiController::class, 'store'])
-        ->name('admin.master.mitra-komisi.store');
-
-    Route::get('/master/mitra-komisi/{komisi}/edit', [MasterMitraKomisiController::class, 'edit'])
-        ->name('admin.master.mitra-komisi.edit');
-
-    Route::put('/master/mitra-komisi/{komisi}', [MasterMitraKomisiController::class, 'update'])
-        ->name('admin.master.mitra-komisi.update');
-
-    Route::delete('/master/mitra-komisi/{komisi}', [MasterMitraKomisiController::class, 'destroy'])
-        ->name('admin.master.mitra-komisi.destroy');
-
-    Route::get('/master/settings', [MasterSettingController::class, 'index'])
-        ->name('admin.master.settings.index');
-
-    Route::get('/master/settings/create', [MasterSettingController::class, 'create'])
-        ->name('admin.master.settings.create');
-
-    Route::post('/master/settings', [MasterSettingController::class, 'store'])
-        ->name('admin.master.settings.store');
-
-    Route::get('/master/settings/{setting}/edit', [MasterSettingController::class, 'edit'])
-        ->name('admin.master.settings.edit');
-
-    Route::put('/master/settings/{setting}', [MasterSettingController::class, 'update'])
-        ->name('admin.master.settings.update');
-
-    Route::delete('/master/settings/{setting}', [MasterSettingController::class, 'destroy'])
-        ->name('admin.master.settings.destroy');
-
-    Route::get('/trans/payment-logs', [TransPaymentLogController::class, 'index'])
-        ->name('admin.trans.payment-logs.index');
-
-    Route::get('/trans/payment-logs/{log}', [TransPaymentLogController::class, 'show'])
-        ->name('admin.trans.payment-logs.show');
-
-    Route::post('/trans/payment-logs/{log}/approve', [TransPaymentLogController::class, 'approve'])
-        ->name('admin.trans.payment-logs.approve');
-
-    Route::post('/trans/payment-logs/{log}/reject', [TransPaymentLogController::class, 'reject'])
-        ->name('admin.trans.payment-logs.reject');
-
-    Route::get('/trans/po', [TransPoController::class, 'index'])
-        ->name('admin.trans.po.index');
-
-    Route::get('/trans/po/{po}', [TransPoController::class, 'show'])
-        ->name('admin.trans.po.show');
-
-    Route::post('/trans/po/{po}/approve-payment', [TransPoController::class, 'approvePayment'])
-        ->name('admin.trans.po.approve-payment');
-
-    Route::post('/trans/po/{po}/reject-payment', [TransPoController::class, 'rejectPayment'])
-        ->name('admin.trans.po.reject-payment');
-
-    Route::post('/trans/po/{po}/status', [TransPoController::class, 'updateStatus'])
-        ->name('admin.trans.po.update-status');
-
-    Route::get('/trans/cicilan', [TransCicilanController::class, 'index'])
-        ->name('admin.trans.cicilan.index');
-
-    Route::get('/trans/cicilan/{contract}', [TransCicilanController::class, 'show'])
-        ->name('admin.trans.cicilan.show');
-
-    Route::get('/trans/ready', [TransReadyController::class, 'index'])
-        ->name('admin.trans.ready.index');
-
-    Route::get('/trans/ready/{ready}', [TransReadyController::class, 'show'])
-        ->name('admin.trans.ready.show');
-
-    Route::post('/trans/ready/{ready}/status', [TransReadyController::class, 'updateStatus'])
-        ->name('admin.trans.ready.update-status');
-
-    Route::get('/trans/cicilan-payments', [TransCicilanPaymentController::class, 'index'])
-        ->name('admin.trans.cicilan-payments.index');
-
-    Route::get('/trans/cicilan-payments/{payment}', [TransCicilanPaymentController::class, 'show'])
-        ->name('admin.trans.cicilan-payments.show');
-
-    Route::post('/logout', [AdminAuthController::class, 'logout'])
-        ->name('admin.logout');
+    // ====================================
+    // ADMIN ONLY (middleware: admin)
+    // ====================================
+    Route::middleware(['auth', 'admin_or_agen'])->group(function () {
+
+        /*
+        |--------------------------------------------------------------------------
+        | MASTER DATA (prefix: /admin/master)
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('master')->name('master.')->group(function () {
+
+            // Customers (tanpa show) — param {customer}
+            Route::resource('customers', MasterCustomerController::class)
+                ->except(['show'])
+                ->names('customers')
+                ->parameters([
+                    'customers' => 'customer',
+                ]);
+
+            // Mitra Brankas — param {mitra}
+            Route::resource('mitra-brankas', MitraBrankasController::class)
+                ->except(['show'])
+                ->names('mitra-brankas')
+                ->parameters([
+                    'mitra-brankas' => 'mitra',
+                ]);
+
+            // Agens — param {agen}
+            Route::resource('agens', MasterAgenController::class)
+                ->except(['show'])
+                ->names('agens')
+                ->parameters([
+                    'agens' => 'agen',
+                ])
+                ->middleware('admin');
+
+            // Admins — param {admin}
+            Route::resource('admins', MasterAdminController::class)
+                ->except(['show'])
+                ->names('admins')
+                ->parameters([
+                    'admins' => 'admin',
+                ])
+                ->middleware('admin');
+
+            // Brand Emas — param {brand}
+            Route::resource('brand-emas', MasterBrandEmasController::class)
+                ->except(['show'])
+                ->names('brand-emas')
+                ->parameters([
+                    'brand-emas' => 'brand',
+                ]);
+
+            // Home Sliders — param {slider}
+            Route::resource('home-slider', MasterHomeSliderController::class)
+                ->except(['show'])
+                ->names('home-slider')
+                ->parameters([
+                    'home-slider' => 'slider',
+                ]);
+
+            // Menu Home Customer — param {menu}
+            Route::resource('menu-home-customer', MasterMenuHomeCustomerController::class)
+                ->except(['show'])
+                ->names('menu-home-customer')
+                ->parameters([
+                    'menu-home-customer' => 'menu',
+                ]);
+
+            // Produk & Layanan — param {item}
+            Route::resource('produk-layanan', MasterProdukDanLayananController::class)
+                ->except(['show'])
+                ->names('produk-layanan')
+                ->parameters([
+                    'produk-layanan' => 'item',
+                ]);
+
+            // Gramasi Emas — param {item}
+            Route::resource('gramasi-emas', MasterGramasiEmasController::class)
+                ->except(['show'])
+                ->names('gramasi-emas')
+                ->parameters([
+                    'gramasi-emas' => 'item',
+                ]);
+
+            // Gold Prices — param {price}
+            Route::resource('gold-prices', MasterGoldPriceController::class)
+                ->except(['show'])
+                ->names('gold-prices')
+                ->parameters([
+                    'gold-prices' => 'price',
+                ]);
+
+            // Ready Stocks — param {stock}
+            Route::resource('ready-stocks', MasterGoldReadyStockController::class)
+                ->except(['show'])
+                ->names('ready-stocks')
+                ->parameters([
+                    'ready-stocks' => 'stock',
+                ]);
+
+            // Mitra Komisi — param {komisi}
+            Route::resource('mitra-komisi', MasterMitraKomisiController::class)
+                ->except(['show'])
+                ->names('mitra-komisi')
+                ->parameters([
+                    'mitra-komisi' => 'komisi',
+                ])
+                ->middleware('admin');
+
+
+            // Settings — param {setting}
+            Route::resource('settings', MasterSettingController::class)
+                ->except(['show'])
+                ->names('settings')
+                ->parameters([
+                    'settings' => 'setting',
+                ])
+                ->middleware('admin');
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | TRANSAKSI (prefix: /admin/trans)
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('trans')->name('trans.')->group(function () {
+
+            // Payment Logs (index, show, approve, reject)
+            Route::get('/payment-logs', [TransPaymentLogController::class, 'index'])
+                ->name('payment-logs.index');
+            Route::get('/payment-logs/{log}', [TransPaymentLogController::class, 'show'])
+                ->name('payment-logs.show');
+            Route::post('/payment-logs/{log}/approve', [TransPaymentLogController::class, 'approve'])
+                ->name('payment-logs.approve');
+            Route::post('/payment-logs/{log}/reject', [TransPaymentLogController::class, 'reject'])
+                ->name('payment-logs.reject');
+
+            // PO
+            Route::prefix('po')->name('po.')->group(function () {
+                Route::get('/', [TransPoController::class, 'index'])->name('index');
+                Route::get('/{po}', [TransPoController::class, 'show'])->name('show');
+                Route::post('/{po}/approve-payment', [TransPoController::class, 'approvePayment'])->name('approve-payment');
+                Route::post('/{po}/reject-payment', [TransPoController::class, 'rejectPayment'])->name('reject-payment');
+                Route::post('/{po}/status', [TransPoController::class, 'updateStatus'])->name('update-status');
+
+                // Mitra Komisi assign/remove (nama & URL sama seperti awal)
+                Route::post('{po}/mitra-komisi', [\App\Http\Controllers\Admin\TransPoMitraKomisiController::class, 'store'])
+                    ->name('mitra-komisi.store');
+                Route::delete('mitra-komisi/{assignment}', [\App\Http\Controllers\Admin\TransPoMitraKomisiController::class, 'destroy'])
+                    ->name('mitra-komisi.destroy');
+            });
+
+            // Cicilan
+            Route::get('/cicilan', [TransCicilanController::class, 'index'])
+                ->name('cicilan.index');
+            Route::get('/cicilan/{contract}', [TransCicilanController::class, 'show'])
+                ->name('cicilan.show');
+
+            // Ready
+            Route::get('/ready', [TransReadyController::class, 'index'])
+                ->name('ready.index');
+            Route::get('/ready/{ready}', [TransReadyController::class, 'show'])
+                ->name('ready.show');
+            Route::post('/ready/{ready}/status', [TransReadyController::class, 'updateStatus'])
+                ->name('ready.update-status');
+
+            // Cicilan Payments
+            Route::get('/cicilan-payments', [TransCicilanPaymentController::class, 'index'])
+                ->name('cicilan-payments.index');
+            Route::get('/cicilan-payments/{payment}', [TransCicilanPaymentController::class, 'show'])
+                ->name('cicilan-payments.show');
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | ROLE & PERMISSION MANAGEMENT
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('permissions')->name('permissions.')->middleware('admin')->group(function () {
+            Route::get('/users', [PermissionController::class, 'index'])->name('users.index');
+            Route::get('/users/{user}/edit', [PermissionController::class, 'edit'])->name('users.edit');
+            Route::put('/users/{user}', [PermissionController::class, 'update'])->name('users.update');
+        });
+
+        Route::resource('roles', RoleController::class)
+            ->names('roles')
+            ->middleware('admin');
+    });
 });

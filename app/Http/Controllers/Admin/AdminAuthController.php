@@ -25,14 +25,16 @@ class AdminAuthController extends Controller
 
             $user = Auth::user();
 
-            // hanya boleh role admin / super_admin
-            if (! in_array($user->role, ['admin', 'super_admin', 'superadmin'])) {
+            // hanya boleh role admin / super_admin / agen aktif
+            if (! in_array($user->role, ['admin', 'super_admin', 'superadmin', 'agen']) || ! $user->is_active) {
                 Auth::logout();
 
                 return back()
-                    ->withErrors(['email' => 'Akses hanya untuk admin.'])
+                    ->withErrors(['email' => 'Akses hanya untuk admin/agen aktif.'])
                     ->withInput();
             }
+
+            $user->forceFill(['last_login_at' => now()])->save();
 
             return redirect()->route('admin.dashboard');
         }

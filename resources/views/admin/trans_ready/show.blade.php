@@ -97,18 +97,19 @@
                                 <td>{{ $l->provider ?? '-' }}</td>
                                 <td>{{ optional($l->paid_at)->format('Y-m-d H:i') ?? '-' }}</td>
                                 <td>
-                                    <a href="{{ route('admin.trans.payment-logs.show', $l) }}"
-                                       class="btn btn-sm btn-outline-primary">Detail</a>
-                                    @if ($l->payment_method === 'manual_transfer' && $l->status === 'pending')
-                                    <form action="{{ route('admin.trans.payment-logs.approve', $l) }}" method="POST" class="d-inline ms-1">
-                                        @csrf
-                                        <button type="submit" class="btn btn-sm btn-success">Approve</button>
-                                    </form>
-                                    <form action="{{ route('admin.trans.payment-logs.reject', $l) }}" method="POST" class="d-inline ms-1">
-                                        @csrf
-                                        <button type="submit" class="btn btn-sm btn-danger">Reject</button>
-                                    </form>
-                                    @endif
+                                    <div class="d-flex align-items-center flex-wrap gap-2">
+                                        <a href="{{ route('admin.trans.payment-logs.show', $l) }}" class="btn btn-sm btn-outline-primary py-0 px-2">Detail</a>
+                                        @if ($l->payment_method === 'manual_transfer' && $l->status === 'pending')
+                                        <form action="{{ route('admin.trans.payment-logs.approve', $l) }}" method="POST" class="m-0">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-success py-0 px-2">Approve</button>
+                                        </form>
+                                        <form action="{{ route('admin.trans.payment-logs.reject', $l) }}" method="POST" class="m-0">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-danger py-0 px-2">Reject</button>
+                                        </form>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @empty

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\MasterAgen;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class MasterAgenController extends Controller
@@ -29,11 +30,43 @@ class MasterAgenController extends Controller
             'area'         => ['nullable', 'string', 'max:100'],
             'address_line' => ['nullable', 'string', 'max:255'],
             'is_active'    => ['sometimes', 'accepted'],
+            'create_login' => ['sometimes', 'accepted'],
         ]);
 
         $data['is_active'] = $request->has('is_active');
 
-        MasterAgen::create($data);
+        $agen = MasterAgen::create($data);
+
+        if ($request->has('create_login')) {
+            $request->validate([
+                'password' => ['required','string','min:8','confirmed'],
+            ]);
+
+            $user = User::where('email', $agen->email)->first();
+
+            if (! $user) {
+                $user = User::create([
+                    'name' => $agen->name,
+                    'email' => $agen->email,
+                    'password' => $request->input('password'),
+                    'role' => 'agen',
+                    'master_agen_id' => $agen->id,
+                    'is_active' => true,
+                ]);
+            } else {
+                $user->update([
+                    'role' => 'agen',
+                    'master_agen_id' => $agen->id,
+                    'is_active' => true,
+                ]);
+                if ($request->filled('password')) {
+                    $user->password = $request->input('password');
+                    $user->save();
+                }
+            }
+
+            $user->assignRole('agen');
+        }
 
         return redirect()
             ->route('admin.master.agens.index')
