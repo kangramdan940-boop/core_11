@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Str;
 
 class MasterMitraBrankas extends Model
 {
@@ -21,6 +22,7 @@ class MasterMitraBrankas extends Model
         'harian_limit_gram',
         'komisi_persen',
         'is_active',
+        'sys_user_id',
     ];
 
     protected $casts = [
@@ -29,8 +31,18 @@ class MasterMitraBrankas extends Model
         'is_active'         => 'boolean',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function (self $model) {
+            if (empty($model->kode_mitra)) {
+                $model->kode_mitra = 'MIT-' . strtoupper(Str::random(10));
+            }
+        });
+    }
+
     public function user()
     {
-        return $this->hasOne(User::class, 'master_mitra_brankas_id');
+        return $this->belongsTo(User::class, 'sys_user_id');
     }
 }

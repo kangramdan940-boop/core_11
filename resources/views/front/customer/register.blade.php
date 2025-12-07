@@ -45,7 +45,7 @@
     <!-- /preload -->
     <div class="header fixed-top">
         <div class="left">
-            <a href="javascript:void(0);" class="icon back-btn">
+            <a href="{{ url('/') }}" class="icon back-btn">
                 <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M6.88986 12.2951L1.60986 7.00008L6.88986 1.70508" stroke="#121927" stroke-width="1.5"
                         stroke-linecap="round" stroke-linejoin="round" />

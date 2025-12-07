@@ -100,9 +100,27 @@ Route::middleware('auth')->prefix('customer')->group(function () {
 
 Route::get('/mitra/login', [MitraAuthController::class, 'showLoginForm'])
     ->name('mitra.login');
+Route::post('/mitra/login', [MitraAuthController::class, 'login'])
+    ->name('mitra.login.submit');
 
 Route::get('/mitra/register', [MitraAuthController::class, 'showRegisterForm'])
     ->name('mitra.register');
+Route::post('/mitra/register', [MitraAuthController::class, 'register'])
+    ->name('mitra.register.submit');
+
+Route::middleware('auth')->get('/mitra/dashboard', [FrontController::class, 'mitraDashboard'])
+    ->name('mitra.dashboard');
+
+Route::middleware('auth')->get('/mitra/komisi', [FrontController::class, 'mitraKomisiIndex'])
+    ->name('mitra.komisi.index');
+
+Route::middleware('auth')->get('/mitra/profile', [FrontController::class, 'mitraProfile'])
+    ->name('mitra.profile');
+Route::middleware('auth')->put('/mitra/profile', [FrontController::class, 'updateMitraProfile'])
+    ->name('mitra.profile.update');
+
+Route::middleware('auth')->post('/mitra/logout', [MitraAuthController::class, 'logout'])
+    ->name('mitra.logout');
 
 Route::middleware('guest')->group(function () {
     Route::get('/admin/login', [AdminAuthController::class, 'showLoginForm'])

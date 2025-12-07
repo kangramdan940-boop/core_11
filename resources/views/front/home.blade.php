@@ -79,8 +79,15 @@
              </div>
          </div>
          <div class="fixed-button group-btn-boarding">
-             <a href="{{ route('customer.register') }}" class="tf-btn primary">Get Started</a>
-         </div>
+            <div class="row g-2">
+                <div class="col-6 text-center">
+                    <a href="{{ route('customer.register') }}" class="tf-btn primary d-block w-100 mb-0">Get Started</a>
+                </div>
+                <div class="col-6 text-center">
+                    <a href="{{ route('mitra.register') }}" class="tf-btn primary d-block w-100 mb-0">Register Mitra</a>
+                </div>
+            </div>
+        </div>
      </section>
  
      <script type="text/javascript" src="{{ asset('front/js/bootstrap.min.js') }}"></script>

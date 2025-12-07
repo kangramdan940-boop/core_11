@@ -151,4 +151,67 @@ class FrontController extends Controller
     {
         return view('front.customer.forget-pass');
     }
+
+    public function mitraDashboard(): View
+    {
+        $mitra = \App\Models\MasterMitraBrankas::where('sys_user_id', auth()->id())->first();
+        $komisiList = $mitra
+            ? \App\Models\MasterMitraKomisi::where('master_mitra_brankas_id', $mitra->id)
+                ->where('is_active', true)
+                ->orderByDesc('id')
+                ->get()
+            : collect();
+        $latestPrice = \App\Models\MasterGoldPrice::where('is_active', true)->orderByDesc('price_date')->first();
+        $hargaPerGram = (float) ($latestPrice->price_sell ?? 0);
+        $saldoKomisi = 0.0;
+        return view('front.mitra.dashboard', compact('mitra', 'komisiList', 'hargaPerGram', 'saldoKomisi'));
+    }
+
+    public function mitraKomisiIndex(): View
+    {
+        $mitra = \App\Models\MasterMitraBrankas::where('sys_user_id', auth()->id())->firstOrFail();
+        $komisiList = \App\Models\MasterMitraKomisi::where('master_mitra_brankas_id', $mitra->id)
+            ->orderByDesc('id')
+            ->get();
+        return view('front.mitra.komisi.index', compact('mitra', 'komisiList'));
+    }
+
+    public function mitraProfile(): View
+    {
+        $mitra = \App\Models\MasterMitraBrankas::where('sys_user_id', auth()->id())->firstOrFail();
+        return view('front.mitra.profile', compact('mitra'));
+    }
+
+    public function updateMitraProfile(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        $mitra = \App\Models\MasterMitraBrankas::where('sys_user_id', auth()->id())->firstOrFail();
+
+        $rawPhone = $request->input('phone_wa');
+        $p = is_string($rawPhone) ? preg_replace('/[^0-9+]/', '', $rawPhone) : null;
+        if ($p !== null) {
+            if (strpos($p, '+62') === 0) {
+                $p = '0' . substr($p, 3);
+            } elseif (strpos($p, '62') === 0) {
+                $p = '0' . substr($p, 2);
+            }
+            $request->merge(['phone_wa' => $p]);
+        }
+
+        $data = $request->validate([
+            'nama_lengkap' => ['required', 'string', 'max:150'],
+            'phone_wa'     => ['nullable', 'string', 'max:30', 'unique:master_mitra_brankas,phone_wa,' . $mitra->id],
+            'platform'     => ['nullable', 'string', 'max:50'],
+            'account_no'   => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $mitra->fill([
+            'nama_lengkap' => $data['nama_lengkap'],
+            'phone_wa'     => $data['phone_wa'] ?? $mitra->phone_wa,
+            'platform'     => $data['platform'] ?? $mitra->platform,
+            'account_no'   => $data['account_no'] ?? $mitra->account_no,
+        ]);
+        $mitra->save();
+
+        return redirect()->route('mitra.profile')->with('success', 'Profil mitra berhasil diperbarui.');
+    }
 }
