@@ -44,6 +44,15 @@
         @enderror
     </div>
 
+    <div class="col-md-3">
+        <label class="form-label">Nomor Rekening</label>
+        <input type="text" name="rekening_nomor" class="form-control @error('rekening_nomor') is-invalid @enderror"
+               value="{{ old('rekening_nomor', $agen->rekening_nomor ?? '') }}">
+        @error('rekening_nomor')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+
     <div class="col-md-6">
         <label class="form-label">Alamat Lengkap</label>
         <input type="text" name="address_line" class="form-control @error('address_line') is-invalid @enderror"

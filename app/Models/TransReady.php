@@ -35,6 +35,7 @@ class TransReady extends Model
         'cancelled_at',
         'payment_method',
         'payment_reference',
+        'rekening_nomor',
         'catatan',
     ];
 

@@ -55,20 +55,56 @@
                     $waText = 'KODE PO: ' . $po->kode_po . ', Halo saya ' . ($userName ?? '-') . ', yang memiliki order, dan saya ingin bicara.';
                     $waUrl = ($waPhone && $po->status !== 'pending_payment') ? ('https://wa.me/' . $waPhone . '?text=' . rawurlencode($waText)) : null;
                 @endphp
-                <div class="col-md-6 agen-wa @if($po->status === 'pending_payment') alert alert-warning light @endif">
-                    @if ($po->status === 'pending_payment')
-                        <strong>Agen (JE)</strong><br>
-                        {{ optional($po->agen)->name ?? '-' }} • <span class="text-muted small">Nomor agen JE akan tampil setelah Anda melakukan pembayaran.</span>
-                    @else
-                        <strong>Agen (JE)</strong>
-                        @if ($waUrl)
-                            <a href="{{ $waUrl }}" target="_blank" rel="noopener" class="ms-2" title="Chat via WhatsApp">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#25D366"><path d="M12 0a12 12 0 0 0-10.6 17.9L0 24l6.2-1.6A12 12 0 1 0 12 0zm5.7 17.1c-.2.6-1.2 1.2-1.7 1.3c-.4.1-.9.2-1.5.1c-1.7-.2-3.1-1.1-4.3-2.3c-1.1-1.1-2-2.5-2.3-4.1c-.2-.8 0-1.4.3-1.9c.2-.3.5-.6.8-.6c.2 0 .4 0 .6.1c.2.1.4.5.5.8c.1.3.3.8.2 1c-.1.3-.2.5-.4.7c-.2.3-.5.6-.2 1.1c.3.6.7 1.2 1.2 1.7c.5.5 1 .9 1.6 1.2c.5.3.8.2 1.1-.1c.3-.3.6-.7.9-.9c.3-.2.6-.2 1-.1c.3.1.8.4 1 .6c.3.2.5.5.6.8c.1.3 0 .6-.1.8z"/></svg>
-                            </a>
-                        @endif<br>
-                        {{ optional($po->agen)->name ?? '-' }} • {{ optional($po->agen)->phone_wa ?? '-' }}
-                    @endif
+                <div class="col-12 alert alert-warning light">
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-6 d-flex align-items-start gap-2">
+                            <div class="fw-semibold">Agen (JE)</div>
+                            <div>
+                                <div>{{ optional($po->agen)->name ?? '-' }}</div>
+                                @if ($po->status === 'pending_payment')
+                                    <div class="text-muted small">Nomor agen JE akan tampil setelah Anda melakukan pembayaran.</div>
+                                @else
+                                    @if ($waUrl)
+                                        <a href="{{ $waUrl }}" target="_blank" rel="noopener" class="ms-1" title="Chat via WhatsApp">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#25D366"><path d="M12 0a12 12 0 0 0-10.6 17.9L0 24l6.2-1.6A12 12 0 1 0 12 0zm5.7 17.1c-.2.6-1.2 1.2-1.7 1.3c-.4.1-.9.2-1.5.1c-1.7-.2-3.1-1.1-4.3-2.3c-1.1-1.1-2-2.5-2.3-4.1c-.2-.8 0-1.4.3-1.9c.2-.3.5-.6.8-.6c.2 0 .4 0 .6.1c.2.1.4.5.5.8c.1.3.3.8.2 1c-.1.3-.2.5-.4.7c-.2.3-.5.6-.2 1.1c.3.6.7 1.2 1.2 1.7c.5.5 1 .9 1.6 1.2c.5.3.8.2 1.1-.1c.3-.3.6-.7.9-.9c.3-.2.6-.2 1-.1c.3.1.8.4 1 .6c.3.2.5.5.6.8c.1.3 0 .6-.1.8z"/></svg>
+                                        </a>
+                                    @endif
+                                    <div class="small">{{ optional($po->agen)->phone_wa ?? '-' }}</div>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="small fw-semibold">BANK BCA — Rek Tujuan:</div>
+                            <div class="fw-bold text-decoration-underline" id="rekTujuan">{{ $po->rekening_nomor ?? (optional($po->agen)->rekening_nomor ?? '-') }}</div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-center">
+                            <button type="button" class="btn btn-sm btn-outline-secondary w-100" id="copyRekBtn" title="Salin">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v12h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                            </button>
+                            <span id="copyStatus" class="ms-2 text-success small" style="display:none;">Tersalin</span>
+                        </div>
+                    </div>
                 </div>
+                <script>
+                (function(){
+                  var btn = document.getElementById('copyRekBtn');
+                  var el = document.getElementById('rekTujuan');
+                  var st = document.getElementById('copyStatus');
+                  function copy(){
+                    var txt = (el && el.textContent || '').trim();
+                    if(!txt || txt === '-') return;
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                      navigator.clipboard.writeText(txt).then(function(){
+                        if(st){ st.style.display = 'inline'; setTimeout(function(){ st.style.display='none'; }, 1500); }
+                      });
+                    } else {
+                      var ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(e){} document.body.removeChild(ta);
+                      if(st){ st.style.display = 'inline'; setTimeout(function(){ st.style.display='none'; }, 1500); }
+                    }
+                  }
+                  if(btn){ btn.addEventListener('click', copy); }
+                })();
+                </script>
                 <div class="col-md-6"><strong>Harga saat ini</strong><br>{{ number_format((float)$po->harga_per_gram, 2, ',', '.') }}</div>
                 <div class="col-md-6"><strong>Total Gram</strong><br>{{ number_format((float)$po->total_gram, 1, ',', '.') }} g</div>
                 <div class="col-md-6"><strong>Qty</strong><br>{{ (int)($po->qty ?? 1) }} pcs</div>

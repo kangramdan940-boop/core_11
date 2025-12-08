@@ -18,6 +18,7 @@ class MasterAgen extends Model
         'kode_agen',
         'area',
         'address_line',
+        'rekening_nomor',
         'is_active',
     ];
 

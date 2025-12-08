@@ -29,6 +29,7 @@ class MasterAgenController extends Controller
             'kode_agen'    => ['required', 'string', 'max:50', 'unique:master_agen,kode_agen'],
             'area'         => ['nullable', 'string', 'max:100'],
             'address_line' => ['nullable', 'string', 'max:255'],
+            'rekening_nomor'=> ['nullable', 'string', 'max:50'],
             'is_active'    => ['sometimes', 'accepted'],
             'create_login' => ['sometimes', 'accepted'],
         ]);
@@ -87,6 +88,7 @@ class MasterAgenController extends Controller
             'kode_agen'    => ['required', 'string', 'max:50', 'unique:master_agen,kode_agen,' . $agen->id],
             'area'         => ['nullable', 'string', 'max:100'],
             'address_line' => ['nullable', 'string', 'max:255'],
+            'rekening_nomor'=> ['nullable', 'string', 'max:50'],
             'is_active'    => ['sometimes', 'accepted'],
         ]);
 

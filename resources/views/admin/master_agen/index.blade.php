@@ -29,6 +29,7 @@
                             <th>WhatsApp</th>
                             <th>Kode Agen</th>
                             <th>Area</th>
+                            <th>Rekening</th>
                             <th>Status</th>
                             <th style="width: 180px;">Aksi</th>
                         </tr>
@@ -42,6 +43,7 @@
                                 <td>{{ $a->phone_wa }}</td>
                                 <td>{{ $a->kode_agen }}</td>
                                 <td>{{ $a->area }}</td>
+                                <td>{{ $a->rekening_nomor ?? '-' }}</td>
                                 <td>
                                     @if($a->is_active)
                                         <span class="badge bg-success">Aktif</span>

@@ -14,6 +14,7 @@ use App\Models\MasterGramasiEmas;
 use App\Models\TransReady;
 use App\Models\TransPaymentLog;
 use App\Models\TransReadyLog;
+use App\Models\MasterAgen;
 
 class CustomerReadyController extends Controller
 {
@@ -121,6 +122,10 @@ class CustomerReadyController extends Controller
             catatan: $data['catatan'] ?? null
         );
         $attrs['id_master_gold_ready_stock'] = (int) $stock->id;
+        $attrs['rekening_nomor'] = $stock->master_agen_id
+            ? optional(MasterAgen::find((int) $stock->master_agen_id))->rekening_nomor
+            : null;
+
 
         $baseInt = (int) floor((float) ($attrs['total_amount'] ?? 0));
         $attempts = 0;

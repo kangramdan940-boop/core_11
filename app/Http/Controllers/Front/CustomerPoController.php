@@ -14,6 +14,7 @@ use App\Models\MasterGramasiEmas;
 use App\Models\TransPoLog;
 use App\Models\TransPaymentLog;
 use Illuminate\Support\Facades\Storage;
+use App\Models\MasterAgen;
 
 class CustomerPoController extends Controller
 {
@@ -87,6 +88,10 @@ class CustomerPoController extends Controller
                 catatan: $data['catatan'] ?? null
             );
             $attempts++;
+        }
+        $selectedAgenId = $attrs['master_agen_id'] ?? null;
+        if ($selectedAgenId) {
+            $attrs['rekening_nomor'] = optional(MasterAgen::find((int) $selectedAgenId))->rekening_nomor;
         }
         $po = TransPo::create($attrs);
         return redirect()
