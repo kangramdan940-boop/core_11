@@ -35,7 +35,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($stocks as $s)
+                        @foreach ($stocks as $s)
                             <tr>
                                 <td class="text-center">{{ $s->id }}</td>
                                 <td class="text-center"><span class="badge bg-light text-dark border text-uppercase">{{ $s->kode_item }}</span></td>
@@ -64,13 +64,7 @@
                                     </div>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="9" class="text-center py-3">
-                                    Belum ada data stok emas ready.
-                                </td>
-                            </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>
