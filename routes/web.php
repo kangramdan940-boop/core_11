@@ -34,6 +34,9 @@ use App\Http\Controllers\Front\FrontController;
 // FRONT HOME
 // ====================================
 Route::get('/', [FrontController::class, 'home']);
+Route::get('/pemesanan-emas-belum-tersedia', function () {
+    return view('front.order-unavailable');
+})->name('order.unavailable');
 
 // ====================================
 // CUSTOMER AREA
