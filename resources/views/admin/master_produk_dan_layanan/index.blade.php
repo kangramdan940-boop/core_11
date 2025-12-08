@@ -64,11 +64,12 @@
                                     </div>
                                 </td>
                             </tr>
+                        @empty
+                            <tr><td colspan="7" class="text-center py-3">Belum ada data produk & layanan.</td></tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
-
-
         </div>
     </div>
 @push('styles')
@@ -96,7 +97,7 @@ $(function(){
     ],
   language: {
     url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/id.json',
-    emptyTable: 'Belum ada Produk dan Layanan.'
+    emptyTable: 'Belum ada data.'
   },
   responsive: true
   });
