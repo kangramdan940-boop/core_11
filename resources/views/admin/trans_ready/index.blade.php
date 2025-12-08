@@ -59,11 +59,6 @@
                                     </div>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="10" class="text-center py-3">Belum ada transaksi ready.</td>
-                            </tr>
-                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -97,7 +92,10 @@ $(function(){
       { width: '160px' },
       { width: '160px', orderable: false }
     ],
-    language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' },
+    language: {
+      url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/id.json',
+      emptyTable: 'Belum ada transaksi ready.'
+    },
     responsive: true
   });
 });
