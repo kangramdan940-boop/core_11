@@ -77,25 +77,26 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script>
-$(function(){
+$(function () {
   $('#pricesTable').DataTable({
     pageLength: 10,
-    lengthMenu: [10,25,50,100],
-    order: [[0,'desc']],
-    columns: [
-      { width: '64px' },
-      { width: '140px' },
-      { width: '160px' },
-      { width: '160px' },
-      { width: '160px' },
-      { width: '160px' },
-      { width: '120px', orderable: false },
-      { width: '160px', orderable: false }
+    lengthMenu: [10, 25, 50, 100],
+    order: [[0, 'desc']],
+    columnDefs: [
+      { width: '64px', targets: 0 },
+      { width: '140px', targets: 1 },
+      { width: '160px', targets: [2, 3, 4, 5] },
+      { width: '120px', orderable: false, targets: 6 },
+      { width: '160px', orderable: false, targets: 7 },
     ],
-    language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/id.json', emptyTable: 'Belum ada data harga emas.' }
-    responsive: true
+    language: {
+      url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/id.json',
+      emptyTable: 'Belum ada data harga emas.',
+    },
+    responsive: true,
   });
 });
+
 </script>
 @endpush
 @endsection

@@ -24,45 +24,43 @@
                             <th class="text-end text-nowrap" style="width:160px;">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @forelse ($pos as $p)
-                            <tr>
-                                <td class="text-center">{{ $p->id }}</td>
-                                <td class="text-center"><span class="badge bg-light text-dark border text-uppercase">{{ $p->kode_po }}</span></td>
-                                <td>{{ optional($p->customer)->full_name ?? '-' }}</td>
-                                <td>{{ optional($p->agen)->name ?? '-' }}</td>
-                                <td class="text-end">{{ number_format((float)$p->total_amount, 2, ',', '.') }}</td>
-                                <td class="text-center">
-                                    @php($st = $p->status)
-                                    @if($st === 'pending_payment')
-                                        <span class="badge rounded-pill bg-warning text-dark">PENDING</span>
-                                    @elseif($st === 'paid')
-                                        <span class="badge rounded-pill bg-success">PAID</span>
-                                    @elseif($st === 'processing')
-                                        <span class="badge rounded-pill bg-info text-dark">PROCESSING</span>
-                                    @elseif($st === 'ready_at_agen')
-                                        <span class="badge rounded-pill bg-primary">READY @AGEN</span>
-                                    @elseif($st === 'shipped')
-                                        <span class="badge rounded-pill bg-primary">SHIPPED</span>
-                                    @elseif($st === 'completed')
-                                        <span class="badge rounded-pill bg-success">COMPLETED</span>
-                                    @else
-                                        <span class="badge rounded-pill bg-secondary">CANCELLED</span>
-                                    @endif
-                                </td>
-                                <td>{{ optional($p->created_at)->format('Y-m-d H:i') }}</td>
-                                <td class="text-end text-nowrap">
-                                    <div class="d-flex justify-content-end align-items-center gap-1">
-                                        <a href="{{ route('admin.trans.po.show', $p) }}" class="btn btn-outline-primary btn-sm px-2 d-inline-flex align-items-center" style="height:28px;">Detail</a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="8" class="text-center py-3">Belum ada PO.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
+                   <tbody>
+                    @foreach ($pos as $p)
+                        <tr>
+                            <td class="text-center">{{ $p->id }}</td>
+                            <td class="text-center">
+                                <span class="badge bg-light text-dark border text-uppercase">{{ $p->kode_po }}</span>
+                            </td>
+                            <td>{{ optional($p->customer)->full_name ?? '-' }}</td>
+                            <td>{{ optional($p->agen)->name ?? '-' }}</td>
+                            <td class="text-end">{{ number_format((float)$p->total_amount, 2, ',', '.') }}</td>
+                            <td class="text-center">
+                                @php($st = $p->status)
+                                @if($st === 'pending_payment')
+                                    <span class="badge rounded-pill bg-warning text-dark">PENDING</span>
+                                @elseif($st === 'paid')
+                                    <span class="badge rounded-pill bg-success">PAID</span>
+                                @elseif($st === 'processing')
+                                    <span class="badge rounded-pill bg-info text-dark">PROCESSING</span>
+                                @elseif($st === 'ready_at_agen')
+                                    <span class="badge rounded-pill bg-primary">READY @AGEN</span>
+                                @elseif($st === 'shipped')
+                                    <span class="badge rounded-pill bg-primary">SHIPPED</span>
+                                @elseif($st === 'completed')
+                                    <span class="badge rounded-pill bg-success">COMPLETED</span>
+                                @else
+                                    <span class="badge rounded-pill bg-secondary">CANCELLED</span>
+                                @endif
+                            </td>
+                            <td>{{ optional($p->created_at)->format('Y-m-d H:i') }}</td>
+                            <td class="text-end text-nowrap">
+                                <div class="d-flex justify-content-end align-items-center gap-1">
+                                    <a href="{{ route('admin.trans.po.show', $p) }}" class="btn btn-outline-primary btn-sm px-2 d-inline-flex align-items-center" style="height:28px;">Detail</a>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
                 </table>
             </div>
 
@@ -78,25 +76,27 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script>
-$(function(){
-  $('#poTable').DataTable({
-    pageLength: 10,
-    lengthMenu: [10,25,50,100],
-    order: [[0,'desc']],
-    columns: [
-      { width: '64px' },
-      { width: '160px' },
-      { width: '200px' },
-      { width: '160px' },
-      { width: '160px' },
-      { width: '120px', orderable: false },
-      { width: '160px' },
-      { width: '160px', orderable: false }
-    ],
-    language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' },
-    responsive: true
-  });
+$('#poTable').DataTable({
+  pageLength: 10,
+  lengthMenu: [10,25,50,100],
+  order: [[0,'desc']],
+  columns: [
+    { width: '64px' },
+    { width: '160px' },
+    { width: '200px' },
+    { width: '160px' },
+    { width: '160px' },
+    { width: '120px', orderable: false },
+    { width: '160px' },
+    { width: '160px', orderable: false }
+  ],
+  language: {
+    url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/id.json',
+    emptyTable: 'Belum ada PO.'
+  },
+  responsive: true
 });
+
 </script>
 @endpush
 @endsection
