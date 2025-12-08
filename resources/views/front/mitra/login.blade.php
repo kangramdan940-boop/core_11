@@ -100,7 +100,6 @@
                 <button class="mt-24 tf-btn primary">Masuk</button>
             </form>
 
-            <p class="mt-24 text-center body-2 text-dark-4">Belum punya akun mitra? <a href="{{ route('mitra.register') }}" class="text-primary button-1">Register</a></p>
         </div>
     </div>
 

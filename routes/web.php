@@ -98,8 +98,8 @@ Route::prefix('mitra')->name('mitra.')->group(function () {
     Route::get('/login', [MitraAuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [MitraAuthController::class, 'login'])->name('login.submit');
 
-    Route::get('/register', [MitraAuthController::class, 'showRegisterForm'])->name('register');
-    Route::post('/register', [MitraAuthController::class, 'register'])->name('register.submit');
+    // Route::get('/register', [MitraAuthController::class, 'showRegisterForm'])->name('register');
+    // Route::post('/register', [MitraAuthController::class, 'register'])->name('register.submit');
 
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [FrontController::class, 'mitraDashboard'])->name('dashboard');
