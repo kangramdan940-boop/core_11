@@ -26,45 +26,52 @@
                             <th class="text-end text-nowrap" style="width:160px;">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @forelse ($readyTrans as $t)
-                            <tr>
-                                <td class="text-center">{{ $t->id }}</td>
-                                <td class="text-center"><span class="badge bg-light text-dark border text-uppercase">{{ $t->kode_trans }}</span></td>
-                                <td>{{ optional($t->customer)->full_name ?? '-' }}</td>
-                                <td>{{ optional($t->agen)->name ?? '-' }}</td>
-                                <td><span class="badge bg-light text-dark border text-uppercase">{{ optional($t->readyStock)->kode_item ?? '-' }}</span></td>
-                                <td class="text-end">{{ $t->qty }}</td>
-                                <td class="text-end">{{ number_format((float)$t->total_amount, 2, ',', '.') }}</td>
-                                <td class="text-center">
-                                    @php($st = $t->status)
-                                    @if($st === 'pending_payment')
-                                        <span class="badge rounded-pill bg-warning text-dark">PENDING</span>
-                                    @elseif($st === 'paid')
-                                        <span class="badge rounded-pill bg-success">PAID</span>
-                                    @elseif($st === 'waiting_shipment')
-                                        <span class="badge rounded-pill bg-info text-dark">WAITING SHIPMENT</span>
-                                    @elseif($st === 'shipped')
-                                        <span class="badge rounded-pill bg-primary">SHIPPED</span>
-                                    @elseif($st === 'completed')
-                                        <span class="badge rounded-pill bg-success">COMPLETED</span>
-                                    @else
-                                        <span class="badge rounded-pill bg-secondary">CANCELLED</span>
-                                    @endif
-                                </td>
-                                <td>{{ optional($t->created_at)->format('Y-m-d H:i') }}</td>
-                                <td class="text-end text-nowrap">
-                                    <div class="d-flex justify-content-end align-items-center gap-1">
-                                        <a href="{{ route('admin.trans.ready.show', $t) }}" class="btn btn-outline-primary btn-sm px-2 d-inline-flex align-items-center" style="height:28px;">Detail</a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="10" class="text-center py-3">Belum ada transaksi ready.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
+                   <tbody>
+    @foreach ($readyTrans as $t)
+        <tr>
+            <td class="text-center">{{ $t->id }}</td>
+            <td class="text-center">
+                <span class="badge bg-light text-dark border text-uppercase">
+                    {{ $t->kode_trans }}
+                </span>
+            </td>
+            <td>{{ optional($t->customer)->full_name ?? '-' }}</td>
+            <td>{{ optional($t->agen)->name ?? '-' }}</td>
+            <td>
+                <span class="badge bg-light text-dark border text-uppercase">
+                    {{ optional($t->readyStock)->kode_item ?? '-' }}
+                </span>
+            </td>
+            <td class="text-end">{{ $t->qty }}</td>
+            <td class="text-end">{{ number_format((float)$t->total_amount, 2, ',', '.') }}</td>
+            <td class="text-center">
+                @php($st = $t->status)
+                @if($st === 'pending_payment')
+                    <span class="badge rounded-pill bg-warning text-dark">PENDING</span>
+                @elseif($st === 'paid')
+                    <span class="badge rounded-pill bg-success">PAID</span>
+                @elseif($st === 'waiting_shipment')
+                    <span class="badge rounded-pill bg-info text-dark">WAITING SHIPMENT</span>
+                @elseif($st === 'shipped')
+                    <span class="badge rounded-pill bg-primary">SHIPPED</span>
+                @elseif($st === 'completed')
+                    <span class="badge rounded-pill bg-success">COMPLETED</span>
+                @else
+                    <span class="badge rounded-pill bg-secondary">CANCELLED</span>
+                @endif
+            </td>
+            <td>{{ optional($t->created_at)->format('Y-m-d H:i') }}</td>
+            <td class="text-end text-nowrap">
+                <div class="d-flex justify-content-end align-items-center gap-1">
+                    <a href="{{ route('admin.trans.ready.show', $t) }}"
+                       class="btn btn-outline-primary btn-sm px-2 d-inline-flex align-items-center"
+                       style="height:28px;">Detail</a>
+                </div>
+            </td>
+        </tr>
+    @endforeach
+</tbody>
+
                 </table>
             </div>
 

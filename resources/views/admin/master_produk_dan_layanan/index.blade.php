@@ -28,46 +28,52 @@
                             <th class="text-end text-nowrap" style="width:160px;">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @forelse ($items as $i)
-                            <tr>
-                                <td class="text-center">{{ $i->id }}</td>
-                                <td class="text-center">
-                                    @if($i->image_produk)
-                                        <img src="{{ Str::startsWith($i->image_produk, ['http://','https://']) ? $i->image_produk : asset($i->image_produk) }}"
-                                             alt="produk" class="rounded" style="height:36px;width:36px;object-fit:cover;background:#fff;border:1px solid #e5e7eb;">
-                                    @else
-                                        -
-                                    @endif
-                                </td>
-                                <td>{{ optional($i->gramasi)->gramasi ? number_format($i->gramasi->gramasi, 3).' g' : '-' }}</td>
-                                <td>{{ number_format((float)$i->harga_hariini, 2, ',', '.') }}</td>
-                                <td class="text-center">
-                                    <span class="badge rounded-pill {{ $i->is_allow_ready ? 'bg-success' : 'bg-secondary' }}">Ready</span>
-                                    <span class="badge rounded-pill {{ $i->is_allow_po ? 'bg-success' : 'bg-secondary' }}">PO</span>
-                                </td>
-                                <td class="text-center">
-                                    @if($i->status === 'active')
-                                        <span class="badge rounded-pill bg-success">Aktif</span>
-                                    @else
-                                        <span class="badge rounded-pill bg-secondary">Nonaktif</span>
-                                    @endif
-                                </td>
-                                <td class="text-end text-nowrap">
-                                    <div class="d-flex justify-content-end align-items-center gap-1">
-                                        <a href="{{ route('admin.master.produk-layanan.edit', $i) }}" class="btn btn-outline-primary btn-sm px-2 d-inline-flex align-items-center" style="height:28px;">Edit</a>
-                                        <form action="{{ route('admin.master.produk-layanan.destroy', $i) }}" method="POST" class="mb-0 d-inline-block" onsubmit="return confirm('Hapus item ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button class="btn btn-outline-danger btn-sm px-2 d-inline-flex align-items-center" style="height:28px;">Hapus</button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="7" class="text-center py-3">Belum ada data produk & layanan.</td></tr>
-                        @endforelse
-                    </tbody>
+                   <tbody>
+    @foreach ($items as $i)
+        <tr>
+            <td class="text-center">{{ $i->id }}</td>
+            <td class="text-center">
+                @if($i->image_produk)
+                    <img src="{{ Str::startsWith($i->image_produk, ['http://','https://']) ? $i->image_produk : asset($i->image_produk) }}"
+                         alt="produk" class="rounded"
+                         style="height:36px;width:36px;object-fit:cover;background:#fff;border:1px solid #e5e7eb;">
+                @else
+                    -
+                @endif
+            </td>
+            <td>{{ optional($i->gramasi)->gramasi ? number_format($i->gramasi->gramasi, 3).' g' : '-' }}</td>
+            <td>{{ number_format((float)$i->harga_hariini, 2, ',', '.') }}</td>
+            <td class="text-center">
+                <span class="badge rounded-pill {{ $i->is_allow_ready ? 'bg-success' : 'bg-secondary' }}">Ready</span>
+                <span class="badge rounded-pill {{ $i->is_allow_po ? 'bg-success' : 'bg-secondary' }}">PO</span>
+            </td>
+            <td class="text-center">
+                @if($i->status === 'active')
+                    <span class="badge rounded-pill bg-success">Aktif</span>
+                @else
+                    <span class="badge rounded-pill bg-secondary">Nonaktif</span>
+                @endif
+            </td>
+            <td class="text-end text-nowrap">
+                <div class="d-flex justify-content-end align-items-center gap-1">
+                    <a href="{{ route('admin.master.produk-layanan.edit', $i) }}"
+                       class="btn btn-outline-primary btn-sm px-2 d-inline-flex align-items-center"
+                       style="height:28px;">Edit</a>
+                    <form action="{{ route('admin.master.produk-layanan.destroy', $i) }}"
+                          method="POST"
+                          class="mb-0 d-inline-block"
+                          onsubmit="return confirm('Hapus item ini?')">
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn btn-outline-danger btn-sm px-2 d-inline-flex align-items-center"
+                                style="height:28px;">Hapus</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+    @endforeach
+</tbody>
+
                 </table>
             </div>
         </div>
