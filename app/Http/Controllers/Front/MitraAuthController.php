@@ -11,21 +11,22 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\MasterMitraBrankas;
+use Illuminate\Http\RedirectResponse;
 
 class MitraAuthController extends Controller
 {
-    public function showLoginForm(): View
+    public function showLoginForm(): RedirectResponse|View
     {
         if (auth()->check() && auth()->user()->role === 'mitra') {
-            return view('front.mitra.dashboard');
+            return redirect()->route('mitra.dashboard');
         }
         return view('front.mitra.login');
     }
 
-    public function showRegisterForm(): View
+    public function showRegisterForm(): RedirectResponse|View
     {
         if (auth()->check() && auth()->user()->role === 'mitra') {
-            return view('front.mitra.dashboard');
+            return redirect()->route('mitra.dashboard');
         }
         return view('front.mitra.register');
     }

@@ -11,21 +11,22 @@ use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\MasterCustomer;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\RedirectResponse;
 
 class CustomerAuthController extends Controller
 {
-    public function showLoginForm(): View
+    public function showLoginForm(): RedirectResponse|View
     {
         if (auth()->check() && auth()->user()->role === 'customer') {
-            return view('front.customer.dashboard');
+            return redirect()->route('customer.dashboard');
         }
         return view('front.customer.login');
     }
 
-    public function showRegisterForm(): View
+    public function showRegisterForm(): RedirectResponse|View
     {
         if (auth()->check() && auth()->user()->role === 'customer') {
-            return view('front.customer.dashboard');
+            return redirect()->route('customer.dashboard');
         }
         return view('front.customer.register');
     }
