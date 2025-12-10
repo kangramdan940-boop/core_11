@@ -80,12 +80,12 @@
          </div>
          <div class="fixed-button group-btn-boarding">
             <div class="row g-2">
-                <div class="col-6 text-center">
-                    <a href="{{ route('order.unavailable') }}" class="tf-btn primary d-block w-100 mb-0">Beli Emas</a>
+                <div class="col-12 text-center">
+                    <a href="{{ route('customer.login') }}" class="tf-btn primary d-block w-100 mb-0">Beli Emas</a>
                 </div>
-                <div class="col-6 text-center">
+                <!-- <div class="col-6 text-center">
                     <a href="{{ route('mitra.login') }}" class="tf-btn primary d-block w-100 mb-0">Login Mitra</a>
-                </div>
+                </div> -->
             </div>
         </div>
      </section>
