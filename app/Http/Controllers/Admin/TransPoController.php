@@ -15,7 +15,7 @@ class TransPoController extends Controller
     {
         $pos = TransPo::with(['customer', 'agen'])
             ->orderByDesc('id')
-            ->paginate(20);
+            ->get();
 
         return view('admin.trans_po.index', compact('pos'));
     }

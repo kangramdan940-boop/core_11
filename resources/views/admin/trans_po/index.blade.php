@@ -67,7 +67,36 @@
 
         </div>
     </div>
+@push('styles')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+@endpush
 
+@push('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script>
+$('#poTable').DataTable({
+  pageLength: 10,
+  lengthMenu: [10,25,50,100],
+  order: [[0,'desc']],
+  columns: [
+    { width: '64px' },
+    { width: '160px' },
+    { width: '200px' },
+    { width: '160px' },
+    { width: '160px' },
+    { width: '120px', orderable: false },
+    { width: '160px' },
+    { width: '160px', orderable: false }
+  ],
+  language: {
+    url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/id.json',
+    emptyTable: 'Belum ada PO.'
+  },
+  responsive: true
+});
 
-
+</script>
+@endpush
 @endsection
