@@ -14,7 +14,7 @@ class MasterMitraKomisiController extends Controller
     {
         $komisis = MasterMitraKomisi::with('mitra')
             ->orderByDesc('id')
-            ->paginate(20);
+            ->get();
 
         $start = now()->startOfMonth()->toDateString();
         $end = now()->endOfMonth()->toDateString();

@@ -10,7 +10,7 @@ class MasterCustomerController extends Controller
 {
     public function index()
     {
-        $customers = MasterCustomer::orderByDesc('id')->paginate(20);
+        $customers = MasterCustomer::orderByDesc('id')->get();
 
         return view('admin.master_customer.index', compact('customers'));
     }
