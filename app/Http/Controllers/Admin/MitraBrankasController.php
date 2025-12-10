@@ -10,7 +10,7 @@ class MitraBrankasController extends Controller
 {
     public function index()
     {
-        $mitras = MasterMitraBrankas::orderByDesc('id')->paginate(20);
+        $mitras = MasterMitraBrankas::orderByDesc('id')->get();
         return view('admin.master_mitra_brankas.index', compact('mitras'));
     }
 
