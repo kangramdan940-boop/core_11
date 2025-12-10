@@ -1,33 +1,24 @@
-@extends('layouts.admin')
+@extends('layouts.admin.master')
 
 @section('title', 'Edit Mitra Brankas - Admin')
-@section('page_title', 'Edit Mitra Brankas')
+@section('sub-title', 'Mitra Brankas')
+@section('breadcrumbExtra', 'Edit Mitra Brankas')
+@section('pagetitle', 'Dashboard')
+@section('subLink', route('admin.master.mitra-brankas.index'))
 
 @section('content')
     <div class="card shadow-sm">
         <div class="card-body">
-            @if ($errors->any())
-                <div class="alert alert-danger py-2">
-                    <ul class="mb-0">
-                        @foreach($errors->all() as $error)
-                            <li style="font-size: 0.85rem;">{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
             <form action="{{ route('admin.master.mitra-brankas.update', $mitra) }}" method="POST">
                 @csrf
                 @method('PUT')
 
                 @include('admin.master_mitra_brankas._form', ['mitra' => $mitra])
 
-                <button type="submit" class="btn btn-primary">
-                    Update
-                </button>
-                <a href="{{ route('admin.master.mitra-brankas.index') }}" class="btn btn-secondary">
-                    Batal
-                </a>
+                <div class="d-flex justify-content-end mt-5 gap-2">
+                    <a href="{{ route('admin.master.mitra-brankas.index') }}" class="btn btn-outline-secondary">Batal</a>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-floppy-fill fs-6 me-1"></i> Update</button>
+                </div>
             </form>
         </div>
     </div>
