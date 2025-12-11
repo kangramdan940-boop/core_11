@@ -10,7 +10,7 @@ class MasterHomeSliderController extends Controller
 {
     public function index()
     {
-        $sliders = MasterHomeSlider::orderByDesc('id')->paginate(20);
+        $sliders = MasterHomeSlider::orderByDesc('id')->get();
         return view('admin.master_home_slider.index', compact('sliders'));
     }
 

@@ -14,7 +14,7 @@ class MasterGoldReadyStockController extends Controller
     {
         $stocks = MasterGoldReadyStock::with('agen')
             ->orderByDesc('id')
-            ->paginate(20);
+            ->get();
 
         return view('admin.master_gold_ready_stock.index', compact('stocks'));
     }

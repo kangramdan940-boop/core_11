@@ -49,9 +49,6 @@
                         </td>
                     </tr>
                 @empty
-                    <tr>
-                        <td colspan="7" class="text-center py-3">Belum ada pengguna.</td>
-                    </tr>
                 @endforelse
             </tbody>
         </table>

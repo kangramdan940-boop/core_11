@@ -17,7 +17,7 @@ final class RoleController extends Controller
 
         $roles = Role::query()
             ->orderBy('name')
-            ->paginate(20);
+            ->get();
 
         return view('admin.roles.index', compact('roles'));
     }

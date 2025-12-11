@@ -63,9 +63,6 @@
                         </td>
                     </tr>
                 @empty
-                    <tr>
-                        <td colspan="9" class="text-center py-3">Belum ada payment log.</td>
-                    </tr>
                 @endforelse
             </tbody>
         </table>
@@ -110,8 +107,8 @@
                     't' +
                     '<"card-footer d-flex flex-column align-items-center gap-2"' +
                     '<"row w-100 align-items-center g-2"' +
-                        '<"col-12 col-md-8 d-flex align-items-center justify-content-md-start justify-content-center gap-2"l i>' +
-                        '<"col-12 col-md-4 d-flex justify-content-md-end justify-content-center"p>' +
+                        '<"col-12 col-md-5 d-flex align-items-center justify-content-md-start justify-content-center gap-2"l i>' +
+                        '<"col-12 col-md-7 d-flex justify-content-md-end justify-content-center"p>' +
                     '>>',
                 language: {
                     sLengthMenu: '_MENU_ ',

@@ -10,7 +10,7 @@ class MasterAdminController extends Controller
 {
     public function index()
     {
-        $admins = MasterAdmin::orderByDesc('id')->paginate(20);
+        $admins = MasterAdmin::orderByDesc('id')->get();
         return view('admin.master_admin.index', compact('admins'));
     }
 

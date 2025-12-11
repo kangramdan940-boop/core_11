@@ -24,7 +24,7 @@ class CustomerReadyController extends Controller
             ->where('status', 'available')
             ->orderBy('brand')
             ->orderBy('gramasi')
-            ->paginate(20);
+            ->get();
 
         return view('front.customer.ready.index', compact('stocks'));
     }

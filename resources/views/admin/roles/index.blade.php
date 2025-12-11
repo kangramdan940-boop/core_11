@@ -47,9 +47,6 @@
                         </td>
                     </tr>
                 @empty
-                    <tr>
-                        <td colspan="4" class="text-center py-3">Belum ada role.</td>
-                    </tr>
                 @endforelse
             </tbody>
         </table>

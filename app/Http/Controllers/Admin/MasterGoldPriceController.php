@@ -13,7 +13,7 @@ class MasterGoldPriceController extends Controller
     {
         $prices = MasterGoldPrice::orderByDesc('price_date')
             ->orderBy('source')
-            ->paginate(20);
+            ->get();
 
         return view('admin.master_gold_price.index', compact('prices'));
     }

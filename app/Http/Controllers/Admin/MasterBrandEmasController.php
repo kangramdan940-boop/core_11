@@ -10,7 +10,7 @@ class MasterBrandEmasController extends Controller
 {
     public function index()
     {
-        $brands = MasterBrandEmas::orderBy('nama_brand')->paginate(20);
+        $brands = MasterBrandEmas::orderBy('nama_brand')->get();
         return view('admin.master_brand_emas.index', compact('brands'));
     }
 
