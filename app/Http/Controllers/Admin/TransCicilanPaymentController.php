@@ -12,7 +12,7 @@ class TransCicilanPaymentController extends Controller
     {
         $payments = TransCicilanPayment::with(['kontrak.customer', 'kontrak.agen'])
             ->orderByDesc('id')
-            ->paginate(20);
+            ->get();
 
         return view('admin.trans_cicilan_payment.index', compact('payments'));
     }

@@ -11,7 +11,7 @@ class MasterProdukDanLayananController extends Controller
 {
     public function index()
     {
-        $items = MasterProdukDanLayanan::with('gramasi')->orderByDesc('id')->paginate(20);
+        $items = MasterProdukDanLayanan::with('gramasi')->orderByDesc('id')->get();
         return view('admin.master_produk_dan_layanan.index', compact('items'));
     }
 

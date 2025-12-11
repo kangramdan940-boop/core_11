@@ -58,44 +58,11 @@
                         </td>
                     </tr>
                 @empty
-                    <tr>
-                        <td colspan="7" class="text-center py-3">
-                            Belum ada data customer.
-                        </td>
-                    </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
-@push('styles')
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
-@endpush
 
-@push('scripts')
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-<script>
-$(function(){
-  $('#customersTable').DataTable({
-    pageLength: 10,
-    lengthMenu: [10,25,50,100],
-    order: [[0,'desc']],
-    columns: [
-      { width: '64px' },
-      { width: '200px' },
-      { width: '200px' },
-      { width: '160px' },
-      { width: '160px' },
-      { width: '120px', orderable: false },
-      { width: '160px', orderable: false }
-    ],
-    language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' },
-    responsive: true
-  });
-});
-</script>
-@endpush
 @endsection
 
 @section('js')
@@ -128,10 +95,11 @@ $(function(){
                     't' +
                     '<"card-footer d-flex flex-column align-items-center gap-2"' +
                     '<"row w-100 align-items-center g-2"' +
-                        '<"col-12 col-md-8 d-flex align-items-center justify-content-md-start justify-content-center gap-2"l i>' +
-                        '<"col-12 col-md-4 d-flex justify-content-md-end justify-content-center"p>' +
+                        '<"col-12 col-md-5 d-flex align-items-center justify-content-md-start justify-content-center gap-2"l i>' +
+                        '<"col-12 col-md-7 d-flex justify-content-md-end justify-content-center"p>' +
                     '>>',
                 language: {
+                    emptyTable: 'Belum ada data customer.',
                     sLengthMenu: '_MENU_ ',
                     search: '',
                     searchPlaceholder: 'Search Files',

@@ -11,7 +11,7 @@ class MasterAgenController extends Controller
 {
     public function index()
     {
-        $agens = MasterAgen::orderByDesc('id')->paginate(20);
+        $agens = MasterAgen::orderByDesc('id')->get();
         return view('admin.master_agen.index', compact('agens'));
     }
 

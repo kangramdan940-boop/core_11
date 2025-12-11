@@ -10,7 +10,7 @@ class MasterMenuHomeCustomerController extends Controller
 {
     public function index()
     {
-        $menus = MasterMenuHomeCustomer::orderByDesc('id')->paginate(20);
+        $menus = MasterMenuHomeCustomer::orderByDesc('id')->get();
         return view('admin.master_menu_home_customer.index', compact('menus'));
     }
 

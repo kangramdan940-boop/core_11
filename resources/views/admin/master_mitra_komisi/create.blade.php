@@ -33,14 +33,14 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            var localeId = {
-                days: ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'],
-                daysShort: ['Min','Sen','Sel','Rab','Kam','Jum','Sab'],
-                daysMin: ['Mg','Sn','Sl','Rb','Km','Jm','Sb'],
-                months: ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'],
-                monthsShort: ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'],
-                today: 'Hari ini',
-                clear: 'Bersihkan',
+            var localeEn = {
+                days: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+                daysShort: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+                daysMin: ['Su','Mo','Tu','We','Th','Fr','Sa'],
+                months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+                monthsShort: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+                today: 'Today',
+                clear: 'Clear',
                 dateFormat: 'yyyy-MM-dd',
                 timeFormat: 'hh:ii',
                 firstDay: 1
@@ -50,8 +50,8 @@
             if (typeof AirDatepicker !== 'undefined') {
                 var startVal = startEl && startEl.value ? new Date(startEl.value) : null;
                 var endVal = endEl && endEl.value ? new Date(endEl.value) : null;
-                if (startEl) new AirDatepicker('#komisiStart', { dateFormat: 'yyyy-MM-dd', locale: localeId, autoClose: true, selectedDates: startVal ? [startVal] : undefined });
-                if (endEl) new AirDatepicker('#komisiEnd', { dateFormat: 'yyyy-MM-dd', locale: localeId, autoClose: true, selectedDates: endVal ? [endVal] : undefined });
+                if (startEl) new AirDatepicker('#komisiStart', { dateFormat: 'yyyy-MM-dd', locale: localeEn, autoClose: true, selectedDates: startVal ? [startVal] : undefined });
+                if (endEl) new AirDatepicker('#komisiEnd', { dateFormat: 'yyyy-MM-dd', locale: localeEn, autoClose: true, selectedDates: endVal ? [endVal] : undefined });
             }
         });
     </script>
