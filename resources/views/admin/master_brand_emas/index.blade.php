@@ -24,7 +24,7 @@
                         <td>{{ $b->id }}</td>
                         <td>
                             @php($raw = $b->image_url ?? '')
-                            @php($logoUrl = Str::startsWith($raw, ['http://','https://']) ? $raw : asset('storage/' . ltrim($raw, '/')))
+                            @php($logoUrl = Str::startsWith($b->image_url, ['http://','https://']) ? $b->image_url : asset($b->image_url))
                             @if(!empty($raw))
                                 <a href="javascript:;" class="zoomable-thumb" data-src="{{ $logoUrl }}" data-label="{{ $b->nama_brand ?? ('#' . $b->id) }}">
                                     <img src="{{ $logoUrl }}" alt="logo" style="height:32px;object-fit:contain;cursor:zoom-in;">
