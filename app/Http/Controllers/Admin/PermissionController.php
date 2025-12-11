@@ -20,7 +20,7 @@ final class PermissionController extends Controller
         $users = User::query()
             ->with(['roles', 'permissions'])
             ->orderByDesc('id')
-            ->paginate(20);
+            ->get();
 
         return view('admin.permissions.index', compact('users'));
     }

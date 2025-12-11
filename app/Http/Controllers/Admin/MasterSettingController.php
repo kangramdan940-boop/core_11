@@ -11,7 +11,7 @@ class MasterSettingController extends Controller
 {
     public function index()
     {
-        $settings = MasterSetting::orderByDesc('id')->paginate(20);
+        $settings = MasterSetting::orderByDesc('id')->get();
         return view('admin.master_setting.index', compact('settings'));
     }
 

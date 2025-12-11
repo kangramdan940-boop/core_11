@@ -11,7 +11,7 @@ class TransCicilanController extends Controller
     {
         $contracts = TransCicilan::with(['customer', 'agen'])
             ->orderByDesc('id')
-            ->paginate(20);
+            ->get();
 
         return view('admin.trans_cicilan.index', compact('contracts'));
     }

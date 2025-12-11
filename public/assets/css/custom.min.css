@@ -1,0 +1,11 @@
+/* logo theme switching */
+html[data-sidebar="dark-sidebar"][data-main-layout="vertical"] .logo-light{display:none!important}
+html[data-sidebar="dark-sidebar"][data-main-layout="vertical"] .logo-dark{display:inline!important}
+html[data-sidebar="light-sidebar"] .logo-light{display:inline!important}
+html[data-sidebar="light-sidebar"] .logo-dark{display:none!important}
+html[data-bs-theme="dark"] .logo-light{display:none!important}
+html[data-bs-theme="dark"][data-main-layout="vertical"] .logo-dark {display:inline!important}
+html[data-bs-theme="light"] .logo-light{display:inline!important}
+html[data-bs-theme="light"] .logo-dark{display:none!important}
+/* default */
+.logo-dark{display:none}

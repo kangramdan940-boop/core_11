@@ -15,7 +15,7 @@ class TransReadyController extends Controller
     {
         $readyTrans = TransReady::with(['customer', 'agen', 'readyStock'])
             ->orderByDesc('id')
-            ->paginate(20);
+            ->get();
 
         return view('admin.trans_ready.index', compact('readyTrans'));
     }

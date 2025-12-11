@@ -1,0 +1,1 @@
+const snowEditor=new Quill("#snowEditor",{theme:"snow",modules:{toolbar:!0},placeholder:"Compose your content here..."}),bubbleEditor=new Quill("#bubbleEditor",{theme:"bubble",placeholder:"Compose an epic..."});

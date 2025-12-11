@@ -21,7 +21,7 @@ class CustomerCicilanController extends Controller
             ->where('status', 'available')
             ->orderBy('brand')
             ->orderBy('gramasi')
-            ->paginate(20);
+            ->get();
 
         $customer = MasterCustomer::where('sys_user_id', Auth::id())->first();
         $contracts = $customer

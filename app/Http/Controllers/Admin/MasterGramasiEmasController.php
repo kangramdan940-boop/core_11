@@ -11,7 +11,7 @@ class MasterGramasiEmasController extends Controller
 {
     public function index()
     {
-        $gramasis = MasterGramasiEmas::orderBy('gramasi')->paginate(20);
+        $gramasis = MasterGramasiEmas::orderBy('gramasi')->get();
         return view('admin.master_gramasi_emas.index', compact('gramasis'));
     }
 

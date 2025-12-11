@@ -39,65 +39,63 @@
     <div class="card shadow-sm">
         <div class="card-body">
             <h6 class="mb-2">Pembayaran Cicilan</h6>
-            <div class="table-responsive">
-                <table class="table table-sm table-hover mb-0">
-                    <thead class="table-light">
+            <table class="table table-sm table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Cicilan Ke</th>
+                        <th>Jatuh Tempo</th>
+                        <th>Nominal</th>
+                        <th>Status</th>
+                        <th>Paid At</th>
+                        <th style="width:260px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($payments as $p)
                         <tr>
-                            <th>Cicilan Ke</th>
-                            <th>Jatuh Tempo</th>
-                            <th>Nominal</th>
-                            <th>Status</th>
-                            <th>Paid At</th>
-                            <th style="width:260px;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($payments as $p)
-                            <tr>
-                                <td>{{ $p->cicilan_ke }}</td>
-                                <td>{{ optional($p->due_date)->format('Y-m-d') ?? '-' }}</td>
-                                <td>{{ number_format((float)$p->amount_due, 2, ',', '.') }}</td>
-                                <td>{{ strtoupper($p->status) }}</td>
-                                <td>{{ optional($p->paid_at)->format('Y-m-d H:i') ?? '-' }}</td>
-                                <td>
-                                    @php
-                                        $firstUnpaidId = optional($payments->first(function($x){ return $x->status !== 'paid'; }))->id;
-                                        $hasPendingLog = \App\Models\TransPaymentLog::where('ref_type','cicilan_payment')
-                                            ->where('ref_id',$p->id)
-                                            ->where('status','pending')
-                                            ->exists();
-                                    @endphp
-                                    @if ($p->id === $firstUnpaidId)
-                                        @if ($hasPendingLog)
-                                            <span class="badge bg-warning text-dark">PROCESS</span>
-                                        @elseif ($p->status === 'pending')
-                                            <form action="{{ route('customer.cicilan.confirm-payment', $p) }}" method="POST" enctype="multipart/form-data" class="row g-2">
-                                                @csrf
-                                                <div class="col-auto">
-                                                    <input type="number" step="0.01" min="0.01" name="nominal_transfer" class="form-control form-control-sm" placeholder="Nominal" required>
-                                                </div>
-                                                <div class="col-auto">
-                                                    <input type="text" name="nama_pengirim" class="form-control form-control-sm" placeholder="Nama Pengirim" required>
-                                                </div>
-                                                <div class="col-auto">
-                                                    <input type="file" name="bukti_transfer" class="form-control form-control-sm" accept="image/*" required>
-                                                </div>
-                                                <div class="col-auto">
-                                                    <button type="submit" class="btn btn-sm btn-primary">Konfirmasi</button>
-                                                </div>
-                                            </form>
-                                        @endif
+                            <td>{{ $p->cicilan_ke }}</td>
+                            <td>{{ optional($p->due_date)->format('Y-m-d') ?? '-' }}</td>
+                            <td>{{ number_format((float)$p->amount_due, 2, ',', '.') }}</td>
+                            <td>{{ strtoupper($p->status) }}</td>
+                            <td>{{ optional($p->paid_at)->format('Y-m-d H:i') ?? '-' }}</td>
+                            <td>
+                                @php
+                                    $firstUnpaidId = optional($payments->first(function($x){ return $x->status !== 'paid'; }))->id;
+                                    $hasPendingLog = \App\Models\TransPaymentLog::where('ref_type','cicilan_payment')
+                                        ->where('ref_id',$p->id)
+                                        ->where('status','pending')
+                                        ->exists();
+                                @endphp
+                                @if ($p->id === $firstUnpaidId)
+                                    @if ($hasPendingLog)
+                                        <span class="badge bg-warning text-dark">PROCESS</span>
+                                    @elseif ($p->status === 'pending')
+                                        <form action="{{ route('customer.cicilan.confirm-payment', $p) }}" method="POST" enctype="multipart/form-data" class="row g-2">
+                                            @csrf
+                                            <div class="col-auto">
+                                                <input type="number" step="0.01" min="0.01" name="nominal_transfer" class="form-control form-control-sm" placeholder="Nominal" required>
+                                            </div>
+                                            <div class="col-auto">
+                                                <input type="text" name="nama_pengirim" class="form-control form-control-sm" placeholder="Nama Pengirim" required>
+                                            </div>
+                                            <div class="col-auto">
+                                                <input type="file" name="bukti_transfer" class="form-control form-control-sm" accept="image/*" required>
+                                            </div>
+                                            <div class="col-auto">
+                                                <button type="submit" class="btn btn-sm btn-primary">Konfirmasi</button>
+                                            </div>
+                                        </form>
                                     @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center py-3">Belum ada jadwal cicilan.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center py-3">Belum ada jadwal cicilan.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

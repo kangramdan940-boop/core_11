@@ -1,0 +1,1 @@
+document.getElementById("toggleSwitch").addEventListener("change",(function(){const e=document.querySelectorAll(".monthly-price"),t=document.querySelectorAll(".yearly-price");e.forEach((e=>e.classList.toggle("d-none"))),t.forEach((e=>e.classList.toggle("d-none")))}));

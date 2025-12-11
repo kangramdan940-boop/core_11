@@ -14,7 +14,7 @@ class TransPaymentLogController extends Controller
 {
     public function index()
     {
-        $logs = TransPaymentLog::orderByDesc('id')->paginate(20);
+        $logs = TransPaymentLog::orderByDesc('id')->get();
         return view('admin.trans_payment_log.index', compact('logs'));
     }
 
