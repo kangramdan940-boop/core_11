@@ -7,10 +7,15 @@ use App\Http\Controllers\Controller;
 use App\Models\MasterHomeSlider;
 use App\Models\MasterMenuHomeCustomer;
 use App\Models\MasterProdukDanLayanan;
+use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class FrontController extends Controller
 {
@@ -150,6 +155,94 @@ class FrontController extends Controller
     public function customerForgotPassword(): View
     {
         return view('front.customer.forget-pass');
+    }
+
+    public function customerSendForgotPassword(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'email' => ['required', 'email', 'max:150'],
+        ], [
+            'email.required' => 'Wajib diisi',
+            'email.email' => 'Format email tidak valid',
+            'email.max' => 'Maksimal 150 karakter',
+        ]);
+
+        $user = User::where('email', $data['email'])->where('role', 'customer')->first();
+
+        if ($user && $user->is_active) {
+            $payload = [
+                'email' => $user->email,
+                'exp' => now()->addMinutes(60)->toISOString(),
+                'type' => 'customer',
+                'nonce' => (string) Str::uuid(),
+            ];
+            $token = Crypt::encryptString(json_encode($payload));
+            $resetUrl = route('customer.reset-password', ['token' => $token]);
+
+            try {
+                Mail::send('emails.customer.reset-password', [
+                    'name' => $user->name ?? 'Customer',
+                    'resetUrl' => $resetUrl,
+                    'brandColor' => '#d9b846',
+                ], function ($message) use ($user) {
+                    $message->to($user->email)->subject('Reset Password Akun Anda');
+                });
+            } catch (\Throwable $e) {
+                // Tetap balas pesan umum tanpa membocorkan status pengiriman
+            }
+        }
+
+        return back()->with('message', 'Terima kasih. Jika email terdaftar, instruksi reset password telah dikirim.');
+    }
+
+    public function showResetPasswordForm(Request $request): View|RedirectResponse
+    {
+        $token = (string) $request->query('token', '');
+        if ($token === '') {
+            return redirect()->route('customer.forgot-password')->withErrors(['email' => 'Token tidak valid.']);
+        }
+        try {
+            $decoded = json_decode(Crypt::decryptString($token), true, 512, JSON_THROW_ON_ERROR);
+        } catch (\Throwable $e) {
+            return redirect()->route('customer.forgot-password')->withErrors(['email' => 'Token tidak valid atau kadaluarsa.']);
+        }
+        if (!is_array($decoded) || ($decoded['type'] ?? '') !== 'customer' || empty($decoded['email']) || empty($decoded['exp'])) {
+            return redirect()->route('customer.forgot-password')->withErrors(['email' => 'Token tidak valid.']);
+        }
+        $exp = \Illuminate\Support\Carbon::parse($decoded['exp']);
+        if (now()->greaterThan($exp)) {
+            return redirect()->route('customer.forgot-password')->withErrors(['email' => 'Token telah kadaluarsa.']);
+        }
+        return view('front.customer.reset-pass', ['token' => $token, 'email' => $decoded['email']]);
+    }
+
+    public function performResetPassword(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'token' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
+        ]);
+        try {
+            $decoded = json_decode(Crypt::decryptString($data['token']), true, 512, JSON_THROW_ON_ERROR);
+        } catch (\Throwable $e) {
+            return redirect()->route('customer.forgot-password')->withErrors(['email' => 'Token tidak valid atau kadaluarsa.']);
+        }
+        $exp = \Illuminate\Support\Carbon::parse($decoded['exp'] ?? null);
+        if (!is_array($decoded) || ($decoded['type'] ?? '') !== 'customer' || empty($decoded['email']) || !$exp || now()->greaterThan($exp)) {
+            return redirect()->route('customer.forgot-password')->withErrors(['email' => 'Token tidak valid atau kadaluarsa.']);
+        }
+        $user = User::where('email', $decoded['email'])->where('role', 'customer')->first();
+        if (! $user || ! $user->is_active) {
+            return redirect()->route('customer.forgot-password')->withErrors(['email' => 'Akun tidak ditemukan atau tidak aktif.']);
+        }
+        $user->password = Hash::make($data['password']);
+        $user->save();
+
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('customer.login')->with('success', 'Password berhasil direset. Silakan login kembali.');
     }
 
     public function mitraDashboard(): View
