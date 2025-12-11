@@ -8,71 +8,65 @@
 
 @section('content')
     <div class="card shadow-sm">
-        <div class="card-body p-20">
-            <div class="table-responsive">
-                <table id="mitraBrankasTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
-                    <thead class="bg-light bg-opacity-30">
-                        <tr>
-                            <th width="10px;">ID</th>
-                            <th>Nama Lengkap</th>
-                            <th>Email</th>
-                            <th>WhatsApp</th>
-                            <th>Kode Mitra</th>
-                            <th>Platform</th>
-                            <th>Limit Harian (g)</th>
-                            <th>Komisi (%)</th>
-                            <th>Status</th>
-                            <th style="width: 75px;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($mitras as $m)
-                            <tr>
-                                <td class="text-center">{{ $m->id }}</td>
-                                <td>{{ $m->nama_lengkap }}</td>
-                                <td>{{ $m->email }}</td>
-                                <td>{{ $m->phone_wa }}</td>
-                                <td class="text-center"><span class="badge bg-light text-dark border text-uppercase">{{ $m->kode_mitra }}</span></td>
-                                <td>{{ $m->platform }}</td>
-                                <td class="text-end">{{ number_format((float)$m->harian_limit_gram, 3, ',', '.') }}</td>
-                                <td class="text-end">{{ number_format((float)$m->komisi_persen, 2, ',', '.') }} %</td>
-                                <td class="text-center">
-                                    @if($m->is_active)
-                                        <span class="badge rounded-pill bg-success">Aktif</span>
-                                    @else
-                                        <span class="badge rounded-pill bg-secondary">Nonaktif</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="hstack gap-2 fs-15">
-                                        <a href="{{ route('admin.master.mitra-brankas.edit', $m) }}" class="btn icon-btn-sm btn-light-primary">
-                                            <i class="ri-pencil-line"></i>
-                                        </a>
-                                        <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
-                                           data-action="{{ route('admin.master.mitra-brankas.destroy', $m) }}"
-                                           data-label="{{ $m->nama_lengkap ? $m->nama_lengkap : ('#' . $m->id) }}">
-                                            <i class="ri-delete-bin-line"></i>
-                                        </a>
-                                    </div>
-                                    <form action="{{ route('admin.master.mitra-brankas.destroy', $m) }}" method="POST" class="d-none delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="10" class="text-center py-3">
-                                    Belum ada data mitra.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-
-        </div>
+        <table id="mitraBrankasTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
+            <thead class="bg-light bg-opacity-30">
+                <tr>
+                    <th width="10px;">ID</th>
+                    <th>Nama Lengkap</th>
+                    <th>Email</th>
+                    <th>WhatsApp</th>
+                    <th>Kode Mitra</th>
+                    <th>Platform</th>
+                    <th>Limit Harian (g)</th>
+                    <th>Komisi (%)</th>
+                    <th>Status</th>
+                    <th style="width: 75px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($mitras as $m)
+                    <tr>
+                        <td class="text-center">{{ $m->id }}</td>
+                        <td>{{ $m->nama_lengkap }}</td>
+                        <td>{{ $m->email }}</td>
+                        <td>{{ $m->phone_wa }}</td>
+                        <td class="text-center"><span class="badge bg-light text-dark border text-uppercase">{{ $m->kode_mitra }}</span></td>
+                        <td>{{ $m->platform }}</td>
+                        <td class="text-end">{{ number_format((float)$m->harian_limit_gram, 3, ',', '.') }}</td>
+                        <td class="text-end">{{ number_format((float)$m->komisi_persen, 2, ',', '.') }} %</td>
+                        <td class="text-center">
+                            @if($m->is_active)
+                                <span class="badge rounded-pill bg-success">Aktif</span>
+                            @else
+                                <span class="badge rounded-pill bg-secondary">Nonaktif</span>
+                            @endif
+                        </td>
+                        <td>
+                            <div class="hstack gap-2 fs-15">
+                                <a href="{{ route('admin.master.mitra-brankas.edit', $m) }}" class="btn icon-btn-sm btn-light-primary">
+                                    <i class="ri-pencil-line"></i>
+                                </a>
+                                <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
+                                    data-action="{{ route('admin.master.mitra-brankas.destroy', $m) }}"
+                                    data-label="{{ $m->nama_lengkap ? $m->nama_lengkap : ('#' . $m->id) }}">
+                                    <i class="ri-delete-bin-line"></i>
+                                </a>
+                            </div>
+                            <form action="{{ route('admin.master.mitra-brankas.destroy', $m) }}" method="POST" class="d-none delete-form">
+                                @csrf
+                                @method('DELETE')
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="10" class="text-center py-3">
+                            Belum ada data mitra.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 @endsection
 

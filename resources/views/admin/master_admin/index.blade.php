@@ -8,77 +8,73 @@
 
 @section('content')
     <div class="card shadow-sm">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table id="adminTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
-                    <thead class="bg-light bg-opacity-30">
-                        <tr>
-                            <th width="10px;">ID</th>
-                            <th>Nama</th>
-                            <th>Email</th>
-                            <th>WhatsApp</th>
-                            <th>Jabatan</th>
-                            <th>Super Admin</th>
-                            <th>Status</th>
-                            <th style="width: 75px;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($admins as $a)
-                            <tr>
-                                <td>{{ $a->id }}</td>
-                                <td>{{ $a->name }}</td>
-                                <td>{{ $a->email }}</td>
-                                <td>{{ $a->phone_wa }}</td>
-                                <td>{{ $a->jabatan }}</td>
-                                <td>
-                                    @if($a->is_super_admin)
-                                        <span class="badge bg-warning text-dark">Ya</span>
-                                    @else
-                                        <span class="badge bg-secondary">Tidak</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($a->is_active)
-                                        <span class="badge bg-success">Aktif</span>
-                                    @else
-                                        <span class="badge bg-secondary">Nonaktif</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="hstack gap-2 fs-15">
-                                        <a href="{{ route('admin.master.admins.edit', $a) }}" class="btn icon-btn-sm btn-light-primary">
-                                            <i class="ri-pencil-line"></i>
-                                        </a>
-                                        <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
-                                           data-action="{{ route('admin.master.admins.destroy', $a) }}"
-                                           data-label="{{ $a->name ? $a->name : ('#' . $a->id) }}">
-                                            <i class="ri-delete-bin-line"></i>
-                                        </a>
-                                    </div>
-                                    <form action="{{ route('admin.master.admins.destroy', $a) }}" method="POST" class="d-none delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="8" class="text-center py-3">
-                                    Belum ada data admin.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+        <table id="adminTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
+            <thead class="bg-light bg-opacity-30">
+                <tr>
+                    <th width="10px;">ID</th>
+                    <th>Nama</th>
+                    <th>Email</th>
+                    <th>WhatsApp</th>
+                    <th>Jabatan</th>
+                    <th>Super Admin</th>
+                    <th>Status</th>
+                    <th style="width: 75px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($admins as $a)
+                    <tr>
+                        <td>{{ $a->id }}</td>
+                        <td>{{ $a->name }}</td>
+                        <td>{{ $a->email }}</td>
+                        <td>{{ $a->phone_wa }}</td>
+                        <td>{{ $a->jabatan }}</td>
+                        <td>
+                            @if($a->is_super_admin)
+                                <span class="badge bg-warning text-dark">Ya</span>
+                            @else
+                                <span class="badge bg-secondary">Tidak</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($a->is_active)
+                                <span class="badge bg-success">Aktif</span>
+                            @else
+                                <span class="badge bg-secondary">Nonaktif</span>
+                            @endif
+                        </td>
+                        <td>
+                            <div class="hstack gap-2 fs-15">
+                                <a href="{{ route('admin.master.admins.edit', $a) }}" class="btn icon-btn-sm btn-light-primary">
+                                    <i class="ri-pencil-line"></i>
+                                </a>
+                                <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
+                                    data-action="{{ route('admin.master.admins.destroy', $a) }}"
+                                    data-label="{{ $a->name ? $a->name : ('#' . $a->id) }}">
+                                    <i class="ri-delete-bin-line"></i>
+                                </a>
+                            </div>
+                            <form action="{{ route('admin.master.admins.destroy', $a) }}" method="POST" class="d-none delete-form">
+                                @csrf
+                                @method('DELETE')
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="8" class="text-center py-3">
+                            Belum ada data admin.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+            
+        @if ($admins->hasPages())
+            <div class="p-2">
+                {{ $admins->links() }}
             </div>
-
-            @if ($admins->hasPages())
-                <div class="p-2">
-                    {{ $admins->links() }}
-                </div>
-            @endif
-        </div>
+        @endif
     </div>
 @endsection
 

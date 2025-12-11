@@ -7,57 +7,51 @@
 
 @section('content')
     <div class="card shadow-sm">
-        <div class="card-body p-20">
-            <div class="table-responsive">
-                <table id="gramasiTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
-                    <thead class="bg-light bg-opacity-30">
-                        <tr>
-                            <th width="10px;">ID</th>
-                            <th>Nama</th>
-                            <th>Gramasi</th>
-                            <th>Status</th>
-                            <th style="width: 75px;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($gramasis as $g)
-                            <tr>
-                                <td class="text-center">{{ $g->id }}</td>
-                                <td>{{ $g->nama }}</td>
-                                <td class="text-end">{{ number_format((float)$g->gramasi, 3, ',', '.') }} g</td>
-                                <td class="text-center">
-                                    @if($g->is_active)
-                                        <span class="badge rounded-pill bg-success">Aktif</span>
-                                    @else
-                                        <span class="badge rounded-pill bg-secondary">Nonaktif</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="hstack gap-2 fs-15">
-                                        <a href="{{ route('admin.master.gramasi-emas.edit', $g) }}" class="btn icon-btn-sm btn-light-primary">
-                                            <i class="ri-pencil-line"></i>
-                                        </a>
-                                        <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
-                                           data-action="{{ route('admin.master.gramasi-emas.destroy', $g) }}"
-                                           data-label="{{ $g->nama ? $g->nama : ('#' . $g->id) }}">
-                                            <i class="ri-delete-bin-line"></i>
-                                        </a>
-                                    </div>
-                                    <form action="{{ route('admin.master.gramasi-emas.destroy', $g) }}" method="POST" class="d-none delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="5" class="text-center py-3">Belum ada data gramasi emas.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-
-        </div>
+        <table id="gramasiTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
+            <thead class="bg-light bg-opacity-30">
+                <tr>
+                    <th width="10px;">ID</th>
+                    <th>Nama</th>
+                    <th>Gramasi</th>
+                    <th>Status</th>
+                    <th style="width: 75px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($gramasis as $g)
+                    <tr>
+                        <td class="text-center">{{ $g->id }}</td>
+                        <td>{{ $g->nama }}</td>
+                        <td class="text-end">{{ number_format((float)$g->gramasi, 3, ',', '.') }} g</td>
+                        <td class="text-center">
+                            @if($g->is_active)
+                                <span class="badge rounded-pill bg-success">Aktif</span>
+                            @else
+                                <span class="badge rounded-pill bg-secondary">Nonaktif</span>
+                            @endif
+                        </td>
+                        <td>
+                            <div class="hstack gap-2 fs-15">
+                                <a href="{{ route('admin.master.gramasi-emas.edit', $g) }}" class="btn icon-btn-sm btn-light-primary">
+                                    <i class="ri-pencil-line"></i>
+                                </a>
+                                <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
+                                    data-action="{{ route('admin.master.gramasi-emas.destroy', $g) }}"
+                                    data-label="{{ $g->nama ? $g->nama : ('#' . $g->id) }}">
+                                    <i class="ri-delete-bin-line"></i>
+                                </a>
+                            </div>
+                            <form action="{{ route('admin.master.gramasi-emas.destroy', $g) }}" method="POST" class="d-none delete-form">
+                                @csrf
+                                @method('DELETE')
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr><td colspan="5" class="text-center py-3">Belum ada data gramasi emas.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 @endsection
 

@@ -8,54 +8,49 @@
 
 @section('content')
     <div class="card shadow-sm">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table id="cicilanTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
-                    <thead class="bg-light bg-opacity-30">
-                        <tr>
-                            <th>ID</th>
-                            <th>Kode Kontrak</th>
-                            <th>Customer</th>
-                            <th>Agen</th>
-                            <th>Total (IDR)</th>
-                            <th>Tenor</th>
-                            <th>Status</th>
-                            <th>Dibuat</th>
-                            <th style="width:140px;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($contracts as $c)
-                            <tr>
-                                <td>{{ $c->id }}</td>
-                                <td>{{ $c->kode_kontrak }}</td>
-                                <td>{{ optional($c->customer)->full_name ?? '-' }}</td>
-                                <td>{{ optional($c->agen)->name ?? '-' }}</td>
-                                <td>{{ number_format((float)$c->harga_total_kontrak, 2, ',', '.') }}</td>
-                                <td>{{ $c->tenor_bulan }} bln</td>
-                                <td>{{ strtoupper($c->status) }}</td>
-                                <td>{{ optional($c->created_at)->format('Y-m-d H:i') }}</td>
-                                <td>
-                                    <div class="hstack gap-2 fs-15">
-                                        <a href="{{ route('admin.trans.cicilan.show', $c) }}" class="btn icon-btn-sm btn-light-primary"><i class="bi bi-eye"></i></a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="9" class="text-center py-3">Belum ada kontrak cicilan.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+        <table id="cicilanTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
+            <thead class="bg-light bg-opacity-30">
+                <tr>
+                    <th>ID</th>
+                    <th>Kode Kontrak</th>
+                    <th>Customer</th>
+                    <th>Agen</th>
+                    <th>Total (IDR)</th>
+                    <th>Tenor</th>
+                    <th>Status</th>
+                    <th>Dibuat</th>
+                    <th style="width:140px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($contracts as $c)
+                    <tr>
+                        <td>{{ $c->id }}</td>
+                        <td>{{ $c->kode_kontrak }}</td>
+                        <td>{{ optional($c->customer)->full_name ?? '-' }}</td>
+                        <td>{{ optional($c->agen)->name ?? '-' }}</td>
+                        <td>{{ number_format((float)$c->harga_total_kontrak, 2, ',', '.') }}</td>
+                        <td>{{ $c->tenor_bulan }} bln</td>
+                        <td>{{ strtoupper($c->status) }}</td>
+                        <td>{{ optional($c->created_at)->format('Y-m-d H:i') }}</td>
+                        <td>
+                            <div class="hstack gap-2 fs-15">
+                                <a href="{{ route('admin.trans.cicilan.show', $c) }}" class="btn icon-btn-sm btn-light-primary"><i class="bi bi-eye"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="9" class="text-center py-3">Belum ada kontrak cicilan.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+        @if ($contracts->hasPages())
+            <div class="p-2">
+                {{ $contracts->links() }}
             </div>
-
-            @if ($contracts->hasPages())
-                <div class="p-2">
-                    {{ $contracts->links() }}
-                </div>
-            @endif
-        </div>
+        @endif
     </div>
 @endsection
 

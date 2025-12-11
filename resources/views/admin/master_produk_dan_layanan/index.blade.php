@@ -8,63 +8,59 @@
 @section('content')
 
     <div class="card shadow-sm">
-        <div class="card-body p-20">
-            <div class="table-responsive">
-                <table id="produkTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
-                    <thead class="bg-light bg-opacity-30">
-                        <tr>
-                            <th width="10px;">ID</th>
-                            <th>Gambar</th>
-                            <th>Gramasi</th>
-                            <th>Harga Hari Ini</th>
-                            <th>Ready/PO</th>
-                            <th>Status</th>
-                            <th style="width: 75px;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($items as $i)
-                            <tr>
-                                <td>{{ $i->id }}</td>
-                                <td>
-                                    @if($i->image_produk)
-                                        <img src="{{ Str::startsWith($i->image_produk, ['http://','https://']) ? $i->image_produk : asset('storage/' . $i->image_produk) }}"
-                                             alt="produk" class="preview-image" style="height:32px;object-fit:contain;cursor: zoom-in;">
-                                    @else
-                                        -
-                                    @endif
-                                </td>
-                                <td>{{ optional($i->gramasi)->gramasi ? number_format($i->gramasi->gramasi, 3).' g' : '-' }}</td>
-                                <td>{{ number_format($i->harga_hariini, 2) }}</td>
-                                <td>
-                                    <span class="badge {{ $i->is_allow_ready ? 'bg-success' : 'bg-secondary' }}">Ready</span>
-                                    <span class="badge {{ $i->is_allow_po ? 'bg-success' : 'bg-secondary' }}">PO</span>
-                                </td>
-                                <td>{{ $i->status }}</td>
-                                <td>
-                                    <div class="hstack gap-2 fs-15">
-                                        <a href="{{ route('admin.master.produk-layanan.edit', $i) }}" class="btn icon-btn-sm btn-light-primary">
-                                            <i class="ri-pencil-line"></i>
-                                        </a>
-                                        <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
-                                           data-action="{{ route('admin.master.produk-layanan.destroy', $i) }}"
-                                           data-label="{{ '#' . $i->id }}">
-                                            <i class="ri-delete-bin-line"></i>
-                                        </a>
-                                    </div>
-                                    <form action="{{ route('admin.master.produk-layanan.destroy', $i) }}" method="POST" class="d-none delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="7" class="text-center py-3">Belum ada data produk & layanan.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <table id="produkTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
+            <thead class="bg-light bg-opacity-30">
+                <tr>
+                    <th width="10px;">ID</th>
+                    <th>Gambar</th>
+                    <th>Gramasi</th>
+                    <th>Harga Hari Ini</th>
+                    <th>Ready/PO</th>
+                    <th>Status</th>
+                    <th style="width: 75px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($items as $i)
+                    <tr>
+                        <td>{{ $i->id }}</td>
+                        <td>
+                            @if($i->image_produk)
+                                <img src="{{ Str::startsWith($i->image_produk, ['http://','https://']) ? $i->image_produk : asset('storage/' . $i->image_produk) }}"
+                                        alt="produk" class="preview-image" style="height:32px;object-fit:contain;cursor: zoom-in;">
+                            @else
+                                -
+                            @endif
+                        </td>
+                        <td>{{ optional($i->gramasi)->gramasi ? number_format($i->gramasi->gramasi, 3).' g' : '-' }}</td>
+                        <td>{{ number_format($i->harga_hariini, 2) }}</td>
+                        <td>
+                            <span class="badge {{ $i->is_allow_ready ? 'bg-success' : 'bg-secondary' }}">Ready</span>
+                            <span class="badge {{ $i->is_allow_po ? 'bg-success' : 'bg-secondary' }}">PO</span>
+                        </td>
+                        <td>{{ $i->status }}</td>
+                        <td>
+                            <div class="hstack gap-2 fs-15">
+                                <a href="{{ route('admin.master.produk-layanan.edit', $i) }}" class="btn icon-btn-sm btn-light-primary">
+                                    <i class="ri-pencil-line"></i>
+                                </a>
+                                <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
+                                    data-action="{{ route('admin.master.produk-layanan.destroy', $i) }}"
+                                    data-label="{{ '#' . $i->id }}">
+                                    <i class="ri-delete-bin-line"></i>
+                                </a>
+                            </div>
+                            <form action="{{ route('admin.master.produk-layanan.destroy', $i) }}" method="POST" class="d-none delete-form">
+                                @csrf
+                                @method('DELETE')
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr><td colspan="7" class="text-center py-3">Belum ada data produk & layanan.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 @endsection
 

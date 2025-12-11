@@ -37,44 +37,42 @@
     <div class="card shadow-sm">
         <div class="card-body">
             <h6 class="mb-3 fs-5"># Payment Logs Terkait</h6>
-            <div class="table-responsive">
-                <table id="cicilanPaymentLogsTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
-                    <thead class="bg-light bg-opacity-30">
+            <table id="cicilanPaymentLogsTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
+                <thead class="bg-light bg-opacity-30">
+                    <tr>
+                        <th width="10px;">ID</th>
+                        <th>Kode Payment</th>
+                        <th>Status</th>
+                        <th>Amount</th>
+                        <th>Metode</th>
+                        <th>Provider</th>
+                        <th>Paid At</th>
+                        <th style="width:120px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($paymentLogs as $l)
                         <tr>
-                            <th width="10px;">ID</th>
-                            <th>Kode Payment</th>
-                            <th>Status</th>
-                            <th>Amount</th>
-                            <th>Metode</th>
-                            <th>Provider</th>
-                            <th>Paid At</th>
-                            <th style="width:120px;">Aksi</th>
+                            <td>{{ $l->id }}</td>
+                            <td>{{ $l->kode_payment }}</td>
+                            <td>{{ strtoupper($l->status) }}</td>
+                            <td>{{ number_format((float)$l->amount, 2, ',', '.') }} {{ $l->currency }}</td>
+                            <td>{{ $l->payment_method ?? '-' }}</td>
+                            <td>{{ $l->provider ?? '-' }}</td>
+                            <td>{{ optional($l->paid_at)->format('Y-m-d H:i') ?? '-' }}</td>
+                            <td>
+                                <div class="hstack gap-2 fs-15">
+                                    <a href="{{ route('admin.trans.payment-logs.show', $l) }}" class="btn icon-btn-sm btn-light-primary"><i class="bi bi-eye"></i></a>
+                                </div>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($paymentLogs as $l)
-                            <tr>
-                                <td>{{ $l->id }}</td>
-                                <td>{{ $l->kode_payment }}</td>
-                                <td>{{ strtoupper($l->status) }}</td>
-                                <td>{{ number_format((float)$l->amount, 2, ',', '.') }} {{ $l->currency }}</td>
-                                <td>{{ $l->payment_method ?? '-' }}</td>
-                                <td>{{ $l->provider ?? '-' }}</td>
-                                <td>{{ optional($l->paid_at)->format('Y-m-d H:i') ?? '-' }}</td>
-                                <td>
-                                    <div class="hstack gap-2 fs-15">
-                                        <a href="{{ route('admin.trans.payment-logs.show', $l) }}" class="btn icon-btn-sm btn-light-primary"><i class="bi bi-eye"></i></a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="8" class="text-center py-3">Belum ada payment log terkait.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="text-center py-3">Belum ada payment log terkait.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 @endsection

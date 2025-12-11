@@ -8,61 +8,53 @@
 
 @section('content')
     <div class="card shadow-sm">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table id="homeSliderTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
-                    <thead class="bg-light bg-opacity-30">
-                        <tr>
-                            <th width="10px;">ID</th>
-                            <th>Gambar</th>
-                            <th>Judul</th>
-                            <th style="width: 75px;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($sliders as $s)
-                            <tr>
-                                <td>{{ $s->id }}</td>
-                                <td>
-                                    @php($raw = $s->image_url ?? '')
-                                    @php($imgUrl = Str::startsWith($raw, ['http://','https://']) ? $raw : asset('storage/' . ltrim($raw, '/')))
-                                    @if(!empty($raw))
-                                        <a href="javascript:;" class="zoomable-thumb" data-src="{{ $imgUrl }}" data-label="{{ $s->title ?? ('#' . $s->id) }}">
-                                            <img src="{{ $imgUrl }}" alt="slider" style="height:48px;object-fit:cover;cursor:zoom-in;">
-                                        </a>
-                                    @else
-                                        -
-                                    @endif
-                                </td>
-                                <td>{{ $s->title }}</td>
-                                <td>
-                                    <div class="hstack gap-2 fs-15">
-                                        <a href="{{ route('admin.master.home-slider.edit', $s) }}" class="btn icon-btn-sm btn-light-primary">
-                                            <i class="ri-pencil-line"></i>
-                                        </a>
-                                        <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
-                                           data-action="{{ route('admin.master.home-slider.destroy', $s) }}"
-                                           data-label="{{ $s->title ? $s->title : ('#' . $s->id) }}">
-                                            <i class="ri-delete-bin-line"></i>
-                                        </a>
-                                    </div>
-                                    <form action="{{ route('admin.master.home-slider.destroy', $s) }}" method="POST" class="d-none delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="4" class="text-center py-3">Belum ada data slider.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            @if ($sliders->hasPages())
-                <div class="p-2">{{ $sliders->links() }}</div>
-            @endif
-        </div>
+        <table id="homeSliderTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
+            <thead class="bg-light bg-opacity-30">
+                <tr>
+                    <th width="10px;">ID</th>
+                    <th>Gambar</th>
+                    <th>Judul</th>
+                    <th style="width: 75px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($sliders as $s)
+                    <tr>
+                        <td>{{ $s->id }}</td>
+                        <td>
+                            @php($raw = $s->image_url ?? '')
+                            @php($imgUrl = Str::startsWith($raw, ['http://','https://']) ? $raw : asset('storage/' . ltrim($raw, '/')))
+                            @if(!empty($raw))
+                                <a href="javascript:;" class="zoomable-thumb" data-src="{{ $imgUrl }}" data-label="{{ $s->title ?? ('#' . $s->id) }}">
+                                    <img src="{{ $imgUrl }}" alt="slider" style="height:48px;object-fit:cover;cursor:zoom-in;">
+                                </a>
+                            @else
+                                -
+                            @endif
+                        </td>
+                        <td>{{ $s->title }}</td>
+                        <td>
+                            <div class="hstack gap-2 fs-15">
+                                <a href="{{ route('admin.master.home-slider.edit', $s) }}" class="btn icon-btn-sm btn-light-primary">
+                                    <i class="ri-pencil-line"></i>
+                                </a>
+                                <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
+                                    data-action="{{ route('admin.master.home-slider.destroy', $s) }}"
+                                    data-label="{{ $s->title ? $s->title : ('#' . $s->id) }}">
+                                    <i class="ri-delete-bin-line"></i>
+                                </a>
+                            </div>
+                            <form action="{{ route('admin.master.home-slider.destroy', $s) }}" method="POST" class="d-none delete-form">
+                                @csrf
+                                @method('DELETE')
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr><td colspan="4" class="text-center py-3">Belum ada data slider.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 @endsection
 

@@ -23,36 +23,34 @@
     <div class="card shadow-sm mb-3">
         <div class="card-body">
             <h6 class="mb-2">Pilih Emas Siap Cicil</h6>
-            <div class="table-responsive">
-                <table class="table table-sm table-hover mb-0">
-                    <thead class="table-light">
+            <table class="table table-sm table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Kode Item</th>
+                        <th>Brand</th>
+                        <th>Gramasi</th>
+                        <th>Harga Jual (IDR)</th>
+                        <th style="width:120px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($stocks as $s)
                         <tr>
-                            <th>Kode Item</th>
-                            <th>Brand</th>
-                            <th>Gramasi</th>
-                            <th>Harga Jual (IDR)</th>
-                            <th style="width:120px;">Aksi</th>
+                            <td>{{ $s->kode_item }}</td>
+                            <td>{{ $s->brand }}</td>
+                            <td>{{ $s->gramasi }}</td>
+                            <td>{{ number_format((float)$s->harga_jual_fix, 2, ',', '.') }}</td>
+                            <td>
+                                <a href="{{ route('customer.cicilan.stock', $s) }}" class="btn btn-sm btn-primary">Cicil</a>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($stocks as $s)
-                            <tr>
-                                <td>{{ $s->kode_item }}</td>
-                                <td>{{ $s->brand }}</td>
-                                <td>{{ $s->gramasi }}</td>
-                                <td>{{ number_format((float)$s->harga_jual_fix, 2, ',', '.') }}</td>
-                                <td>
-                                    <a href="{{ route('customer.cicilan.stock', $s) }}" class="btn btn-sm btn-primary">Cicil</a>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="text-center py-3">Belum ada stok emas tersedia.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="text-center py-3">Belum ada stok emas tersedia.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
 
             @if(method_exists($stocks, 'hasPages') && $stocks->hasPages())
                 <div class="pt-2">{{ $stocks->links() }}</div>
@@ -63,38 +61,36 @@
     <div class="card shadow-sm">
         <div class="card-body">
             <h6 class="mb-2">Kontrak Cicilan Saya</h6>
-            <div class="table-responsive">
-                <table class="table table-sm table-hover mb-0">
-                    <thead class="table-light">
+            <table class="table table-sm table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Kode Kontrak</th>
+                        <th>Gramasi</th>
+                        <th>Total Kontrak (IDR)</th>
+                        <th>Tenor</th>
+                        <th>Status</th>
+                        <th style="width:120px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($contracts as $c)
                         <tr>
-                            <th>Kode Kontrak</th>
-                            <th>Gramasi</th>
-                            <th>Total Kontrak (IDR)</th>
-                            <th>Tenor</th>
-                            <th>Status</th>
-                            <th style="width:120px;">Aksi</th>
+                            <td>{{ $c->kode_kontrak }}</td>
+                            <td>{{ $c->gramasi }}</td>
+                            <td>{{ number_format((float)$c->harga_total_kontrak, 2, ',', '.') }}</td>
+                            <td>{{ $c->tenor_bulan }} bln</td>
+                            <td>{{ strtoupper($c->status) }}</td>
+                            <td>
+                                <a href="{{ route('customer.cicilan.show', $c) }}" class="btn btn-sm btn-outline-primary">Detail</a>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($contracts as $c)
-                            <tr>
-                                <td>{{ $c->kode_kontrak }}</td>
-                                <td>{{ $c->gramasi }}</td>
-                                <td>{{ number_format((float)$c->harga_total_kontrak, 2, ',', '.') }}</td>
-                                <td>{{ $c->tenor_bulan }} bln</td>
-                                <td>{{ strtoupper($c->status) }}</td>
-                                <td>
-                                    <a href="{{ route('customer.cicilan.show', $c) }}" class="btn btn-sm btn-outline-primary">Detail</a>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center py-3">Belum ada kontrak cicilan.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center py-3">Belum ada kontrak cicilan.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
 
             @if(method_exists($contracts, 'hasPages') && $contracts->hasPages())
                 <div class="pt-2">{{ $contracts->links() }}</div>

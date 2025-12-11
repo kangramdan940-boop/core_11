@@ -8,67 +8,59 @@
 
 @section('content')
     <div class="card shadow-sm">
-        <div class="card-body p-20">
-            <div class="table-responsive">
-                <table id="goldPriceTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
-                    <thead class="bg-light bg-opacity-30">
-                        <tr>
-                            <th width="10px;">ID</th>
-                            <th>Tanggal</th>
-                            <th>Source</th>
-                            <th>Beli (IDR/g)</th>
-                            <th>Jual (IDR/g)</th>
-                            <th>Buyback (IDR/g)</th>
-                            <th>Status</th>
-                            <th style="width: 75px;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($prices as $p)
-                            <tr>
-                                <td class="text-center">{{ $p->id }}</td>
-                                <td>{{ optional($p->price_date)->format('Y-m-d') }}</td>
-                                <td>{{ $p->source }}</td>
-                                <td class="text-end">{{ number_format((float)$p->price_buy, 2, ',', '.') }}</td>
-                                <td class="text-end">{{ number_format((float)$p->price_sell, 2, ',', '.') }}</td>
-                                <td class="text-end">{{ $p->price_buyback !== null ? number_format((float)$p->price_buyback, 2, ',', '.') : '-' }}</td>
-                                <td class="text-center">
-                                    @if($p->is_active)
-                                        <span class="badge rounded-pill bg-success">Aktif</span>
-                                    @else
-                                        <span class="badge rounded-pill bg-secondary">Nonaktif</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="hstack gap-2 fs-15">
-                                        <a href="{{ route('admin.master.gold-prices.edit', $p) }}" class="btn icon-btn-sm btn-light-primary">
-                                            <i class="ri-pencil-line"></i>
-                                        </a>
-                                        <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
-                                           data-action="{{ route('admin.master.gold-prices.destroy', $p) }}"
-                                           data-label="{{ optional($p->price_date)->format('Y-m-d') ? optional($p->price_date)->format('Y-m-d') : ('#' . $p->id) }}">
-                                            <i class="ri-delete-bin-line"></i>
-                                        </a>
-                                    </div>
-                                    <form action="{{ route('admin.master.gold-prices.destroy', $p) }}" method="POST" class="d-none delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="8" class="text-center py-3">Belum ada data harga emas.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            @if ($prices->hasPages())
-                <div class="p-2">{{ $prices->links() }}</div>
-            @endif
-        </div>
+        <table id="goldPriceTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
+            <thead class="bg-light bg-opacity-30">
+                <tr>
+                    <th width="10px;">ID</th>
+                    <th>Tanggal</th>
+                    <th>Source</th>
+                    <th>Beli (IDR/g)</th>
+                    <th>Jual (IDR/g)</th>
+                    <th>Buyback (IDR/g)</th>
+                    <th>Status</th>
+                    <th style="width: 75px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($prices as $p)
+                    <tr>
+                        <td class="text-center">{{ $p->id }}</td>
+                        <td>{{ optional($p->price_date)->format('Y-m-d') }}</td>
+                        <td>{{ $p->source }}</td>
+                        <td class="text-end">{{ number_format((float)$p->price_buy, 2, ',', '.') }}</td>
+                        <td class="text-end">{{ number_format((float)$p->price_sell, 2, ',', '.') }}</td>
+                        <td class="text-end">{{ $p->price_buyback !== null ? number_format((float)$p->price_buyback, 2, ',', '.') : '-' }}</td>
+                        <td class="text-center">
+                            @if($p->is_active)
+                                <span class="badge rounded-pill bg-success">Aktif</span>
+                            @else
+                                <span class="badge rounded-pill bg-secondary">Nonaktif</span>
+                            @endif
+                        </td>
+                        <td>
+                            <div class="hstack gap-2 fs-15">
+                                <a href="{{ route('admin.master.gold-prices.edit', $p) }}" class="btn icon-btn-sm btn-light-primary">
+                                    <i class="ri-pencil-line"></i>
+                                </a>
+                                <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
+                                    data-action="{{ route('admin.master.gold-prices.destroy', $p) }}"
+                                    data-label="{{ optional($p->price_date)->format('Y-m-d') ? optional($p->price_date)->format('Y-m-d') : ('#' . $p->id) }}">
+                                    <i class="ri-delete-bin-line"></i>
+                                </a>
+                            </div>
+                            <form action="{{ route('admin.master.gold-prices.destroy', $p) }}" method="POST" class="d-none delete-form">
+                                @csrf
+                                @method('DELETE')
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="8" class="text-center py-3">Belum ada data harga emas.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 @endsection
 

@@ -8,71 +8,63 @@
 
 @section('content')
     <div class="card shadow-sm">
-        <div class="card-body p-20">
-            <div class="table-responsive">
-                <table id="goldReadyTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
-                    <thead class="bg-light bg-opacity-30">
-                        <tr>
-                            <th width="10px;">ID</th>
-                            <th>Kode Item</th>
-                            <th>Brand</th>
-                            <th>Gramasi (g)</th>
-                            <th>Agen</th>
-                            <th>Kondisi</th>
-                            <th>Status</th>
-                            <th>Harga Jual Fix</th>
-                            <th style="width: 75px;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($stocks as $s)
-                            <tr>
-                                <td class="text-center">{{ $s->id }}</td>
-                                <td class="text-center"><span class="badge bg-light text-dark border text-uppercase">{{ $s->kode_item }}</span></td>
-                                <td class="text-uppercase">{{ $s->brand }}</td>
-                                <td class="text-end">{{ number_format((float)$s->gramasi, 3, ',', '.') }}</td>
-                                <td>{{ optional($s->agen)->name ?? '-' }}</td>
-                                <td>{{ ucfirst($s->kondisi_barang) }}</td>
-                                <td class="text-center">
-                                    @if($s->status === 'available')
-                                        <span class="badge rounded-pill bg-success">Available</span>
-                                    @elseif($s->status === 'reserved')
-                                        <span class="badge rounded-pill bg-warning text-dark">Reserved</span>
-                                    @else
-                                        <span class="badge rounded-pill bg-secondary">Sold</span>
-                                    @endif
-                                </td>
-                                <td>{{ $s->harga_jual_fix !== null ? number_format((float)$s->harga_jual_fix, 2, ',', '.') : '-' }}</td>
-                                <td>
-                                    <div class="hstack gap-2 fs-15">
-                                        <a href="{{ route('admin.master.ready-stocks.edit', $s) }}" class="btn icon-btn-sm btn-light-primary">
-                                            <i class="ri-pencil-line"></i>
-                                        </a>
-                                        <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
-                                           data-action="{{ route('admin.master.ready-stocks.destroy', $s) }}"
-                                           data-label="{{ $s->kode_item ? $s->kode_item : ('#' . $s->id) }}">
-                                            <i class="ri-delete-bin-line"></i>
-                                        </a>
-                                    </div>
-                                    <form action="{{ route('admin.master.ready-stocks.destroy', $s) }}" method="POST" class="d-none delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="9" class="text-center py-3">Belum ada data stok emas ready.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            @if ($stocks->hasPages())
-                <div class="p-2">{{ $stocks->links() }}</div>
-            @endif
-        </div>
+        <table id="goldReadyTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
+            <thead class="bg-light bg-opacity-30">
+                <tr>
+                    <th width="10px;">ID</th>
+                    <th>Kode Item</th>
+                    <th>Brand</th>
+                    <th>Gramasi (g)</th>
+                    <th>Agen</th>
+                    <th>Kondisi</th>
+                    <th>Status</th>
+                    <th>Harga Jual Fix</th>
+                    <th style="width: 75px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($stocks as $s)
+                    <tr>
+                        <td class="text-center">{{ $s->id }}</td>
+                        <td class="text-center"><span class="badge bg-light text-dark border text-uppercase">{{ $s->kode_item }}</span></td>
+                        <td class="text-uppercase">{{ $s->brand }}</td>
+                        <td class="text-end">{{ number_format((float)$s->gramasi, 3, ',', '.') }}</td>
+                        <td>{{ optional($s->agen)->name ?? '-' }}</td>
+                        <td>{{ ucfirst($s->kondisi_barang) }}</td>
+                        <td class="text-center">
+                            @if($s->status === 'available')
+                                <span class="badge rounded-pill bg-success">Available</span>
+                            @elseif($s->status === 'reserved')
+                                <span class="badge rounded-pill bg-warning text-dark">Reserved</span>
+                            @else
+                                <span class="badge rounded-pill bg-secondary">Sold</span>
+                            @endif
+                        </td>
+                        <td>{{ $s->harga_jual_fix !== null ? number_format((float)$s->harga_jual_fix, 2, ',', '.') : '-' }}</td>
+                        <td>
+                            <div class="hstack gap-2 fs-15">
+                                <a href="{{ route('admin.master.ready-stocks.edit', $s) }}" class="btn icon-btn-sm btn-light-primary">
+                                    <i class="ri-pencil-line"></i>
+                                </a>
+                                <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
+                                    data-action="{{ route('admin.master.ready-stocks.destroy', $s) }}"
+                                    data-label="{{ $s->kode_item ? $s->kode_item : ('#' . $s->id) }}">
+                                    <i class="ri-delete-bin-line"></i>
+                                </a>
+                            </div>
+                            <form action="{{ route('admin.master.ready-stocks.destroy', $s) }}" method="POST" class="d-none delete-form">
+                                @csrf
+                                @method('DELETE')
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="9" class="text-center py-3">Belum ada data stok emas ready.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 @endsection
 

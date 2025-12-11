@@ -100,30 +100,28 @@
 
                 @if ($assignItems->count() > 0)
                     <h5 class="mt-24 mb-8">Alokasi Komisi Saya</h5>
-                    <div class="table-responsive">
-                        <table class="table table-sm mb-0">
-                            <thead class="table-light">
+                    <table class="table table-sm mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Kode PO</th>
+                                <th>Gram</th>
+                                <th>% Komisi</th>
+                                <th>Nominal (IDR)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($assignItems as $a)
                                 <tr>
-                                    <th>Tanggal</th>
-                                    <th>Kode PO</th>
-                                    <th>Gram</th>
-                                    <th>% Komisi</th>
-                                    <th>Nominal (IDR)</th>
+                                    <td>{{ optional($a->tanggal_komisi)->format('Y-m-d') ?? '-' }}</td>
+                                    <td>{{ optional($a->po)->kode_po ?? '-' }}</td>
+                                    <td>{{ number_format((float)$a->jumlah_gram, 3, ',', '.') }}</td>
+                                    <td>{{ number_format((float)$a->komisi_persen, 2, ',', '.') }}</td>
+                                    <td>{{ number_format((float)$a->komisi_amount, 2, ',', '.') }}</td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($assignItems as $a)
-                                    <tr>
-                                        <td>{{ optional($a->tanggal_komisi)->format('Y-m-d') ?? '-' }}</td>
-                                        <td>{{ optional($a->po)->kode_po ?? '-' }}</td>
-                                        <td>{{ number_format((float)$a->jumlah_gram, 3, ',', '.') }}</td>
-                                        <td>{{ number_format((float)$a->komisi_persen, 2, ',', '.') }}</td>
-                                        <td>{{ number_format((float)$a->komisi_amount, 2, ',', '.') }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                            @endforeach
+                        </tbody>
+                    </table>
                 @endif
             @endif
         </div>

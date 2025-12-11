@@ -8,66 +8,59 @@
 
 @section('content')
     <div class="card shadow-sm">
-        <div class="card-body p-20">
-            <div class="table-responsive">
-                <table id="poTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
-                    <thead class="bg-light bg-opacity-30">
-                        <tr>
-                            <th width="10px;">ID</th>
-                            <th>Kode PO</th>
-                            <th>Customer</th>
-                            <th>Agen</th>
-                            <th>Total (IDR)</th>
-                            <th>Status</th>
-                            <th>Dibuat</th>
-                            <th style="width: 75px;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($pos as $p)
-                            <tr>
-                                <td>{{ $p->id }}</td>
-                                <td>{{ $p->kode_po }}</td>
-                                <td>{{ optional($p->customer)->full_name ?? '-' }}</td>
-                                <td>{{ optional($p->agen)->name ?? '-' }}</td>
-                                <td>{{ number_format((float)$p->total_amount, 2, ',', '.') }}</td>
-                                <td>
-                                    @php($st = $p->status)
-                                    @if($st === 'pending_payment')
-                                        <span class="badge bg-warning text-dark">PENDING</span>
-                                    @elseif($st === 'paid')
-                                        <span class="badge bg-success">PAID</span>
-                                    @elseif($st === 'processing')
-                                        <span class="badge bg-info text-dark">PROCESSING</span>
-                                    @elseif($st === 'ready_at_agen')
-                                        <span class="badge bg-primary">READY @AGEN</span>
-                                    @elseif($st === 'shipped')
-                                        <span class="badge bg-primary">SHIPPED</span>
-                                    @elseif($st === 'completed')
-                                        <span class="badge bg-success">COMPLETED</span>
-                                    @else
-                                        <span class="badge bg-secondary">CANCELLED</span>
-                                    @endif
-                                </td>
-                                <td>{{ optional($p->created_at)->format('Y-m-d H:i') }}</td>
-                                <td>
-                                    <div class="hstack gap-2 fs-15">
-                                        <a href="{{ route('admin.trans.po.show', $p) }}" class="btn icon-btn-sm btn-light-primary">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="8" class="text-center py-3">Belum ada PO.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            @if ($pos->hasPages())
-                <div class="p-2">{{ $pos->links() }}</div>
-            @endif
-        </div>
+        <table id="poTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
+            <thead class="bg-light bg-opacity-30">
+                <tr>
+                    <th width="10px;">ID</th>
+                    <th>Kode PO</th>
+                    <th>Customer</th>
+                    <th>Agen</th>
+                    <th>Total (IDR)</th>
+                    <th>Status</th>
+                    <th>Dibuat</th>
+                    <th style="width: 75px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($pos as $p)
+                    <tr>
+                        <td>{{ $p->id }}</td>
+                        <td>{{ $p->kode_po }}</td>
+                        <td>{{ optional($p->customer)->full_name ?? '-' }}</td>
+                        <td>{{ optional($p->agen)->name ?? '-' }}</td>
+                        <td>{{ number_format((float)$p->total_amount, 2, ',', '.') }}</td>
+                        <td>
+                            @php($st = $p->status)
+                            @if($st === 'pending_payment')
+                                <span class="badge bg-warning text-dark">PENDING</span>
+                            @elseif($st === 'paid')
+                                <span class="badge bg-success">PAID</span>
+                            @elseif($st === 'processing')
+                                <span class="badge bg-info text-dark">PROCESSING</span>
+                            @elseif($st === 'ready_at_agen')
+                                <span class="badge bg-primary">READY @AGEN</span>
+                            @elseif($st === 'shipped')
+                                <span class="badge bg-primary">SHIPPED</span>
+                            @elseif($st === 'completed')
+                                <span class="badge bg-success">COMPLETED</span>
+                            @else
+                                <span class="badge bg-secondary">CANCELLED</span>
+                            @endif
+                        </td>
+                        <td>{{ optional($p->created_at)->format('Y-m-d H:i') }}</td>
+                        <td>
+                            <div class="hstack gap-2 fs-15">
+                                <a href="{{ route('admin.trans.po.show', $p) }}" class="btn icon-btn-sm btn-light-primary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr><td colspan="8" class="text-center py-3">Belum ada PO.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 @endsection
 

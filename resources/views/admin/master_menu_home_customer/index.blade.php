@@ -8,63 +8,55 @@
 
 @section('content')
     <div class="card shadow-sm">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table id="menuHomeTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
-                    <thead class="bg-light bg-opacity-30">
-                        <tr>
-                            <th width="10px;">ID</th>
-                            <th>Gambar</th>
-                            <th>Label</th>
-                            <th>Path URL</th>
-                            <th style="width: 75px;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($menus as $m)
-                            <tr>
-                                <td>{{ $m->id }}</td>
-                                <td>
-                                    @php($raw = $m->image ?? '')
-                                    @php($imgUrl = Str::startsWith($raw, ['http://','https://']) ? $raw : asset('storage/' . ltrim($raw, '/')))
-                                    @if(!empty($raw))
-                                        <a href="javascript:;" class="zoomable-thumb" data-src="{{ $imgUrl }}" data-label="{{ $m->label ?? ('#' . $m->id) }}">
-                                            <img src="{{ $imgUrl }}" alt="menu" style="height:32px;object-fit:contain;cursor:zoom-in;">
-                                        </a>
-                                    @else
-                                        -
-                                    @endif
-                                </td>
-                                <td>{{ $m->label }}</td>
-                                <td>{{ $m->path_url ?? '-' }}</td>
-                                <td>
-                                    <div class="hstack gap-2 fs-15">
-                                        <a href="{{ route('admin.master.menu-home-customer.edit', $m) }}" class="btn icon-btn-sm btn-light-primary">
-                                            <i class="ri-pencil-line"></i>
-                                        </a>
-                                        <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
-                                           data-action="{{ route('admin.master.menu-home-customer.destroy', $m) }}"
-                                           data-label="{{ $m->label ? $m->label : ('#' . $m->id) }}">
-                                            <i class="ri-delete-bin-line"></i>
-                                        </a>
-                                    </div>
-                                    <form action="{{ route('admin.master.menu-home-customer.destroy', $m) }}" method="POST" class="d-none delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="5" class="text-center py-3">Belum ada data menu.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            @if ($menus->hasPages())
-                <div class="p-2">{{ $menus->links() }}</div>
-            @endif
-        </div>
+        <table id="menuHomeTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
+            <thead class="bg-light bg-opacity-30">
+                <tr>
+                    <th width="10px;">ID</th>
+                    <th>Gambar</th>
+                    <th>Label</th>
+                    <th>Path URL</th>
+                    <th style="width: 75px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($menus as $m)
+                    <tr>
+                        <td>{{ $m->id }}</td>
+                        <td>
+                            @php($raw = $m->image ?? '')
+                            @php($imgUrl = Str::startsWith($raw, ['http://','https://']) ? $raw : asset('storage/' . ltrim($raw, '/')))
+                            @if(!empty($raw))
+                                <a href="javascript:;" class="zoomable-thumb" data-src="{{ $imgUrl }}" data-label="{{ $m->label ?? ('#' . $m->id) }}">
+                                    <img src="{{ $imgUrl }}" alt="menu" style="height:32px;object-fit:contain;cursor:zoom-in;">
+                                </a>
+                            @else
+                                -
+                            @endif
+                        </td>
+                        <td>{{ $m->label }}</td>
+                        <td>{{ $m->path_url ?? '-' }}</td>
+                        <td>
+                            <div class="hstack gap-2 fs-15">
+                                <a href="{{ route('admin.master.menu-home-customer.edit', $m) }}" class="btn icon-btn-sm btn-light-primary">
+                                    <i class="ri-pencil-line"></i>
+                                </a>
+                                <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
+                                    data-action="{{ route('admin.master.menu-home-customer.destroy', $m) }}"
+                                    data-label="{{ $m->label ? $m->label : ('#' . $m->id) }}">
+                                    <i class="ri-delete-bin-line"></i>
+                                </a>
+                            </div>
+                            <form action="{{ route('admin.master.menu-home-customer.destroy', $m) }}" method="POST" class="d-none delete-form">
+                                @csrf
+                                @method('DELETE')
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr><td colspan="5" class="text-center py-3">Belum ada data menu.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 @endsection
 

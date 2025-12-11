@@ -126,36 +126,34 @@
     <div class="card shadow-sm">
         <div class="card-body">
             <h6 class="mb-3 fs-5"># Jadwal & Pembayaran Cicilan</h6>
-            <div class="table-responsive">
-                <table id="cicilanPaymentsTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
-                    <thead class="bg-light bg-opacity-30">
+            <table id="cicilanPaymentsTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
+                <thead class="bg-light bg-opacity-30">
+                    <tr>
+                        <th>#</th>
+                        <th>Due Date</th>
+                        <th>Amount Due</th>
+                        <th>Status</th>
+                        <th>Paid At</th>
+                        <th>Amount Paid</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($payments as $p)
                         <tr>
-                            <th>#</th>
-                            <th>Due Date</th>
-                            <th>Amount Due</th>
-                            <th>Status</th>
-                            <th>Paid At</th>
-                            <th>Amount Paid</th>
+                            <td>{{ $p->cicilan_ke }}</td>
+                            <td>{{ optional($p->due_date)->format('Y-m-d') ?? '-' }}</td>
+                            <td>{{ number_format((float)$p->amount_due, 2, ',', '.') }}</td>
+                            <td>{{ strtoupper($p->status) }}</td>
+                            <td>{{ optional($p->paid_at)->format('Y-m-d H:i') ?? '-' }}</td>
+                            <td>{{ number_format((float)$p->amount_paid, 2, ',', '.') }}</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($payments as $p)
-                            <tr>
-                                <td>{{ $p->cicilan_ke }}</td>
-                                <td>{{ optional($p->due_date)->format('Y-m-d') ?? '-' }}</td>
-                                <td>{{ number_format((float)$p->amount_due, 2, ',', '.') }}</td>
-                                <td>{{ strtoupper($p->status) }}</td>
-                                <td>{{ optional($p->paid_at)->format('Y-m-d H:i') ?? '-' }}</td>
-                                <td>{{ number_format((float)$p->amount_paid, 2, ',', '.') }}</td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center py-3">Belum ada jadwal pembayaran.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center py-3">Belum ada jadwal pembayaran.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -169,54 +167,52 @@
                     ->orderByDesc('id')
                     ->get();
             @endphp
-            <div class="table-responsive">
-                <table id="cicilanManualLogsTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
-                    <thead class="bg-light bg-opacity-30">
+            <table id="cicilanManualLogsTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
+                <thead class="bg-light bg-opacity-30">
+                    <tr>
+                        <th>ID</th>
+                        <th>Kode Payment</th>
+                        <th>Status</th>
+                        <th>Amount</th>
+                        <th>Metode</th>
+                        <th>Provider</th>
+                        <th>Paid At</th>
+                        <th style="width:160px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($paymentLogs as $l)
                         <tr>
-                            <th>ID</th>
-                            <th>Kode Payment</th>
-                            <th>Status</th>
-                            <th>Amount</th>
-                            <th>Metode</th>
-                            <th>Provider</th>
-                            <th>Paid At</th>
-                            <th style="width:160px;">Aksi</th>
+                            <td>{{ $l->id }}</td>
+                            <td>{{ $l->kode_payment }}</td>
+                            <td>{{ strtoupper($l->status) }}</td>
+                            <td>{{ number_format((float)$l->amount, 2, ',', '.') }} {{ $l->currency }}</td>
+                            <td>{{ $l->payment_method ?? '-' }}</td>
+                            <td>{{ $l->provider ?? '-' }}</td>
+                            <td>{{ optional($l->paid_at)->format('Y-m-d H:i') ?? '-' }}</td>
+                            <td>
+                                <div class="hstack gap-2 fs-15">
+                                    <a href="{{ route('admin.trans.payment-logs.show', $l) }}" class="btn icon-btn-sm btn-light-primary"><i class="bi bi-eye"></i></a>
+                                    @if ($l->payment_method === 'manual_transfer' && $l->status === 'pending')
+                                    <form action="{{ route('admin.trans.payment-logs.approve', $l) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="approve-btn btn icon-btn-sm btn-success"><i class="bi bi-check2"></i></button>
+                                    </form>
+                                    <form action="{{ route('admin.trans.payment-logs.reject', $l) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="reject-btn btn icon-btn-sm btn-outline-danger"><i class="bi bi-x"></i></button>
+                                    </form>
+                                    @endif
+                                </div>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($paymentLogs as $l)
-                            <tr>
-                                <td>{{ $l->id }}</td>
-                                <td>{{ $l->kode_payment }}</td>
-                                <td>{{ strtoupper($l->status) }}</td>
-                                <td>{{ number_format((float)$l->amount, 2, ',', '.') }} {{ $l->currency }}</td>
-                                <td>{{ $l->payment_method ?? '-' }}</td>
-                                <td>{{ $l->provider ?? '-' }}</td>
-                                <td>{{ optional($l->paid_at)->format('Y-m-d H:i') ?? '-' }}</td>
-                                <td>
-                                    <div class="hstack gap-2 fs-15">
-                                        <a href="{{ route('admin.trans.payment-logs.show', $l) }}" class="btn icon-btn-sm btn-light-primary"><i class="bi bi-eye"></i></a>
-                                        @if ($l->payment_method === 'manual_transfer' && $l->status === 'pending')
-                                        <form action="{{ route('admin.trans.payment-logs.approve', $l) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            <button type="submit" class="approve-btn btn icon-btn-sm btn-success"><i class="bi bi-check2"></i></button>
-                                        </form>
-                                        <form action="{{ route('admin.trans.payment-logs.reject', $l) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            <button type="submit" class="reject-btn btn icon-btn-sm btn-outline-danger"><i class="bi bi-x"></i></button>
-                                        </form>
-                                        @endif
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="8" class="text-center py-3">Belum ada konfirmasi pembayaran manual.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="text-center py-3">Belum ada konfirmasi pembayaran manual.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 @endsection

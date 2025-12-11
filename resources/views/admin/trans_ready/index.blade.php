@@ -8,67 +8,61 @@
 
 @section('content')
     <div class="card shadow-sm">
-        <div class="card-body p-20">
-            <div class="table-responsive">
-                <table id="readyTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
-                    <thead class="bg-light bg-opacity-30">
-                        <tr>
-                            <th class="text-center" style="width:64px;">ID</th>
-                            <th class="text-center" style="width:160px;">Kode Trans</th>
-                            <th style="min-width:200px;">Customer</th>
-                            <th style="min-width:160px;">Agen</th>
-                            <th style="min-width:160px;">Item</th>
-                            <th class="text-end" style="width:80px;">Qty</th>
-                            <th class="text-end" style="min-width:160px;">Total (IDR)</th>
-                            <th class="text-center" style="width:120px;">Status</th>
-                            <th style="min-width:160px;">Dibuat</th>
-                            <th class="text-end text-nowrap" style="width:160px;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($readyTrans as $t)
-                            <tr>
-                                <td>{{ $t->id }}</td>
-                                <td>{{ $t->kode_trans }}</td>
-                                <td>{{ optional($t->customer)->full_name ?? '-' }}</td>
-                                <td>{{ optional($t->agen)->name ?? '-' }}</td>
-                                <td>{{ optional($t->readyStock)->kode_item ?? '-' }}</td>
-                                <td>{{ $t->qty }}</td>
-                                <td>{{ number_format((float)$t->total_amount, 2, ',', '.') }}</td>
-                                <td>
-                                    @php($st = $t->status)
-                                    @if($st === 'pending_payment')
-                                        <span class="badge bg-warning text-dark">PENDING</span>
-                                    @elseif($st === 'paid')
-                                        <span class="badge bg-success">PAID</span>
-                                    @elseif($st === 'waiting_shipment')
-                                        <span class="badge bg-info text-dark">WAITING SHIPMENT</span>
-                                    @elseif($st === 'shipped')
-                                        <span class="badge bg-primary">SHIPPED</span>
-                                    @elseif($st === 'completed')
-                                        <span class="badge bg-success">COMPLETED</span>
-                                    @else
-                                        <span class="badge bg-secondary">CANCELLED</span>
-                                    @endif
-                                </td>
-                                <td>{{ optional($t->created_at)->format('Y-m-d H:i') }}</td>
-                                <td>
-                                    <div class="hstack gap-2 fs-15">
-                                        <a href="{{ route('admin.trans.ready.show', $t) }}" class="btn icon-btn-sm btn-light-primary"><i class="bi bi-eye"></i></a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="10" class="text-center py-3">Belum ada transaksi ready.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-
-        </div>
+        <table id="readyTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
+            <thead class="bg-light bg-opacity-30">
+                <tr>
+                    <th class="text-center" style="width:64px;">ID</th>
+                    <th class="text-center" style="width:160px;">Kode Trans</th>
+                    <th style="min-width:200px;">Customer</th>
+                    <th style="min-width:160px;">Agen</th>
+                    <th style="min-width:160px;">Item</th>
+                    <th class="text-end" style="width:80px;">Qty</th>
+                    <th class="text-end" style="min-width:160px;">Total (IDR)</th>
+                    <th class="text-center" style="width:120px;">Status</th>
+                    <th style="min-width:160px;">Dibuat</th>
+                    <th class="text-end text-nowrap" style="width:160px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($readyTrans as $t)
+                    <tr>
+                        <td>{{ $t->id }}</td>
+                        <td>{{ $t->kode_trans }}</td>
+                        <td>{{ optional($t->customer)->full_name ?? '-' }}</td>
+                        <td>{{ optional($t->agen)->name ?? '-' }}</td>
+                        <td>{{ optional($t->readyStock)->kode_item ?? '-' }}</td>
+                        <td>{{ $t->qty }}</td>
+                        <td>{{ number_format((float)$t->total_amount, 2, ',', '.') }}</td>
+                        <td>
+                            @php($st = $t->status)
+                            @if($st === 'pending_payment')
+                                <span class="badge bg-warning text-dark">PENDING</span>
+                            @elseif($st === 'paid')
+                                <span class="badge bg-success">PAID</span>
+                            @elseif($st === 'waiting_shipment')
+                                <span class="badge bg-info text-dark">WAITING SHIPMENT</span>
+                            @elseif($st === 'shipped')
+                                <span class="badge bg-primary">SHIPPED</span>
+                            @elseif($st === 'completed')
+                                <span class="badge bg-success">COMPLETED</span>
+                            @else
+                                <span class="badge bg-secondary">CANCELLED</span>
+                            @endif
+                        </td>
+                        <td>{{ optional($t->created_at)->format('Y-m-d H:i') }}</td>
+                        <td>
+                            <div class="hstack gap-2 fs-15">
+                                <a href="{{ route('admin.trans.ready.show', $t) }}" class="btn icon-btn-sm btn-light-primary"><i class="bi bi-eye"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="10" class="text-center py-3">Belum ada transaksi ready.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 @endsection
 

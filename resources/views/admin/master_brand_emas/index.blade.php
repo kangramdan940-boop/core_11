@@ -7,72 +7,67 @@
 
 @section('content')
     <div class="card shadow-sm">
-        <div class="card-body p-20">
-            <div class="table-responsive">
-                <table id="brandsTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
-                    <thead class="bg-light bg-opacity-30">
-                        <tr>
-                            <th width="10px;">ID</th>
-                            <th>Logo</th>
-                            <th>Kode</th>
-                            <th>Nama</th>
-                            <th>Status</th>
-                            <th style="width: 75px;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($brands as $b)
-                            <tr>
-                                <td>{{ $b->id }}</td>
-                                <td>
-                                    @php($raw = $b->image_url ?? '')
-                                    @php($logoUrl = Str::startsWith($raw, ['http://','https://']) ? $raw : asset('storage/' . ltrim($raw, '/')))
-                                    @if(!empty($raw))
-                                        <a href="javascript:;" class="zoomable-thumb" data-src="{{ $logoUrl }}" data-label="{{ $b->nama_brand ?? ('#' . $b->id) }}">
-                                            <img src="{{ $logoUrl }}" alt="logo" style="height:32px;object-fit:contain;cursor:zoom-in;">
-                                        </a>
-                                    @else
-                                        <div class="d-inline-flex align-items-center justify-content-center rounded" style="height:36px;width:36px;background:#e5e7eb;color:#111827;font-weight:600;">
-                                            {{ Str::upper(Str::substr($b->nama_brand ?? $b->kode_brand, 0, 2)) }}
-                                        </div>
-                                    @endif
-                                </td>
-                                <td class="text-center">
-                                    <span class="badge bg-light text-dark border text-uppercase text-truncate" style="max-width:160px;">{{ $b->kode_brand }}</span>
-                                </td>
-                                <td class="text-truncate" style="max-width:220px;">{{ $b->nama_brand }}</td>
-                                <td class="text-center">
-                                    @if($b->is_active)
-                                        <span class="badge rounded-pill bg-success">Aktif</span>
-                                    @else
-                                        <span class="badge rounded-pill bg-secondary">Nonaktif</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="hstack gap-2 fs-15">
-                                        <a href="{{ route('admin.master.brand-emas.edit', $b) }}" class="btn icon-btn-sm btn-light-primary">
-                                            <i class="ri-pencil-line"></i>
-                                        </a>
-                                        <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
-                                           data-action="{{ route('admin.master.brand-emas.destroy', $b) }}"
-                                           data-label="{{ $b->nama_brand ? $b->nama_brand : ('#' . $b->id) }}">
-                                            <i class="ri-delete-bin-line"></i>
-                                        </a>
-                                    </div>
-                                    <form action="{{ route('admin.master.brand-emas.destroy', $b) }}" method="POST" class="d-none delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="6" class="text-center py-3">Belum ada data brand emas.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
+        <table id="brandsTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
+            <thead class="bg-light bg-opacity-30">
+                <tr>
+                    <th width="10px;">ID</th>
+                    <th>Logo</th>
+                    <th>Kode</th>
+                    <th>Nama</th>
+                    <th>Status</th>
+                    <th style="width: 75px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($brands as $b)
+                    <tr>
+                        <td>{{ $b->id }}</td>
+                        <td>
+                            @php($raw = $b->image_url ?? '')
+                            @php($logoUrl = Str::startsWith($raw, ['http://','https://']) ? $raw : asset('storage/' . ltrim($raw, '/')))
+                            @if(!empty($raw))
+                                <a href="javascript:;" class="zoomable-thumb" data-src="{{ $logoUrl }}" data-label="{{ $b->nama_brand ?? ('#' . $b->id) }}">
+                                    <img src="{{ $logoUrl }}" alt="logo" style="height:32px;object-fit:contain;cursor:zoom-in;">
+                                </a>
+                            @else
+                                <div class="d-inline-flex align-items-center justify-content-center rounded" style="height:36px;width:36px;background:#e5e7eb;color:#111827;font-weight:600;">
+                                    {{ Str::upper(Str::substr($b->nama_brand ?? $b->kode_brand, 0, 2)) }}
+                                </div>
+                            @endif
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-light text-dark border text-uppercase text-truncate" style="max-width:160px;">{{ $b->kode_brand }}</span>
+                        </td>
+                        <td class="text-truncate" style="max-width:220px;">{{ $b->nama_brand }}</td>
+                        <td class="text-center">
+                            @if($b->is_active)
+                                <span class="badge rounded-pill bg-success">Aktif</span>
+                            @else
+                                <span class="badge rounded-pill bg-secondary">Nonaktif</span>
+                            @endif
+                        </td>
+                        <td>
+                            <div class="hstack gap-2 fs-15">
+                                <a href="{{ route('admin.master.brand-emas.edit', $b) }}" class="btn icon-btn-sm btn-light-primary">
+                                    <i class="ri-pencil-line"></i>
+                                </a>
+                                <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
+                                    data-action="{{ route('admin.master.brand-emas.destroy', $b) }}"
+                                    data-label="{{ $b->nama_brand ? $b->nama_brand : ('#' . $b->id) }}">
+                                    <i class="ri-delete-bin-line"></i>
+                                </a>
+                            </div>
+                            <form action="{{ route('admin.master.brand-emas.destroy', $b) }}" method="POST" class="d-none delete-form">
+                                @csrf
+                                @method('DELETE')
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr><td colspan="6" class="text-center py-3">Belum ada data brand emas.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 @endsection
 

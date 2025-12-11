@@ -13,78 +13,59 @@
 
 @section('content')
     <div class="card shadow-sm">
-        <div class="card-body p-20">
-            <div class="table-responsive">
-<<<<<<< HEAD
-                <table id="customersTable" class="table table-sm table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="text-center" style="width:64px;">ID</th>
-                            <th style="min-width:200px;">Nama Lengkap</th>
-                            <th style="min-width:200px;">Email</th>
-                            <th style="min-width:160px;">WhatsApp</th>
-                            <th style="min-width:160px;">Kota</th>
-                            <th class="text-center" style="width:120px;">Status</th>
-                            <th class="text-end text-nowrap" style="width:160px;">Aksi</th>
-=======
-                <table id="customersTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
-                    <thead class="bg-light bg-opacity-30">
-                        <tr>
-                            <th width="10px;">ID</th>
-                            <th>Nama Lengkap</th>
-                            <th>Email</th>
-                            <th>WhatsApp</th>
-                            <th>Kota</th>
-                            <th>Status</th>
-                            <th style="width: 75px;">Aksi</th>
->>>>>>> 2a60d9d (feat(update): update fauzi core admin)
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($customers as $c)
-                            <tr>
-                                <td class="text-center">{{ $c->id }}</td>
-                                <td>{{ $c->full_name }}</td>
-                                <td>{{ $c->email }}</td>
-                                <td>{{ $c->phone_wa }}</td>
-                                <td>{{ $c->kota }}</td>
-                                <td class="text-center">
-                                    @if($c->is_active)
-                                        <span class="badge rounded-pill bg-success">Aktif</span>
-                                    @else
-                                        <span class="badge rounded-pill bg-secondary">Nonaktif</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="hstack gap-2 fs-15">
-                                        <a href="{{ route('admin.master.customers.edit', $c) }}" class="btn icon-btn-sm btn-light-primary">
-                                            <i class="ri-pencil-line"></i>
-                                        </a>
-                                        <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
-                                           data-action="{{ route('admin.master.customers.destroy', $c) }}"
-                                           data-label="{{ $c->full_name ? $c->full_name : ($c->email ? $c->email : ('#' . $c->id)) }}">
-                                            <i class="ri-delete-bin-line"></i>
-                                        </a>
-                                    </div>
-                                    <form action="{{ route('admin.master.customers.destroy', $c) }}" method="POST" class="d-none delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="text-center py-3">
-                                    Belum ada data customer.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-
-        </div>
+        <table id="customersTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
+            <thead class="bg-light bg-opacity-30">
+                <tr>
+                    <th width="10px;">ID</th>
+                    <th>Nama Lengkap</th>
+                    <th>Email</th>
+                    <th>WhatsApp</th>
+                    <th>Kota</th>
+                    <th>Status</th>
+                    <th style="width: 75px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($customers as $c)
+                    <tr>
+                        <td class="text-center">{{ $c->id }}</td>
+                        <td>{{ $c->full_name }}</td>
+                        <td>{{ $c->email }}</td>
+                        <td>{{ $c->phone_wa }}</td>
+                        <td>{{ $c->kota }}</td>
+                        <td class="text-center">
+                            @if($c->is_active)
+                                <span class="badge rounded-pill bg-success">Aktif</span>
+                            @else
+                                <span class="badge rounded-pill bg-secondary">Nonaktif</span>
+                            @endif
+                        </td>
+                        <td>
+                            <div class="hstack gap-2 fs-15">
+                                <a href="{{ route('admin.master.customers.edit', $c) }}" class="btn icon-btn-sm btn-light-primary">
+                                    <i class="ri-pencil-line"></i>
+                                </a>
+                                <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
+                                    data-action="{{ route('admin.master.customers.destroy', $c) }}"
+                                    data-label="{{ $c->full_name ? $c->full_name : ($c->email ? $c->email : ('#' . $c->id)) }}">
+                                    <i class="ri-delete-bin-line"></i>
+                                </a>
+                            </div>
+                            <form action="{{ route('admin.master.customers.destroy', $c) }}" method="POST" class="d-none delete-form">
+                                @csrf
+                                @method('DELETE')
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="7" class="text-center py-3">
+                            Belum ada data customer.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 @push('styles')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">

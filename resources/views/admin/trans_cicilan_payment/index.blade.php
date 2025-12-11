@@ -8,54 +8,49 @@
 
 @section('content')
     <div class="card shadow-sm">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table id="cicilanPaymentsTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
-                    <thead class="bg-light bg-opacity-30">
-                        <tr>
-                            <th>ID</th>
-                            <th>Kontrak</th>
-                            <th>Customer</th>
-                            <th>Cicilan Ke</th>
-                            <th>Due Date</th>
-                            <th>Amount Due</th>
-                            <th>Status</th>
-                            <th>Paid At</th>
-                            <th style="width:140px;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($payments as $p)
-                            <tr>
-                                <td>{{ $p->id }}</td>
-                                <td>{{ optional($p->kontrak)->kode_kontrak ?? '-' }}</td>
-                                <td>{{ optional(optional($p->kontrak)->customer)->full_name ?? '-' }}</td>
-                                <td>{{ $p->cicilan_ke }}</td>
-                                <td>{{ optional($p->due_date)->format('Y-m-d') ?? '-' }}</td>
-                                <td>{{ number_format((float)$p->amount_due, 2, ',', '.') }}</td>
-                                <td>{{ strtoupper($p->status) }}</td>
-                                <td>{{ optional($p->paid_at)->format('Y-m-d H:i') ?? '-' }}</td>
-                                <td>
-                                    <div class="hstack gap-2 fs-15">
-                                        <a href="{{ route('admin.trans.cicilan-payments.show', $p) }}" class="btn icon-btn-sm btn-light-primary"><i class="bi bi-eye"></i></a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="9" class="text-center py-3">Belum ada pembayaran cicilan.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+        <table id="cicilanPaymentsTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
+            <thead class="bg-light bg-opacity-30">
+                <tr>
+                    <th>ID</th>
+                    <th>Kontrak</th>
+                    <th>Customer</th>
+                    <th>Cicilan Ke</th>
+                    <th>Due Date</th>
+                    <th>Amount Due</th>
+                    <th>Status</th>
+                    <th>Paid At</th>
+                    <th style="width:140px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($payments as $p)
+                    <tr>
+                        <td>{{ $p->id }}</td>
+                        <td>{{ optional($p->kontrak)->kode_kontrak ?? '-' }}</td>
+                        <td>{{ optional(optional($p->kontrak)->customer)->full_name ?? '-' }}</td>
+                        <td>{{ $p->cicilan_ke }}</td>
+                        <td>{{ optional($p->due_date)->format('Y-m-d') ?? '-' }}</td>
+                        <td>{{ number_format((float)$p->amount_due, 2, ',', '.') }}</td>
+                        <td>{{ strtoupper($p->status) }}</td>
+                        <td>{{ optional($p->paid_at)->format('Y-m-d H:i') ?? '-' }}</td>
+                        <td>
+                            <div class="hstack gap-2 fs-15">
+                                <a href="{{ route('admin.trans.cicilan-payments.show', $p) }}" class="btn icon-btn-sm btn-light-primary"><i class="bi bi-eye"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="9" class="text-center py-3">Belum ada pembayaran cicilan.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+        @if ($payments->hasPages())
+            <div class="p-2">
+                {{ $payments->links() }}
             </div>
-
-            @if ($payments->hasPages())
-                <div class="p-2">
-                    {{ $payments->links() }}
-                </div>
-            @endif
-        </div>
+        @endif
     </div>
 @endsection
 
