@@ -19,6 +19,7 @@
     <meta property="og:url" content="https://jajanimas.com/admin">
     <meta property="og:site_name" content="Jajan Emas">
     <meta name="robots" content="noindex, nofollow">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     @yield('css')
     @include('layouts.admin.partials.head-css')
