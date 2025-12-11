@@ -245,43 +245,41 @@
         <div class="card shadow-sm mb-3">
             <div class="card-body">
                 <h6 class="mb-3">Payment Logs</h6>
-                <div class="table-responsive">
-                    <table class="table table-sm mb-0">
-                        <thead class="table-light">
+                <table class="table table-sm mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Kode</th>
+                            <th>Status</th>
+                            <th>Jumlah</th>
+                            <th>Metode</th>
+                            <th>Dibayar</th>
+                            <th>Bukti</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($paymentLogs as $pl)
+                            @php $ps = $pl->status; $pbadge = 'text-bg-secondary'; if ($ps === 'paid') { $pbadge = 'text-bg-success'; } elseif ($ps === 'pending') { $pbadge = 'text-bg-warning'; } elseif ($ps === 'failed') { $pbadge = 'text-bg-danger'; } $payload = json_decode($pl->request_payload, true); $proof = $payload['proof_path'] ?? null; @endphp
                             <tr>
-                                <th>Kode</th>
-                                <th>Status</th>
-                                <th>Jumlah</th>
-                                <th>Metode</th>
-                                <th>Dibayar</th>
-                                <th>Bukti</th>
+                                <td>{{ $pl->kode_payment }}</td>
+                                <td><span class="badge rounded-pill {{ $pbadge }}">{{ strtoupper($ps) }}</span></td>
+                                <td>{{ number_format((float)$pl->amount, 2, ',', '.') }} {{ $pl->currency }}</td>
+                                <td>{{ $pl->payment_method ?? '-' }}</td>
+                                <td>{{ optional($pl->paid_at)->format('Y-m-d H:i') ?? '-' }}</td>
+                                <td>
+                                    @if ($proof)
+                                        <img src="{{ asset($proof) }}" class="img-thumbnail js-proof" style="height:48px;cursor:pointer" alt="Bukti Transfer" data-src="{{ asset($proof) }}">
+                                    @else
+                                        -
+                                    @endif
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($paymentLogs as $pl)
-                                @php $ps = $pl->status; $pbadge = 'text-bg-secondary'; if ($ps === 'paid') { $pbadge = 'text-bg-success'; } elseif ($ps === 'pending') { $pbadge = 'text-bg-warning'; } elseif ($ps === 'failed') { $pbadge = 'text-bg-danger'; } $payload = json_decode($pl->request_payload, true); $proof = $payload['proof_path'] ?? null; @endphp
-                                <tr>
-                                    <td>{{ $pl->kode_payment }}</td>
-                                    <td><span class="badge rounded-pill {{ $pbadge }}">{{ strtoupper($ps) }}</span></td>
-                                    <td>{{ number_format((float)$pl->amount, 2, ',', '.') }} {{ $pl->currency }}</td>
-                                    <td>{{ $pl->payment_method ?? '-' }}</td>
-                                    <td>{{ optional($pl->paid_at)->format('Y-m-d H:i') ?? '-' }}</td>
-                                    <td>
-                                        @if ($proof)
-                                            <img src="{{ asset($proof) }}" class="img-thumbnail js-proof" style="height:48px;cursor:pointer" alt="Bukti Transfer" data-src="{{ asset($proof) }}">
-                                        @else
-                                            -
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center py-3">Belum ada payment log.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center py-3">Belum ada payment log.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
                 <div class="modal fade" id="proofModal" tabindex="-1" aria-hidden="true">
                   <div class="modal-dialog modal-dialog-centered modal-lg">
                     <div class="modal-content">
@@ -311,26 +309,24 @@
         <div class="card shadow-sm mb-3">
             <div class="card-body">
                 <h6 class="mb-3">Log Status</h6>
-                <div class="table-responsive">
-                    <table class="table table-sm table-hover mb-0">
-                        <thead class="table-light">
+                <table class="table table-sm table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Status</th>
+                            <th>Deskripsi</th>
+                            <th>Dibuat</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($logs as $log)
                             <tr>
-                                <th>Status</th>
-                                <th>Deskripsi</th>
-                                <th>Dibuat</th>
+                                <td>{{ strtoupper($log->status) }}</td>
+                                <td>{{ $log->description ?? '-' }}</td>
+                                <td>{{ optional($log->created_at)->format('Y-m-d H:i') ?? '-' }}</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($logs as $log)
-                                <tr>
-                                    <td>{{ strtoupper($log->status) }}</td>
-                                    <td>{{ $log->description ?? '-' }}</td>
-                                    <td>{{ optional($log->created_at)->format('Y-m-d H:i') ?? '-' }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     @endif

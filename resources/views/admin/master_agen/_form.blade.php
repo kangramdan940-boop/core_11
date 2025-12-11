@@ -1,8 +1,11 @@
 <div class="row g-3">
     <div class="col-md-6">
         <label class="form-label">Nama</label>
-        <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
-               value="{{ old('name', $agen->name ?? '') }}" required>
+        <div class="input-group">
+            <span class="input-group-text"><i class="ri-user-3-line"></i></span>
+            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
+                   value="{{ old('name', $agen->name ?? '') }}" required>
+        </div>
         @error('name')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -10,8 +13,11 @@
 
     <div class="col-md-3">
         <label class="form-label">WhatsApp</label>
-        <input type="text" name="phone_wa" class="form-control @error('phone_wa') is-invalid @enderror"
-               value="{{ old('phone_wa', $agen->phone_wa ?? '') }}" required>
+        <div class="input-group">
+            <span class="input-group-text"><i class="ri-whatsapp-line"></i></span>
+            <input type="text" name="phone_wa" class="form-control @error('phone_wa') is-invalid @enderror"
+                   value="{{ old('phone_wa', $agen->phone_wa ?? '') }}" required>
+        </div>
         @error('phone_wa')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -19,8 +25,11 @@
 
     <div class="col-md-3">
         <label class="form-label">Email</label>
-        <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
-               value="{{ old('email', $agen->email ?? '') }}" required>
+        <div class="input-group">
+            <span class="input-group-text"><i class="ri-mail-line"></i></span>
+            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
+                   value="{{ old('email', $agen->email ?? '') }}" required>
+        </div>
         @error('email')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -28,8 +37,11 @@
 
     <div class="col-md-3">
         <label class="form-label">Kode Agen</label>
-        <input type="text" name="kode_agen" class="form-control @error('kode_agen') is-invalid @enderror"
-               value="{{ old('kode_agen', $agen->kode_agen ?? '') }}" required>
+        <div class="input-group">
+            <span class="input-group-text"><i class="ri-key-2-line"></i></span>
+            <input type="text" name="kode_agen" class="form-control @error('kode_agen') is-invalid @enderror"
+                   value="{{ old('kode_agen', $agen->kode_agen ?? '') }}" required>
+        </div>
         @error('kode_agen')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -37,8 +49,11 @@
 
     <div class="col-md-3">
         <label class="form-label">Area</label>
-        <input type="text" name="area" class="form-control @error('area') is-invalid @enderror"
-               value="{{ old('area', $agen->area ?? '') }}">
+        <div class="input-group">
+            <span class="input-group-text"><i class="ri-map-pin-line"></i></span>
+            <input type="text" name="area" class="form-control @error('area') is-invalid @enderror"
+                   value="{{ old('area', $agen->area ?? '') }}">
+        </div>
         @error('area')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -55,8 +70,11 @@
 
     <div class="col-md-6">
         <label class="form-label">Alamat Lengkap</label>
-        <input type="text" name="address_line" class="form-control @error('address_line') is-invalid @enderror"
-               value="{{ old('address_line', $agen->address_line ?? '') }}">
+        <div class="input-group">
+            <span class="input-group-text"><i class="ri-home-4-line"></i></span>
+            <input type="text" name="address_line" class="form-control @error('address_line') is-invalid @enderror"
+                   value="{{ old('address_line', $agen->address_line ?? '') }}">
+        </div>
         @error('address_line')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -90,18 +108,20 @@
         <input type="password" name="password_confirmation" class="form-control" autocomplete="new-password">
     </div>
 
-    <script>
-    (function(){
-      var cb = document.getElementById('create_login');
-      var pass = document.querySelector('input[name="password"]');
-      var conf = document.querySelector('input[name="password_confirmation"]');
-      function toggle(){
-        var on = cb && cb.checked;
-        if(pass){ pass.disabled = !on; pass.required = on; }
-        if(conf){ conf.disabled = !on; conf.required = on; }
-      }
-      toggle();
-      if(cb){ cb.addEventListener('change', toggle); }
-    })();
-    </script>
+    @section('js')
+        <script>
+        (function(){
+        var cb = document.getElementById('create_login');
+        var pass = document.querySelector('input[name="password"]');
+        var conf = document.querySelector('input[name="password_confirmation"]');
+        function toggle(){
+            var on = cb && cb.checked;
+            if(pass){ pass.disabled = !on; pass.required = on; }
+            if(conf){ conf.disabled = !on; conf.required = on; }
+        }
+        toggle();
+        if(cb){ cb.addEventListener('change', toggle); }
+        })();
+        </script>
+    @endsection
 </div>

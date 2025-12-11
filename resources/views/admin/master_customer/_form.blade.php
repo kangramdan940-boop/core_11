@@ -10,8 +10,11 @@
 
     <div class="col-md-3">
         <label class="form-label">WhatsApp</label>
-        <input type="text" name="phone_wa" class="form-control @error('phone_wa') is-invalid @enderror"
-               value="{{ old('phone_wa', $customer->phone_wa ?? '') }}" required>
+        <div class="input-group">
+            <span class="input-group-text"><i class="ri-whatsapp-line"></i></span>
+            <input type="text" name="phone_wa" class="form-control @error('phone_wa') is-invalid @enderror"
+                   value="{{ old('phone_wa', $customer->phone_wa ?? '') }}" required>
+        </div>
         @error('phone_wa')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -19,8 +22,11 @@
 
     <div class="col-md-3">
         <label class="form-label">Email</label>
-        <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
-               value="{{ old('email', $customer->email ?? '') }}" required>
+        <div class="input-group">
+            <span class="input-group-text"><i class="ri-mail-line"></i></span>
+            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
+                   value="{{ old('email', $customer->email ?? '') }}" required>
+        </div>
         @error('email')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -40,8 +46,12 @@
 
     <div class="col-md-3">
         <label class="form-label">Tanggal Lahir</label>
-        <input type="date" name="birth_date" class="form-control"
-               value="{{ old('birth_date', isset($customer->birth_date) ? $customer->birth_date->format('Y-m-d') : '') }}">
+        <div class="input-group">
+            <span class="input-group-text"><i class="ri-calendar-line"></i></span>
+            <input type="text" id="basic-date-picker" name="birth_date" class="form-control"
+                   placeholder="YYYY-MM-DD"
+                   value="{{ old('birth_date', isset($customer->birth_date) ? $customer->birth_date->format('Y-m-d') : '') }}">
+        </div>
     </div>
 
     <div class="col-md-3">
@@ -80,7 +90,7 @@
                value="{{ old('address_line', $customer->address_line ?? '') }}">
     </div>
 
-    <div class="col-md-3 d-flex align-items-center mt-4">
+    <div class="col-md-3 d-flex align-items-center mt-4 pt-md-5">
         <div class="form-check">
             <input class="form-check-input" type="checkbox" name="is_active" id="is_active"
                    {{ old('is_active', $customer->is_active ?? true) ? 'checked' : '' }}>

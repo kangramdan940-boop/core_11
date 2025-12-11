@@ -1,7 +1,10 @@
-@extends('layouts.admin')
+@extends('layouts.admin.master')
 
 @section('title', 'Edit Gramasi Emas - Admin')
-@section('page_title', 'Edit Gramasi Emas')
+@section('sub-title', 'Gramasi Emas')
+@section('breadcrumbExtra', 'Edit Gramasi Emas')
+@section('pagetitle', 'Dashboard')
+@section('subLink', route('admin.master.gramasi-emas.index'))
 
 @section('content')
     <div class="card shadow-sm">
@@ -10,9 +13,9 @@
                 @csrf
                 @method('PUT')
                 @include('admin.master_gramasi_emas._form', ['item' => $item])
-                <div class="mt-3 d-flex gap-2">
-                    <button class="btn btn-primary">Update</button>
-                    <a href="{{ route('admin.master.gramasi-emas.index') }}" class="btn btn-secondary">Kembali</a>
+                <div class="d-flex justify-content-end mt-5 gap-2">
+                    <a href="{{ route('admin.master.gramasi-emas.index') }}" class="btn btn-outline-secondary">Batal</a>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-floppy-fill fs-6 me-1"></i> Update</button>
                 </div>
             </form>
         </div>
