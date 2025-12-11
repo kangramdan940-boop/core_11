@@ -24,7 +24,7 @@
                         <td>{{ $m->id }}</td>
                         <td>
                             @php($raw = $m->image ?? '')
-                            @php($imgUrl = Str::startsWith($raw, ['http://','https://']) ? $raw : asset('storage/' . ltrim($raw, '/')))
+                            @php($imgUrl = Str::startsWith($m->image, ['http://','https://']) ? $m->image : asset($m->image))
                             @if(!empty($raw))
                                 <a href="javascript:;" class="zoomable-thumb" data-src="{{ $imgUrl }}" data-label="{{ $m->label ?? ('#' . $m->id) }}">
                                     <img src="{{ $imgUrl }}" alt="menu" style="height:32px;object-fit:contain;cursor:zoom-in;">

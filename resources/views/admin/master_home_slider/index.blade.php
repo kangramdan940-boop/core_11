@@ -23,7 +23,7 @@
                         <td>{{ $s->id }}</td>
                         <td>
                             @php($raw = $s->image_url ?? '')
-                            @php($imgUrl = Str::startsWith($raw, ['http://','https://']) ? $raw : asset('storage/' . ltrim($raw, '/')))
+                            @php($imgUrl = Str::startsWith($s->image_url, ['http://','https://']) ? $s->image_url : asset($s->image_url))
                             @if(!empty($raw))
                                 <a href="javascript:;" class="zoomable-thumb" data-src="{{ $imgUrl }}" data-label="{{ $s->title ?? ('#' . $s->id) }}">
                                     <img src="{{ $imgUrl }}" alt="slider" style="height:48px;object-fit:cover;cursor:zoom-in;">

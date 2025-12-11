@@ -1,7 +1,7 @@
 @extends('layouts.admin.master')
 
-@section('title', 'Master Produk & Layanan - Admin')
-@section('sub-title', 'Produk & Layanan')
+@section('title', 'Master Produk dan Layanan - Admin')
+@section('sub-title', 'Produk dan Layanan')
 @section('pagetitle', 'Dashboard')
 @section('subLink', route('admin.master.produk-layanan.index'))
 
@@ -26,7 +26,7 @@
                         <td>{{ $i->id }}</td>
                         <td>
                             @if($i->image_produk)
-                                <img src="{{ Str::startsWith($i->image_produk, ['http://','https://']) ? $i->image_produk : asset('storage/' . $i->image_produk) }}"
+                                <img src="{{ Str::startsWith($i->image_produk, ['http://','https://']) ? $i->image_produk : asset($i->image_produk) }}"
                                         alt="produk" class="preview-image" style="height:32px;object-fit:contain;cursor: zoom-in;">
                             @else
                                 -
