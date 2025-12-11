@@ -51,6 +51,8 @@ Route::prefix('customer')->name('customer.')->group(function () {
 
     Route::get('/forgot-password', [FrontController::class, 'customerForgotPassword'])
         ->name('forgot-password');
+    Route::post('/forgot-password', [CustomerAuthController::class, 'sendResetLink'])
+        ->name('forgot-password.submit');
 
     // Protected (harus login)
     Route::middleware('auth')->group(function () {
@@ -90,6 +92,10 @@ Route::prefix('customer')->name('customer.')->group(function () {
 
 // Alias /login → customer login (tetap ada)
 Route::get('/login', [CustomerAuthController::class, 'showLoginForm'])->name('login');
+
+// Password reset routes (global name untuk notifikasi default Laravel)
+Route::get('/customer/reset-password/{token}', [CustomerAuthController::class, 'showResetForm'])->name('password.reset');
+Route::post('/customer/reset-password', [CustomerAuthController::class, 'resetPassword'])->name('password.update');
 
 // ====================================
 // MITRA AREA
@@ -275,6 +281,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 Route::post('/{po}/approve-payment', [TransPoController::class, 'approvePayment'])->name('approve-payment');
                 Route::post('/{po}/reject-payment', [TransPoController::class, 'rejectPayment'])->name('reject-payment');
                 Route::post('/{po}/status', [TransPoController::class, 'updateStatus'])->name('update-status');
+                Route::post('/cancel-pending', [TransPoController::class, 'cancelPendingAll'])->name('cancel-pending-all');
 
                 // Mitra Komisi assign/remove (nama & URL sama seperti awal)
                 Route::post('{po}/mitra-komisi', [\App\Http\Controllers\Admin\TransPoMitraKomisiController::class, 'store'])

@@ -8,6 +8,7 @@ use App\Models\MasterHomeSlider;
 use App\Models\MasterMenuHomeCustomer;
 use App\Models\MasterProdukDanLayanan;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -59,9 +60,8 @@ class FrontController extends Controller
         $poGramTotal = $customer
             ? (float) \App\Models\TransPo::where('master_customer_id', $customer->id)
                 ->where('status', '!=', 'cancelled')
-                ->sum('total_gram')
+                ->sum(DB::raw('COALESCE(total_gram,0) * COALESCE(qty,1)'))
             : 0.0;
-
         $readyGramTotal = 0.0;
         if ($customer) {
             $readyItems = \App\Models\TransReady::with('readyStock')

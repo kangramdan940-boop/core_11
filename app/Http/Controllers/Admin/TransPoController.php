@@ -11,11 +11,26 @@ use Illuminate\Validation\Rule;
 
 class TransPoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $pos = TransPo::with(['customer', 'agen'])
-            ->orderByDesc('id')
-            ->get();
+        $status = (string) $request->query('status', '');
+        $dateFilter = (string) $request->query('date', '');
+
+        $query = TransPo::with(['customer', 'agen'])
+            ->orderByDesc('id');
+
+        if ($status !== '') {
+            $allowed = ['pending_payment','paid','processing','ready_at_agen','shipped','completed','cancelled'];
+            if (in_array($status, $allowed, true)) {
+                $query->where('status', $status);
+            }
+        }
+
+        if ($dateFilter === 'today') {
+            $query->whereDate('created_at', now()->toDateString());
+        }
+
+        $pos = $query->get();
 
         return view('admin.trans_po.index', compact('pos'));
     }
@@ -133,5 +148,22 @@ class TransPoController extends Controller
         $po->save();
 
         return redirect()->route('admin.trans.po.show', $po)->with('success', 'Status PO diperbarui.');
+    }
+
+    public function cancelPendingAll(Request $request)
+    {
+        $count = 0;
+        TransPo::where('status', 'pending_payment')->chunkById(100, function ($items) use (&$count) {
+            foreach ($items as $po) {
+                $po->status = 'cancelled';
+                if (!$po->cancelled_at) {
+                    $po->cancelled_at = now();
+                }
+                $po->save();
+                $count++;
+            }
+        });
+
+        return redirect()->route('admin.trans.po.index')->with('success', 'Berhasil membatalkan ' . $count . ' transaksi pending.');
     }
 }

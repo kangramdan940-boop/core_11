@@ -8,10 +8,21 @@
 
 @section('content')
     <div class="card shadow-sm">
+        <ul class="nav nav-tabs mb-3" id="statusTabs" role="tablist">
+            <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['date' => 'today']) }}" class="nav-link {{ request('date') === 'today' ? 'active' : '' }}">Hari Ini</a></li>
+            <li class="nav-item"><a href="{{ route('admin.trans.po.index') }}" class="nav-link {{ (request()->missing('status') || request('status') === '') && (request()->missing('date') || request('date') === '') ? 'active' : '' }}">Semua</a></li>
+            <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'pending_payment']) }}" class="nav-link {{ request('status') === 'pending_payment' ? 'active' : '' }}">Pending</a></li>
+            <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'paid']) }}" class="nav-link {{ request('status') === 'paid' ? 'active' : '' }}">Paid</a></li>
+            <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'processing']) }}" class="nav-link {{ request('status') === 'processing' ? 'active' : '' }}">Processing</a></li>
+            <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'ready_at_agen']) }}" class="nav-link {{ request('status') === 'ready_at_agen' ? 'active' : '' }}">Ready @Agen</a></li>
+            <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'shipped']) }}" class="nav-link {{ request('status') === 'shipped' ? 'active' : '' }}">Shipped</a></li>
+            <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'completed']) }}" class="nav-link {{ request('status') === 'completed' ? 'active' : '' }}">Completed</a></li>
+            <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'cancelled']) }}" class="nav-link {{ request('status') === 'cancelled' ? 'active' : '' }}">Cancelled</a></li>
+        </ul>
         <table id="poTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
             <thead class="bg-light bg-opacity-30">
                 <tr>
-                    <th width="10px;">ID</th>
+                    <th width="10px;">No</th>
                     <th>Kode PO</th>
                     <th>Customer</th>
                     <th>Agen</th>
@@ -24,7 +35,7 @@
             <tbody>
                 @forelse ($pos as $p)
                     <tr>
-                        <td>{{ $p->id }}</td>
+                        <td>{{ $loop->iteration }}</td>
                         <td>{{ $p->kode_po }}</td>
                         <td>{{ optional($p->customer)->full_name ?? '-' }}</td>
                         <td>{{ optional($p->agen)->name ?? '-' }}</td>
@@ -76,6 +87,7 @@
     <script src="https://cdn.datatables.net/responsive/2.4.0/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-datatables-checkboxes@1.3.0/js/dataTables.checkboxes.min.js"></script>
     <script src="https://cdn.datatables.net/select/1.6.0/js/dataTables.select.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const tableEl = document.getElementById('poTable');
@@ -88,7 +100,7 @@
                 lengthMenu: [10, 20, 50],
                 pageLength: 10,
                 ordering: true,
-                order: [[0, 'desc']],
+                order: [[0, 'asc']],
                 columnDefs: [{ targets: -1, orderable: false }],
                 dom:
                     '<"card-header dt-head d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3"' +
@@ -113,7 +125,7 @@
 
             const headLabel = document.querySelector('div.head-label');
             if (headLabel) {
-                headLabel.innerHTML = '<h5 class="card-title text-nowrap mb-0">Daftar PO Emas</h5>';
+                headLabel.innerHTML = '<div class="d-flex w-100 align-items-center justify-content-between"><h5 class="card-title text-nowrap mb-0">Daftar PO Emas</h5><form id="cancelPendingForm" action="{{ route('admin.trans.po.cancel-pending-all') }}" method="POST">@csrf<button type="button" id="cancelPendingBtn" class="btn btn-outline-danger btn-sm">Batalkan Semua Pending</button></form></div>';
             }
 
             setTimeout(function () {
@@ -122,6 +134,25 @@
                 if (filterInput) filterInput.classList.remove('form-control-sm');
                 if (lengthSelect) lengthSelect.classList.remove('form-select-sm');
             }, 300);
+
+            const cancelBtn = document.getElementById('cancelPendingBtn');
+            if (cancelBtn && typeof Swal !== 'undefined') {
+                cancelBtn.addEventListener('click', function () {
+                    Swal.fire({
+                        title: 'Konfirmasi',
+                        text: 'Yakin ingin membatalkan semua transaksi PENDING?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, batalkan',
+                        cancelButtonText: 'Batal'
+                    }).then(function (result) {
+                        if (result.isConfirmed) {
+                            const form = document.getElementById('cancelPendingForm');
+                            if (form) form.submit();
+                        }
+                    });
+                });
+            }
         });
     </script>
 @endsection

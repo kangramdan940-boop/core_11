@@ -64,12 +64,6 @@
                 @endforelse
             </tbody>
         </table>
-            
-        @if ($admins->hasPages())
-            <div class="p-2">
-                {{ $admins->links() }}
-            </div>
-        @endif
     </div>
 @endsection
 
