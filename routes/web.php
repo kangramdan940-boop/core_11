@@ -59,7 +59,7 @@ Route::prefix('customer')->name('customer.')->group(function () {
         ->middleware('throttle:forgot-password')
         ->name('forgot.submit');
     Route::get('/reset-password', [FrontController::class, 'showResetPasswordForm'])->name('reset-password');
-    Route::post('/reset-password', [FrontController::class, 'performResetPassword'])->name('reset-password.submit');
+    Route::post('/reset-password/submit', [FrontController::class, 'performResetPassword'])->name('reset-password.submit');
 
     // Protected (harus login)
     Route::middleware('auth')->group(function () {
@@ -100,9 +100,7 @@ Route::prefix('customer')->name('customer.')->group(function () {
 // Alias /login → customer login (tetap ada)
 Route::get('/login', [CustomerAuthController::class, 'showLoginForm'])->name('login');
 
-// Password reset routes (global name untuk notifikasi default Laravel)
-Route::get('/customer/reset-password/{token}', [CustomerAuthController::class, 'showResetForm'])->name('password.reset');
-Route::post('/customer/reset-password', [CustomerAuthController::class, 'resetPassword'])->name('password.update');
+// Password reset bawaan Laravel tidak digunakan dalam flow custom ini
 
 // ====================================
 // MITRA AREA
