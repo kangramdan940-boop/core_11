@@ -30,6 +30,11 @@ use App\Http\Controllers\Front\CustomerReadyController;
 use App\Http\Controllers\Front\CustomerCicilanController;
 use App\Http\Controllers\Front\FrontController;
 
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Mail;
+
+
+
 // ====================================
 // FRONT HOME
 // ====================================
@@ -49,10 +54,12 @@ Route::prefix('customer')->name('customer.')->group(function () {
     Route::get('/register', [CustomerAuthController::class, 'showRegisterForm'])->name('register');
     Route::post('/register', [CustomerAuthController::class, 'register'])->name('register.submit');
 
-    Route::get('/forgot-password', [FrontController::class, 'customerForgotPassword'])
-        ->name('forgot-password');
-    Route::post('/forgot-password', [CustomerAuthController::class, 'sendResetLink'])
-        ->name('forgot-password.submit');
+    Route::get('/forgot-password', [FrontController::class, 'customerForgotPassword'])->name('forgot-password');
+    Route::post('/forgot-password', [FrontController::class, 'customerSendForgotPassword'])
+        ->middleware('throttle:forgot-password')
+        ->name('forgot.submit');
+    Route::get('/reset-password', [FrontController::class, 'showResetPasswordForm'])->name('reset-password');
+    Route::post('/reset-password', [FrontController::class, 'performResetPassword'])->name('reset-password.submit');
 
     // Protected (harus login)
     Route::middleware('auth')->group(function () {
