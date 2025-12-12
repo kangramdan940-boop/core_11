@@ -59,7 +59,7 @@ Route::prefix('customer')->name('customer.')->group(function () {
         ->middleware('throttle:forgot-password')
         ->name('forgot.submit');
     Route::get('/reset-password', [FrontController::class, 'showResetPasswordForm'])->name('reset-password');
-    Route::post('/reset-password', [FrontController::class, 'performResetPassword'])->name('reset-password.submit');
+    Route::post('/reset-password/submit', [FrontController::class, 'performResetPassword'])->name('reset-password.submit');
 
     // Protected (harus login)
     Route::middleware('auth')->group(function () {
@@ -100,6 +100,8 @@ Route::prefix('customer')->name('customer.')->group(function () {
 // Alias /login → customer login (tetap ada)
 Route::get('/login', [CustomerAuthController::class, 'showLoginForm'])->name('login');
 
+// Password reset bawaan Laravel tidak digunakan dalam flow custom ini
+
 // ====================================
 // MITRA AREA
 // ====================================
@@ -109,6 +111,8 @@ Route::prefix('mitra')->name('mitra.')->group(function () {
 
     // Route::get('/register', [MitraAuthController::class, 'showRegisterForm'])->name('register');
     // Route::post('/register', [MitraAuthController::class, 'register'])->name('register.submit');
+
+    Route::get('/jajanemas', [FrontController::class, 'mitraJajanEmasTerms'])->name('jajanemas');
 
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [FrontController::class, 'mitraDashboard'])->name('dashboard');
@@ -284,6 +288,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 Route::post('/{po}/approve-payment', [TransPoController::class, 'approvePayment'])->name('approve-payment');
                 Route::post('/{po}/reject-payment', [TransPoController::class, 'rejectPayment'])->name('reject-payment');
                 Route::post('/{po}/status', [TransPoController::class, 'updateStatus'])->name('update-status');
+                Route::post('/cancel-pending', [TransPoController::class, 'cancelPendingAll'])->name('cancel-pending-all');
 
                 // Mitra Komisi assign/remove (nama & URL sama seperti awal)
                 Route::post('{po}/mitra-komisi', [\App\Http\Controllers\Admin\TransPoMitraKomisiController::class, 'store'])

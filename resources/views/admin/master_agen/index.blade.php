@@ -60,11 +60,6 @@
                 @endforelse
             </tbody>
         </table>
-        @if ($agens->hasPages())
-            <div class="p-2">
-                {{ $agens->links() }}
-            </div>
-        @endif
     </div>
 @endsection
 

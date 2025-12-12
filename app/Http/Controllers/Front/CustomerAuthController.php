@@ -7,7 +7,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\MasterCustomer;
 use Illuminate\Support\Facades\Hash;
@@ -44,7 +46,7 @@ class CustomerAuthController extends Controller
 
             if (! $user || $user->role !== 'customer' || ! $user->is_active) {
                 Auth::logout();
-                return back()->withErrors(['email' => 'Akses khusus customer aktif.']).withInput();
+                return back()->withErrors(['email' => 'Akses khusus customer aktif.'])->withInput();
             }
 
             $user->forceFill(['last_login_at' => now()])->save();
@@ -109,5 +111,51 @@ class CustomerAuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect()->route('customer.login');
+    }
+
+    public function sendResetLink(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+
+        $status = Password::sendResetLink(['email' => $data['email']]);
+
+        if ($status === Password::RESET_LINK_SENT) {
+            return back()->with('status', 'Instruksi reset password telah dikirim jika email terdaftar.');
+        }
+
+        return back()->withErrors(['email' => 'Gagal mengirim instruksi reset password.'])->withInput();
+    }
+
+    public function showResetForm(Request $request, string $token): View
+    {
+        $email = (string) $request->query('email', '');
+        return view('front.customer.reset-pass', compact('token', 'email'));
+    }
+
+    public function resetPassword(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'token' => ['required'],
+            'email' => ['required', 'email'],
+            'password' => ['required', 'confirmed', 'min:6'],
+        ]);
+
+        $status = Password::reset(
+            $data,
+            function (User $user) use ($data) {
+                $user->forceFill([
+                    'password' => Hash::make($data['password']),
+                ])->save();
+                $user->setRememberToken(Str::random(60));
+            }
+        );
+
+        if ($status === Password::PASSWORD_RESET) {
+            return redirect()->route('customer.login')->with('status', 'Password berhasil direset. Silakan login.');
+        }
+
+        return back()->withErrors(['email' => 'Token reset atau email tidak valid.'])->withInput();
     }
 }

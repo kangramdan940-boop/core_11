@@ -66,11 +66,6 @@
                 @endforelse
             </tbody>
         </table>
-        @if ($logs->hasPages())
-            <div class="p-2">
-                {{ $logs->links() }}
-            </div>
-        @endif
     </div>
 @endsection
 

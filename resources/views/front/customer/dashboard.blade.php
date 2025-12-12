@@ -163,17 +163,12 @@
                                         <a href="{{ ($p->is_allow_po ? route('customer.po.create', ['pid' => encrypt((string)$p->id)]) : ($p->is_allow_ready ? route('customer.ready.index') : '#')) }}">
                                             {{ $p->gramasi?->nama ?? 'Produk' }} {{ number_format((float) ($p->gramasi?->gramasi ?? 0), 3) }} gr
                                         </a>
-                                        <span class="dot"></span>
-                                        <span class="body-6 text-dark-4">Harga: Rp {{ number_format((float) ($p->harga_hariini ?? 0), 0) }}</span>
+                                       
                                     </div>
                                     <div class="box-map-date">
                                         <div class="d-flex gap-4 align-items-center">
                                             <i class="icon icon-wallet-2 text-primary"></i>
                                             <span class="body-3 text-dark-4">Jasa: Rp {{ number_format((float) ($p->harga_jasa ?? 0), 0) }}</span>
-                                        </div>
-                                        <div class="d-flex gap-4 align-items-center">
-                                            <i class="icon icon-map text-secondary-yellow"></i>
-                                            <span class="body-3 text-dark-4">Status: @if($p->is_allow_ready) Ready @endif @if($p->is_allow_po) {{ $p->is_allow_ready ? '/' : '' }} Pre Order @endif</span>
                                         </div>
                                     </div>
                                 </div>
