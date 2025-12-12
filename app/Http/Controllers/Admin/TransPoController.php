@@ -30,7 +30,22 @@ class TransPoController extends Controller
             $query->whereDate('created_at', now()->toDateString());
         }
 
-        $pos = $query->get();
+        $pos = $query->get()->map(function ($p) {
+            $waRaw = optional($p->customer)->phone_wa;
+            $waDigits = $waRaw ? preg_replace('/\D+/', '', $waRaw) : null;
+            if ($waDigits && substr($waDigits, 0, 1) === '0') {
+                $waDigits = '62' . substr($waDigits, 1);
+            }
+            $gramText = number_format((float) ($p->total_gram ?? 0), 3, ',', '.');
+            $amountText = number_format((float) ($p->total_amount ?? 0), 2, ',', '.');
+            $customerName = trim((string) (optional($p->customer)->full_name ?? ''));
+            $sapaan = $customerName !== '' ? ('Kak ' . $customerName) : 'Kak';
+            $waText = "Assalamu’alaikum " . $sapaan . " 🙏\n\nKami dari jajanemas.com ingin follow up transaksi emas berikut:\n\n📄 Kode Pesanan : " . ($p->kode_po ?? '-') . "\n⚖️ Emas        : " . $gramText . " gram\n💰 Nominal TF  : Rp " . $amountText . "\n\nApakah transaksi akan dilanjutkan, dibatalkan,\natau ada kendala yang bisa kami bantu?\n\nTerima kasih 🙏\nTim jajanemas.com";
+            $p->wa_url = ($p->status === 'pending_payment' && $waDigits)
+                ? ('https://wa.me/' . $waDigits . '?text=' . rawurlencode($waText))
+                : null;
+            return $p;
+        });
 
         return view('admin.trans_po.index', compact('pos'));
     }

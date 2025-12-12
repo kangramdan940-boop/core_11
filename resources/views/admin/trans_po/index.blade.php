@@ -64,6 +64,11 @@
                                 <a href="{{ route('admin.trans.po.show', $p) }}" class="btn icon-btn-sm btn-light-primary">
                                     <i class="bi bi-eye"></i>
                                 </a>
+                                @if (!empty($p->wa_url))
+                                    <a href="{{ $p->wa_url }}" target="_blank" rel="noopener" class="btn icon-btn-sm btn-light-success" title="WhatsApp">
+                                        <i class="bi bi-whatsapp"></i>
+                                    </a>
+                                @endif
                             </div>
                         </td>
                     </tr>
