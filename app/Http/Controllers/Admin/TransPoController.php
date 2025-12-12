@@ -38,9 +38,10 @@ class TransPoController extends Controller
             }
             $gramText = number_format((float) ($p->total_gram ?? 0), 3, ',', '.');
             $amountText = number_format((float) ($p->total_amount ?? 0), 2, ',', '.');
+            $qtyText = number_format((int) ($p->qty ?? 0), 0, ',', '.');
             $customerName = trim((string) (optional($p->customer)->full_name ?? ''));
             $sapaan = $customerName !== '' ? ('Kak ' . $customerName) : 'Kak';
-            $waText = "Assalamu’alaikum " . $sapaan . " 🙏\n\nKami dari jajanemas.com ingin follow up transaksi emas berikut:\n\n📄 Kode Pesanan : " . ($p->kode_po ?? '-') . "\n⚖️ Emas        : " . $gramText . " gram\n💰 Nominal TF  : Rp " . $amountText . "\n\nApakah transaksi akan dilanjutkan, dibatalkan,\natau ada kendala yang bisa kami bantu?\n\nTerima kasih 🙏\nTim jajanemas.com";
+            $waText = "Assalamu’alaikum " . $sapaan . " 🙏\n\nKami dari jajanemas.com ingin follow up transaksi emas berikut:\n\n📄 Kode Pesanan : " . ($p->kode_po ?? '-') . "\n⚖️ Emas        : " . $gramText . " gram\n📦 Qty         : " . $qtyText . "\n💰 Nominal TF  : Rp " . $amountText . "\n\nApakah transaksi akan dilanjutkan, dibatalkan,\natau ada kendala yang bisa kami bantu?\n\nTerima kasih 🙏\nTim jajanemas.com";
             $p->wa_url = ($p->status === 'pending_payment' && $waDigits)
                 ? ('https://wa.me/' . $waDigits . '?text=' . rawurlencode($waText))
                 : null;
