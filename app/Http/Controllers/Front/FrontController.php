@@ -17,10 +17,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-<<<<<<< HEAD
-=======
 use Illuminate\Support\Facades\Log;
->>>>>>> master
 
 class FrontController extends Controller
 {
@@ -206,23 +203,6 @@ class FrontController extends Controller
 
     public function showResetPasswordForm(Request $request): View|RedirectResponse
     {
-<<<<<<< HEAD
-        $token = (string) $request->query('token', '');
-        if ($token === '') {
-            return redirect()->route('customer.forgot-password')->withErrors(['email' => 'Token tidak valid.']);
-        }
-        try {
-            $decoded = json_decode(Crypt::decryptString($token), true, 512, JSON_THROW_ON_ERROR);
-        } catch (\Throwable $e) {
-            return redirect()->route('customer.forgot-password')->withErrors(['email' => 'Token tidak valid atau kadaluarsa.']);
-        }
-        if (!is_array($decoded) || ($decoded['type'] ?? '') !== 'customer' || empty($decoded['email']) || empty($decoded['exp'])) {
-            return redirect()->route('customer.forgot-password')->withErrors(['email' => 'Token tidak valid.']);
-        }
-        $exp = \Illuminate\Support\Carbon::parse($decoded['exp']);
-        if (now()->greaterThan($exp)) {
-            return redirect()->route('customer.forgot-password')->withErrors(['email' => 'Token telah kadaluarsa.']);
-=======
         $token = trim((string) $request->query('token', ''));
         if ($token === '') {
             return redirect()->route('customer.forgot-password')->withErrors(['email' => 'Token tidak valid.']);
@@ -245,7 +225,6 @@ class FrontController extends Controller
         if (! \Illuminate\Support\Facades\View::exists('front.customer.reset-pass')) {
             Log::error('View front.customer.reset-pass not found on server');
             return redirect()->route('customer.forgot-password')->with('message', 'Halaman reset belum tersedia. Silakan coba lagi.');
->>>>>>> master
         }
         return view('front.customer.reset-pass', ['token' => $token, 'email' => $decoded['email']]);
     }
@@ -257,15 +236,6 @@ class FrontController extends Controller
             'password' => ['required', 'string', 'min:6', 'confirmed'],
         ]);
         try {
-<<<<<<< HEAD
-            $decoded = json_decode(Crypt::decryptString($data['token']), true, 512, JSON_THROW_ON_ERROR);
-        } catch (\Throwable $e) {
-            return redirect()->route('customer.forgot-password')->withErrors(['email' => 'Token tidak valid atau kadaluarsa.']);
-        }
-        $exp = \Illuminate\Support\Carbon::parse($decoded['exp'] ?? null);
-        if (!is_array($decoded) || ($decoded['type'] ?? '') !== 'customer' || empty($decoded['email']) || !$exp || now()->greaterThan($exp)) {
-            return redirect()->route('customer.forgot-password')->withErrors(['email' => 'Token tidak valid atau kadaluarsa.']);
-=======
             $decrypted = Crypt::decryptString($data['token']);
             $decoded = json_decode($decrypted, true);
         } catch (\Throwable $e) {
@@ -275,7 +245,6 @@ class FrontController extends Controller
         $exp = \Illuminate\Support\Carbon::parse($decoded['exp'] ?? null);
         if (!is_array($decoded) || ($decoded['type'] ?? '') !== 'customer' || empty($decoded['email']) || !$exp || now()->greaterThan($exp)) {
             return redirect()->route('customer.forgot-password')->with('message', 'Token tidak valid atau kadaluarsa.');
->>>>>>> master
         }
         $user = User::where('email', $decoded['email'])->where('role', 'customer')->first();
         if (! $user || ! $user->is_active) {
