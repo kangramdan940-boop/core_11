@@ -37,6 +37,11 @@ class FrontController extends Controller
         return view('front.home', ['slides' => $slides]);
     }
 
+    public function mitraJajanEmasTerms(): View
+    {
+        return view('front.mitra.jajanemas');
+    }
+
     private function resolveImageUrl(?string $imageUrl): string
     {
         if (!$imageUrl) {

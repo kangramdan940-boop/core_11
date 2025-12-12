@@ -112,6 +112,8 @@ Route::prefix('mitra')->name('mitra.')->group(function () {
     // Route::get('/register', [MitraAuthController::class, 'showRegisterForm'])->name('register');
     // Route::post('/register', [MitraAuthController::class, 'register'])->name('register.submit');
 
+    Route::get('/jajanemas', [FrontController::class, 'mitraJajanEmasTerms'])->name('jajanemas');
+
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [FrontController::class, 'mitraDashboard'])->name('dashboard');
         Route::get('/komisi', [FrontController::class, 'mitraKomisiIndex'])->name('komisi.index');
