@@ -125,6 +125,7 @@
                         <input class="tf-switch-check" id="checkRemember" type="checkbox" name="remember">
                         <label for="checkRemember" class="body-2 text-dark-4">Remember Me</label>
                     </div>
+                    <a href="{{ route('customer.forgot-password') }}" class="button-1 text-primary">Forgot Password?</a>
                 </div>
                 <button class="mt-40 tf-btn primary">Sign In</button>
             </form>
