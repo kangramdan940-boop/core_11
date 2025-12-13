@@ -135,7 +135,7 @@
                 </div>
 
                 <div class="mt-20 form-field">
-                    <h6 class="label text-dark-4">Nomor Brankas</h6>
+                    <h6 class="label text-dark-4">Nomor Rekening</h6>
                     <fieldset class="mt-12">
                         <input type="text" name="account_no" value="{{ old('account_no', $mitra->account_no ?? '') }}" placeholder="Nomor akun/platform" class="form-control line-dark" {{ $canEdit ? '' : 'disabled' }}>
                     </fieldset>

@@ -342,4 +342,63 @@ class FrontController extends Controller
 
         return redirect()->route('mitra.profile')->with('success', 'Profil mitra berhasil diperbarui.');
     }
+
+    public function mitraCalendar(): View
+    {
+        return view('front.mitra.calendar');
+    }
+
+    public function mitraCalendarData(\Illuminate\Http\Request $request): \Illuminate\Http\JsonResponse
+    {
+        $mitra = \App\Models\MasterMitraBrankas::where('sys_user_id', auth()->id())->firstOrFail();
+        $month = trim((string) $request->query('month', ''));
+        if (!preg_match('/^\d{4}-\d{2}$/', $month)) {
+            $month = date('Y-m');
+        }
+        $year = (int) substr($month, 0, 4);
+        $mon = (int) substr($month, 5, 2);
+        $start = sprintf('%04d-%02d-01', $year, $mon);
+        $end = date('Y-m-t', strtotime($start));
+        $rows = \App\Models\TransPoMitraKomisi::where('master_mitra_brankas_id', $mitra->id)
+            ->whereBetween('tanggal_komisi', [$start, $end])
+            ->get()
+            ->groupBy(function($r){ return $r->tanggal_komisi->format('Y-m-d'); })
+            ->map(function($g){
+                return [
+                    'date' => $g->first()->tanggal_komisi->format('Y-m-d'),
+                    'count' => $g->count(),
+                    'total_gram' => (float) $g->sum('jumlah_gram'),
+                    'total_amount' => (float) $g->sum('komisi_amount'),
+                ];
+            })
+            ->values();
+        return response()->json(['data' => $rows]);
+    }
+
+    public function mitraCalendarDay(string $date): View
+    {
+        $mitra = \App\Models\MasterMitraBrankas::where('sys_user_id', auth()->id())->firstOrFail();
+        try {
+            $d = \Illuminate\Support\Carbon::parse($date)->format('Y-m-d');
+        } catch (\Throwable $e) {
+            $d = date('Y-m-d');
+        }
+        $assignments = \App\Models\TransPoMitraKomisi::with('po.produk.gramasi')
+            ->where('master_mitra_brankas_id', $mitra->id)
+            ->whereDate('tanggal_komisi', $d)
+            ->orderByDesc('id')
+            ->get();
+
+        $poIds = $assignments->pluck('trans_po_id')->filter()->unique()->values();
+        $mobilitiesByPo = $poIds->count() > 0
+            ? \App\Models\TransPoMobilitas::whereIn('trans_po_id', $poIds)->orderBy('tanggal')->get()->groupBy('trans_po_id')
+            : collect();
+
+        return view('front.mitra.calendar-day', [
+            'mitra' => $mitra,
+            'assignments' => $assignments,
+            'mobilitiesByPo' => $mobilitiesByPo,
+            'date' => $d,
+        ]);
+    }
 }

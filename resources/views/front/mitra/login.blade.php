@@ -92,9 +92,11 @@
                     </fieldset>
                 </div>
 
-                <div class="mt-12 form-check">
-                    <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-                    <label class="form-check-label" for="remember">Ingat saya</label>
+                <div class="mt-20 d-flex justify-content-between">
+                    <div class="box-check-remember">
+                        <input class="tf-switch-check" id="checkRemember" type="checkbox" name="remember">
+                        <label for="checkRemember" class="body-2 text-dark-4">Remember Me</label>
+                    </div>
                 </div>
 
                 <button class="mt-24 tf-btn primary">Masuk</button>

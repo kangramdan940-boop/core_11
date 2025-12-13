@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\TransPo;
 use App\Models\TransPaymentLog;
 use App\Models\TransPoLog;
+use App\Models\TransPoMobilitas;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -15,6 +16,7 @@ class TransPoController extends Controller
     {
         $status = (string) $request->query('status', '');
         $dateFilter = (string) $request->query('date', '');
+        $createdDate = (string) $request->query('created_date', '');
 
         $query = TransPo::with(['customer', 'agen'])
             ->orderByDesc('id');
@@ -28,6 +30,10 @@ class TransPoController extends Controller
 
         if ($dateFilter === 'today') {
             $query->whereDate('created_at', now()->toDateString());
+        }
+
+        if ($createdDate !== '') {
+            $query->whereDate('created_at', $createdDate);
         }
 
         $pos = $query->get()->map(function ($p) {
@@ -58,7 +64,11 @@ class TransPoController extends Controller
             ->orderByDesc('id')
             ->get();
 
-        return view('admin.trans_po.show', compact('po', 'paymentLogs'));
+        $mobilities = TransPoMobilitas::where('trans_po_id', $po->id)
+            ->orderByDesc('id')
+            ->get();
+
+        return view('admin.trans_po.show', compact('po', 'paymentLogs', 'mobilities'));
     }
 
     public function approvePayment(Request $request, TransPo $po)
@@ -164,6 +174,36 @@ class TransPoController extends Controller
         $po->save();
 
         return redirect()->route('admin.trans.po.show', $po)->with('success', 'Status PO diperbarui.');
+    }
+
+    public function updateShipping(Request $request, TransPo $po)
+    {
+        $data = $request->validate([
+            'shipping_name' => ['required', 'string', 'max:150'],
+            'shipping_phone' => ['nullable', 'string', 'max:30'],
+            'shipping_address' => ['required', 'string'],
+            'shipping_city' => ['nullable', 'string', 'max:100'],
+            'shipping_province' => ['nullable', 'string', 'max:100'],
+            'shipping_postal_code' => ['nullable', 'string', 'max:20'],
+        ]);
+
+        $po->fill([
+            'shipping_name' => $data['shipping_name'],
+            'shipping_phone' => $data['shipping_phone'] ?? null,
+            'shipping_address' => $data['shipping_address'],
+            'shipping_city' => $data['shipping_city'] ?? null,
+            'shipping_province' => $data['shipping_province'] ?? null,
+            'shipping_postal_code' => $data['shipping_postal_code'] ?? null,
+        ]);
+        $po->save();
+
+        TransPoLog::create([
+            'trans_po_id' => $po->id,
+            'status' => $po->status,
+            'description' => 'Update data pengiriman oleh ' . ($request->user()?->name ?? 'SYSTEM') . ' pada ' . now(),
+        ]);
+
+        return redirect()->route('admin.trans.po.show', $po)->with('success', 'Data pengiriman diperbarui.');
     }
 
     public function cancelPendingAll(Request $request)

@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\TransPoController;
 use App\Http\Controllers\Admin\TransCicilanController;
 use App\Http\Controllers\Admin\TransReadyController;
 use App\Http\Controllers\Admin\TransCicilanPaymentController;
+use App\Http\Controllers\Admin\MitraWithdrawalController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 
@@ -119,6 +120,12 @@ Route::prefix('mitra')->name('mitra.')->group(function () {
         Route::get('/komisi', [FrontController::class, 'mitraKomisiIndex'])->name('komisi.index');
         Route::get('/profile', [FrontController::class, 'mitraProfile'])->name('profile');
         Route::put('/profile', [FrontController::class, 'updateMitraProfile'])->name('profile.update');
+        Route::get('/calendar', [FrontController::class, 'mitraCalendar'])->name('calendar');
+        Route::get('/calendar/data', [FrontController::class, 'mitraCalendarData'])->name('calendar.data');
+        Route::get('/calendar/day/{date}', [FrontController::class, 'mitraCalendarDay'])->name('calendar.day');
+
+        Route::get('/withdrawals/request', [\App\Http\Controllers\Front\MitraWithdrawalController::class, 'create'])->name('withdrawals.create');
+        Route::post('/withdrawals', [\App\Http\Controllers\Front\MitraWithdrawalController::class, 'store'])->name('withdrawals.store');
 
         Route::post('/logout', [MitraAuthController::class, 'logout'])->name('logout');
     });
@@ -169,6 +176,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->parameters([
                     'mitra-brankas' => 'mitra',
                 ]);
+
+            Route::get('mitra-brankas/{mitra}/set-password', [MitraBrankasController::class, 'setPasswordForm'])
+                ->name('mitra-brankas.set-password')
+                ->middleware('admin');
+            Route::post('mitra-brankas/{mitra}/set-password', [MitraBrankasController::class, 'setPasswordUpdate'])
+                ->name('mitra-brankas.set-password.update')
+                ->middleware('admin');
 
             // Agens — param {agen}
             Route::resource('agens', MasterAgenController::class)
@@ -288,6 +302,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 Route::post('/{po}/approve-payment', [TransPoController::class, 'approvePayment'])->name('approve-payment');
                 Route::post('/{po}/reject-payment', [TransPoController::class, 'rejectPayment'])->name('reject-payment');
                 Route::post('/{po}/status', [TransPoController::class, 'updateStatus'])->name('update-status');
+                Route::post('/{po}/shipping', [TransPoController::class, 'updateShipping'])->name('update-shipping');
                 Route::post('/cancel-pending', [TransPoController::class, 'cancelPendingAll'])->name('cancel-pending-all');
 
                 // Mitra Komisi assign/remove (nama & URL sama seperti awal)
@@ -295,6 +310,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
                     ->name('mitra-komisi.store');
                 Route::delete('mitra-komisi/{assignment}', [\App\Http\Controllers\Admin\TransPoMitraKomisiController::class, 'destroy'])
                     ->name('mitra-komisi.destroy');
+
+                // Biaya Mobilitas
+                Route::post('{po}/mobilitas', [\App\Http\Controllers\Admin\TransPoMobilitasController::class, 'store'])
+                    ->name('mobilitas.store');
             });
 
             // Cicilan
@@ -316,6 +335,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->name('cicilan-payments.index');
             Route::get('/cicilan-payments/{payment}', [TransCicilanPaymentController::class, 'show'])
                 ->name('cicilan-payments.show');
+
+            // Mitra Withdrawals
+            Route::get('/mitra-withdrawals', [MitraWithdrawalController::class, 'index'])
+                ->name('mitra-withdrawals.index');
+            Route::get('/mitra-withdrawals/{withdrawal}', [MitraWithdrawalController::class, 'show'])
+                ->name('mitra-withdrawals.show');
+            Route::post('/mitra-withdrawals/{withdrawal}/status', [MitraWithdrawalController::class, 'updateStatus'])
+                ->name('mitra-withdrawals.update-status');
+            Route::post('/mitra-withdrawals/{withdrawal}/upload-proof', [MitraWithdrawalController::class, 'uploadProof'])
+                ->name('mitra-withdrawals.upload-proof');
         });
 
         /*

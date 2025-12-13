@@ -69,7 +69,7 @@
                         stroke="#1A1528" stroke-width="1.5" stroke-miterlimit="10" />
                 </svg>
             </a> -->
-                <a href="#" class="box-icon logout-btn" onclick="event.preventDefault(); document.getElementById('logoutForm').submit();" title="Logout">
+                <a href="#" class="box-icon logout-btn" onclick="event.preventDefault(); if (window.confirm('Anda yakin ingin logout?')) { document.getElementById('logoutForm').submit(); }" title="Logout">
                     <svg width="24" height="24" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 3h5a1 1 0 011 1v9a1 1 0 01-1 1H6" stroke="#1A1528" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8.5h6M5 6l-2.5 2.5L5 11" stroke="#1A1528" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </a>
                 <form id="logoutForm" action="{{ route('customer.logout') }}" method="POST" style="display:none;">

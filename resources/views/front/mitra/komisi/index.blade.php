@@ -100,28 +100,44 @@
 
                 @if ($assignItems->count() > 0)
                     <h5 class="mt-24 mb-8">Alokasi Komisi Saya</h5>
-                    <table class="table table-sm mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Tanggal</th>
-                                <th>Kode PO</th>
-                                <th>Gram</th>
-                                <th>% Komisi</th>
-                                <th>Nominal (IDR)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($assignItems as $a)
-                                <tr>
-                                    <td>{{ optional($a->tanggal_komisi)->format('Y-m-d') ?? '-' }}</td>
-                                    <td>{{ optional($a->po)->kode_po ?? '-' }}</td>
-                                    <td>{{ number_format((float)$a->jumlah_gram, 3, ',', '.') }}</td>
-                                    <td>{{ number_format((float)$a->komisi_persen, 2, ',', '.') }}</td>
-                                    <td>{{ number_format((float)$a->komisi_amount, 2, ',', '.') }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm table-striped table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Tanggal</th>
+                                            <th>Kode PO</th>
+                                            <th class="text-end">Gram</th>
+                                            <th class="text-center">% Komisi</th>
+                                            <th class="text-end">Nominal (IDR)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($assignItems as $a)
+                                            <tr>
+                                                <td>{{ optional($a->tanggal_komisi)->format('Y-m-d') ?? '-' }}</td>
+                                                <td>
+                                                    @php($kp = optional($a->po)->kode_po ?? '-')
+                                                    {{ is_string($kp) && $kp !== '-' ? (strlen($kp) > 10 ? substr($kp, 0, strlen($kp)-10).'XXX' : 'XXX') : $kp }}
+                                                </td>
+                                                <td class="text-end">{{ number_format((float)$a->jumlah_gram, 3, ',', '.') }}</td>
+                                                <td class="text-center"><span class="badge bg-primary-subtle text-primary">{{ number_format((float)$a->komisi_persen, 2, ',', '.') }}%</span></td>
+                                                <td class="text-end">{{ number_format((float)$a->komisi_amount, 2, ',', '.') }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                    <tfoot>
+                                        @php($totalNominal = (float) $assignItems->sum('komisi_amount'))
+                                        <tr>
+                                            <th colspan="4" class="text-end">Total Nominal</th>
+                                            <th class="text-end">{{ number_format($totalNominal, 2, ',', '.') }}</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 @endif
             @endif
         </div>

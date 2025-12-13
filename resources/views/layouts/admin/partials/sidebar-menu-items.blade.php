@@ -3,20 +3,21 @@
         $menu = [
             [ 'type' => 'title', 'text' => 'Main' ],
             [ 'type' => 'link', 'icon' => 'ri-home-3-line', 'text' => 'Dashboard', 'url' => route('admin.dashboard'), 'routeIs' => 'admin.dashboard' ],
-
- [ 'type' => 'title', 'text' => 'Transaksi' ],
             [ 'type' => 'link', 'icon' => 'ri-receipt-line', 'text' => 'Payment Log', 'url' => route('admin.trans.payment-logs.index'), 'routeIs' => 'admin.trans.payment-logs.*' ],
 
+ [ 'type' => 'title', 'text' => 'Transaksi' ],
+
             [ 'type' => 'link', 'icon' => 'ri-file-list-3-line', 'text' => 'PO Emas', 'url' => route('admin.trans.po.index'), 'routeIs' => 'admin.trans.po.*' ],
+            [ 'type' => 'link', 'icon' => 'ri-shopping-bag-3-line', 'text' => 'Produk & Layanan', 'url' => route('admin.master.produk-layanan.index'), 'routeIs' => 'admin.master.produk-layanan.*' ],
             [ 'type' => 'link', 'icon' => 'ri-flashlight-line', 'text' => 'Emas Ready', 'url' => route('admin.trans.ready.index'), 'routeIs' => 'admin.trans.ready.*' ],
             [ 'type' => 'link', 'icon' => 'ri-calendar-check-line', 'text' => 'Cicilan Emas', 'url' => route('admin.trans.cicilan.index'), 'routeIs' => 'admin.trans.cicilan.*' ],
             [ 'type' => 'link', 'icon' => 'ri-hand-coin-line', 'text' => 'Pembayaran Cicilan', 'url' => route('admin.trans.cicilan-payments.index'), 'routeIs' => 'admin.trans.cicilan-payments.*' ],
+            [ 'type' => 'link', 'icon' => 'ri-wallet-3-line', 'text' => 'WD Mitra', 'url' => route('admin.trans.mitra-withdrawals.index'), 'routeIs' => 'admin.trans.mitra-withdrawals.*' ],
 
             [ 'type' => 'title', 'text' => 'Master' ],
             [ 'type' => 'link', 'icon' => 'ri-user-3-line', 'text' => 'Customer', 'url' => route('admin.master.customers.index'), 'routeIs' => 'admin.master.customers.*' ],
             [ 'type' => 'link', 'icon' => 'ri-price-tag-3-line', 'text' => 'Brand Emas', 'url' => route('admin.master.brand-emas.index'), 'routeIs' => 'admin.master.brand-emas.*' ],
             [ 'type' => 'link', 'icon' => 'ri-scales-3-line', 'text' => 'Gramasi Emas', 'url' => route('admin.master.gramasi-emas.index'), 'routeIs' => 'admin.master.gramasi-emas.*' ],
-            [ 'type' => 'link', 'icon' => 'ri-shopping-bag-3-line', 'text' => 'Produk & Layanan', 'url' => route('admin.master.produk-layanan.index'), 'routeIs' => 'admin.master.produk-layanan.*' ],
             [ 'type' => 'link', 'icon' => 'ri-image-line', 'text' => 'Home Slider', 'url' => route('admin.master.home-slider.index'), 'routeIs' => 'admin.master.home-slider.*' ],
             [ 'type' => 'link', 'icon' => 'ri-apps-2-line', 'text' => 'Menu Home Customer', 'url' => route('admin.master.menu-home-customer.index'), 'routeIs' => 'admin.master.menu-home-customer.*' ],
             [ 'type' => 'link', 'icon' => 'ri-group-line', 'text' => 'Agen', 'url' => route('admin.master.agens.index'), 'routeIs' => 'admin.master.agens.*' ],

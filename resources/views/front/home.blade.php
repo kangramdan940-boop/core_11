@@ -62,7 +62,7 @@
                          <div class="content-boarding text-center">
                              <h1 class="title">{!! nl2br(e($slide['title'])) !!}</h1>
                              @if(!empty($slide['description']))
-                             <p class="desc">{!! nl2br(e($slide['description'])) !!}</p>
+                             <p class="desc">{!! $slide['description'] !!}</p>
                              @endif
                          </div>
                      </div>

@@ -7,10 +7,44 @@
 @section('subLink', route('admin.trans.po.index'))
 
 @section('content')
+    @section('content')
+    <div class="d-flex justify-content-end mb-2">
+        <form id="cancelPendingForm" action="{{ route('admin.trans.po.cancel-pending-all') }}" method="POST">
+            @csrf
+            <button type="button" id="cancelPendingBtn" class="btn btn-outline-danger btn-sm">Batalkan Semua Pending</button>
+        </form>
+    </div>
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <form action="{{ route('admin.trans.po.index') }}" method="GET" class="row g-3 align-items-end">
+                <div class="col-12 col-md-4">
+                    <label for="filterDate" class="form-label mb-1">Tanggal Dibuat</label>
+                    <input type="date" id="filterDate" name="created_date" class="form-control" value="{{ request('created_date') ?? (request('date') === 'today' ? now()->format('Y-m-d') : '') }}">
+                </div>
+                <div class="col-12 col-md-5">
+                    <label for="filterStatus" class="form-label mb-1">Status</label>
+                    <select id="filterStatus" name="status" class="form-select">
+                        <option value="" {{ (request()->missing('status') || request('status') === '') ? 'selected' : '' }}>Semua</option>
+                        <option value="pending_payment" {{ request('status') === 'pending_payment' ? 'selected' : '' }}>Pending</option>
+                        <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Paid</option>
+                        <option value="processing" {{ request('status') === 'processing' ? 'selected' : '' }}>Processing</option>
+                        <option value="ready_at_agen" {{ request('status') === 'ready_at_agen' ? 'selected' : '' }}>Ready @Agen</option>
+                        <option value="shipped" {{ request('status') === 'shipped' ? 'selected' : '' }}>Shipped</option>
+                        <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Completed</option>
+                        <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                    <a href="{{ route('admin.trans.po.index') }}" class="btn btn-outline-secondary">Reset</a>
+                </div>
+            </form>
+        </div>
+    </div>
     <div class="card shadow-sm">
         <ul class="nav nav-tabs mb-3" id="statusTabs" role="tablist">
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['date' => 'today']) }}" class="nav-link {{ request('date') === 'today' ? 'active' : '' }}">Hari Ini</a></li>
-            <li class="nav-item"><a href="{{ route('admin.trans.po.index') }}" class="nav-link {{ (request()->missing('status') || request('status') === '') && (request()->missing('date') || request('date') === '') ? 'active' : '' }}">Semua</a></li>
+            <li class="nav-item"><a href="{{ route('admin.trans.po.index') }}" class="nav-link {{ (request()->missing('status') || request('status') === '') && (request()->missing('date') || request('date') === '') && (request()->missing('created_date') || request('created_date') === '') ? 'active' : '' }}">Semua</a></li>
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'pending_payment']) }}" class="nav-link {{ request('status') === 'pending_payment' ? 'active' : '' }}">Pending</a></li>
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'paid']) }}" class="nav-link {{ request('status') === 'paid' ? 'active' : '' }}">Paid</a></li>
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'processing']) }}" class="nav-link {{ request('status') === 'processing' ? 'active' : '' }}">Processing</a></li>
@@ -130,7 +164,7 @@
 
             const headLabel = document.querySelector('div.head-label');
             if (headLabel) {
-                headLabel.innerHTML = '<div class="d-flex w-100 align-items-center justify-content-between"><h5 class="card-title text-nowrap mb-0">Daftar PO Emas</h5><form id="cancelPendingForm" action="{{ route('admin.trans.po.cancel-pending-all') }}" method="POST">@csrf<button type="button" id="cancelPendingBtn" class="btn btn-outline-danger btn-sm">Batalkan Semua Pending</button></form></div>';
+                headLabel.innerHTML = '<div class="d-flex w-100 align-items-center justify-content-between"><h5 class="card-title text-nowrap mb-0">Daftar PO Emas</h5></div>';
             }
 
             setTimeout(function () {

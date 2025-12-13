@@ -50,6 +50,7 @@
         <a class="nav-link {{ request()->routeIs('admin.trans.cicilan.*') ? 'active' : '' }}" href="{{ route('admin.trans.cicilan.index') }}">📆 Cicilan Emas</a>
         <a class="nav-link {{ request()->routeIs('admin.trans.cicilan-payments.*') ? 'active' : '' }}" href="{{ route('admin.trans.cicilan-payments.index') }}">💳 Pembayaran Cicilan</a>
         <a class="nav-link {{ request()->routeIs('admin.trans.payment-logs.*') ? 'active' : '' }}" href="{{ route('admin.trans.payment-logs.index') }}">📑 Payment Log</a>
+        <a class="nav-link {{ request()->routeIs('admin.trans.mitra-withdrawals.*') ? 'active' : '' }}" href="{{ route('admin.trans.mitra-withdrawals.index') }}">🏦 WD Mitra</a>
  <div class="menu-title">Emas</div>
         <a class="nav-link {{ request()->routeIs('admin.master.ready-stocks.*') ? 'active' : '' }}" href="{{ route('admin.master.ready-stocks.index') }}">📦 Stok Emas Ready</a>
 

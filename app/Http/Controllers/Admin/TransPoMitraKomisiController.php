@@ -10,6 +10,7 @@ use App\Models\TransPoLog;
 use App\Models\TransPoMitraKomisi;
 use App\Models\MasterMitraBrankas;
 use App\Models\MasterMitraKomisi;
+use App\Models\TransPoMobilitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -65,8 +66,15 @@ class TransPoMitraKomisiController extends Controller
             $persen = 0.0;
         }
 
-        $hargaJasa = (float) optional($po->produk)->harga_jasa;
-        $amount = (float) number_format($hargaJasa * ($persen / 100), 2, '.', '');
+        $feePerUnit = (float) (optional($po->produk)->harga_jasa ?? 0.0);
+        $qtyUnit = (int) ($po->qty ?? 1);
+        $feePool = (float) number_format($feePerUnit * $qtyUnit, 2, '.', '');
+        $totalMobilitas = (float) TransPoMobilitas::where('trans_po_id', $po->id)->sum('amount');
+        $netFeePool = (float) number_format(max(0.0, $feePool - $totalMobilitas), 2, '.', '');
+        $poTotalGram = (float) ($po->total_gram ?? 0.0);
+        $proportion = $poTotalGram > 0.0 ? (float) number_format(min(1.0, ((float) $data['jumlah_gram'] / $poTotalGram)), 6, '.', '') : 0.0;
+        $commissionBase = (float) number_format($netFeePool * $proportion, 2, '.', '');
+        $amount = (float) number_format($commissionBase * ($persen / 100), 2, '.', '');
 
         DB::transaction(function () use ($po, $mitra, $data, $persen, $amount) {
             TransPoMitraKomisi::create([
