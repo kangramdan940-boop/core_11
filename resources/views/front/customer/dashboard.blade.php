@@ -57,7 +57,7 @@
 
         <div class="right">
            
-            <a class="box-icon" href="#notification" data-bs-toggle="offcanvas" aria-controls="offcanvasBottom">
+            <!-- <a class="box-icon" href="#notification" data-bs-toggle="offcanvas" aria-controls="offcanvasBottom">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 6.44043V9.77043" stroke="#1A1528" stroke-width="1.5" stroke-miterlimit="10"
                         stroke-linecap="round" />
@@ -68,9 +68,9 @@
                         d="M15.3299 18.8203C15.3299 20.6503 13.8299 22.1503 11.9999 22.1503C11.0899 22.1503 10.2499 21.7703 9.64992 21.1703C9.04992 20.5703 8.66992 19.7303 8.66992 18.8203"
                         stroke="#1A1528" stroke-width="1.5" stroke-miterlimit="10" />
                 </svg>
-            </a>
-                <a href="#" class="icon logout-btn" onclick="event.preventDefault(); document.getElementById('logoutForm').submit();" title="Logout">
-                    <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 3h5a1 1 0 011 1v9a1 1 0 01-1 1H6" stroke="#121927" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8.5h6M5 6l-2.5 2.5L5 11" stroke="#121927" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a> -->
+                <a href="#" class="box-icon logout-btn" onclick="event.preventDefault(); document.getElementById('logoutForm').submit();" title="Logout">
+                    <svg width="24" height="24" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 3h5a1 1 0 011 1v9a1 1 0 01-1 1H6" stroke="#1A1528" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8.5h6M5 6l-2.5 2.5L5 11" stroke="#1A1528" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </a>
                 <form id="logoutForm" action="{{ route('customer.logout') }}" method="POST" style="display:none;">
                     @csrf
