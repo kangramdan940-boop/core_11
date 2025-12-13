@@ -4,6 +4,14 @@
             [ 'type' => 'title', 'text' => 'Main' ],
             [ 'type' => 'link', 'icon' => 'ri-home-3-line', 'text' => 'Dashboard', 'url' => route('admin.dashboard'), 'routeIs' => 'admin.dashboard' ],
 
+ [ 'type' => 'title', 'text' => 'Transaksi' ],
+            [ 'type' => 'link', 'icon' => 'ri-receipt-line', 'text' => 'Payment Log', 'url' => route('admin.trans.payment-logs.index'), 'routeIs' => 'admin.trans.payment-logs.*' ],
+
+            [ 'type' => 'link', 'icon' => 'ri-file-list-3-line', 'text' => 'PO Emas', 'url' => route('admin.trans.po.index'), 'routeIs' => 'admin.trans.po.*' ],
+            [ 'type' => 'link', 'icon' => 'ri-flashlight-line', 'text' => 'Emas Ready', 'url' => route('admin.trans.ready.index'), 'routeIs' => 'admin.trans.ready.*' ],
+            [ 'type' => 'link', 'icon' => 'ri-calendar-check-line', 'text' => 'Cicilan Emas', 'url' => route('admin.trans.cicilan.index'), 'routeIs' => 'admin.trans.cicilan.*' ],
+            [ 'type' => 'link', 'icon' => 'ri-hand-coin-line', 'text' => 'Pembayaran Cicilan', 'url' => route('admin.trans.cicilan-payments.index'), 'routeIs' => 'admin.trans.cicilan-payments.*' ],
+
             [ 'type' => 'title', 'text' => 'Master' ],
             [ 'type' => 'link', 'icon' => 'ri-user-3-line', 'text' => 'Customer', 'url' => route('admin.master.customers.index'), 'routeIs' => 'admin.master.customers.*' ],
             [ 'type' => 'link', 'icon' => 'ri-price-tag-3-line', 'text' => 'Brand Emas', 'url' => route('admin.master.brand-emas.index'), 'routeIs' => 'admin.master.brand-emas.*' ],
@@ -20,17 +28,12 @@
             [ 'type' => 'link', 'icon' => 'ri-archive-stack-line', 'text' => 'Stok Emas Ready', 'url' => route('admin.master.ready-stocks.index'), 'routeIs' => 'admin.master.ready-stocks.*' ],
             [ 'type' => 'link', 'icon' => 'ri-hand-coin-line', 'text' => 'Komisi Mitra', 'url' => route('admin.master.mitra-komisi.index'), 'routeIs' => 'admin.master.mitra-komisi.*' ],
 
-            [ 'type' => 'title', 'text' => 'Transaksi' ],
-            [ 'type' => 'link', 'icon' => 'ri-file-list-3-line', 'text' => 'PO Emas', 'url' => route('admin.trans.po.index'), 'routeIs' => 'admin.trans.po.*' ],
-            [ 'type' => 'link', 'icon' => 'ri-flashlight-line', 'text' => 'Emas Ready', 'url' => route('admin.trans.ready.index'), 'routeIs' => 'admin.trans.ready.*' ],
-            [ 'type' => 'link', 'icon' => 'ri-calendar-check-line', 'text' => 'Cicilan Emas', 'url' => route('admin.trans.cicilan.index'), 'routeIs' => 'admin.trans.cicilan.*' ],
-            [ 'type' => 'link', 'icon' => 'ri-hand-coin-line', 'text' => 'Pembayaran Cicilan', 'url' => route('admin.trans.cicilan-payments.index'), 'routeIs' => 'admin.trans.cicilan-payments.*' ],
+           
 
             [ 'type' => 'title', 'text' => 'System' ],
             [ 'type' => 'link', 'icon' => 'ri-settings-3-line', 'text' => 'Setting', 'url' => route('admin.master.settings.index'), 'routeIs' => 'admin.master.settings.*' ],
             [ 'type' => 'link', 'icon' => 'ri-user-settings-line', 'text' => 'Role', 'url' => '#!' ],
             [ 'type' => 'link', 'icon' => 'ri-notification-3-line', 'text' => 'Notifikasi', 'url' => '#!' ],
-            [ 'type' => 'link', 'icon' => 'ri-receipt-line', 'text' => 'Payment Log', 'url' => route('admin.trans.payment-logs.index'), 'routeIs' => 'admin.trans.payment-logs.*' ],
         ];
 
         $renderMenuItem = function ($item) use (&$renderMenuItem) {

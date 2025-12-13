@@ -86,7 +86,7 @@
                                 }
                             @endphp
                             @foreach($produkPo as $p)
-                                <option value="{{ encrypt((string)$p->id) }}" data-harga="{{ (float)($p->harga_hariini ?? 0) }}" data-gram="{{ (float)optional($p->gramasi)->gramasi }}" {{ (string)$selectedId === (string)$p->id ? 'selected' : '' }}>
+                                <option value="{{ encrypt((string)$p->id) }}" data-harga="{{ (float)($p->harga_hariini ?? 0) }}" data-jasa="{{ (float)($p->harga_jasa ?? 0) }}" data-gram="{{ (float)optional($p->gramasi)->gramasi }}" {{ (string)$selectedId === (string)$p->id ? 'selected' : '' }}>
                                     {{ optional($p->gramasi)->nama }} - {{ number_format((float)optional($p->gramasi)->gramasi, 3, ',', '.') }} gram
                                 </option>
                             @endforeach
@@ -154,11 +154,13 @@
                 var $prod = $('select[name="id_master_produk_dan_layanan"]');
                 var opt = $prod.find('option:selected');
                 var harga = Number(opt.data('harga')) || 0;
+                var jasa = Number(opt.data('jasa')) || 0;
                 var gram = Number(opt.data('gram')) || 0;
                 var qty = Number($('#qty').val()) || 1;
-                $('#estimasiHarga').text(formatIDR(harga));
+                var perItem = harga + jasa;
+                $('#estimasiHarga').text(formatIDR(perItem));
                 $('#estimasiQty').text(qty);
-                $('#estimasiTotal').text(formatIDR(harga * qty));
+                $('#estimasiTotal').text(formatIDR(perItem * qty));
                 $('#totalGram').val((gram * qty).toFixed(3));
             }
             $(document).ready(function(){

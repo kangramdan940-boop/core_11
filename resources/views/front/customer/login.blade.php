@@ -63,7 +63,7 @@
             <form method="post" action="{{ route('customer.login.submit') }}">
                 @csrf
                 @if ($errors->any())
-                    <div class="alert alert-danger mt-3">{{ $errors->first() }}</div>
+                    <div class="alert alert-danger light alert-dismissible fade show mb-10 mt-3">{{ $errors->first() }}</div>
                 @endif
                 <div class="mt-32 form-field">
                     <h6 class="label">Email</h6>

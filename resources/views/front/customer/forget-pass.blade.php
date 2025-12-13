@@ -32,7 +32,7 @@
             <div class="alert alert-primary mt-3">{{ session('message') }}</div>
         @endif
         @if($errors->any())
-            <div class="alert alert-danger mt-3">{{ $errors->first() }}</div>
+        <div class="alert alert-danger light alert-dismissible fade show mb-10 mt-3">{{ $errors->first() }}</div>
         @endif
         <form class="mt-20" action="{{ route('customer.forgot.submit') }}" method="POST">
             @csrf
