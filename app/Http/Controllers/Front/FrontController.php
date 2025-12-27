@@ -71,6 +71,7 @@ class FrontController extends Controller
         $poGramTotal = $customer
             ? (float) \App\Models\TransPo::where('master_customer_id', $customer->id)
                 ->where('status', '!=', 'cancelled')
+                ->where('status', '!=', 'pending_payment')
                 ->sum(DB::raw('COALESCE(total_gram,0) * COALESCE(qty,1)'))
             : 0.0;
         $readyGramTotal = 0.0;

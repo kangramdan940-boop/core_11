@@ -101,7 +101,7 @@
                         </div>
                     </div>
                     <div style="margin-top:8px;border-top:1px solid rgba(255,255,255,.4);padding-top:10px;display:flex;align-items:center;justify-content:space-between;">
-                        <div style="font-size:16px;font-weight:600;">Saldo 1.0 gr</div>
+                        <div style="font-size:16px;font-weight:600;">Saldo {{ number_format((float)$poGramTotal, 3, ',', '.') }} gr</div>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7z" stroke="white" stroke-width="1.5" />
                             <circle cx="12" cy="12" r="3" stroke="white" stroke-width="1.5" />
