@@ -53,6 +53,116 @@ class FrontController extends Controller
         return asset(ltrim($imageUrl, '/'));
     }
 
+    public function jneCities(Request $request)
+    {
+        $search = $request->query('search', '');
+        if (strlen($search) < 3) {
+            return response()->json(['status' => false, 'data' => []]);
+        }
+        
+        // Simple proxy using file_get_contents or curl
+        // Since this is a public API, we just forward the request
+        $url = 'https://www.jne.co.id/api-destination?search=' . urlencode($search);
+        
+        try {
+            // Using context to ignore SSL verification if needed locally, though better to verify
+            $arrContextOptions = [
+                "ssl" => [
+                    "verify_peer" => false,
+                    "verify_peer_name" => false,
+                ],
+                "http" => [
+                    "header" => "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36\r\n"
+                ]
+            ];  
+            $response = file_get_contents($url, false, stream_context_create($arrContextOptions));
+            if ($response === false) {
+                return response()->json(['status' => false, 'data' => []]);
+            }
+            return response($response)->header('Content-Type', 'application/json');
+        } catch (\Throwable $e) {
+            Log::error('JNE Proxy Error', ['error' => $e->getMessage()]);
+            return response()->json(['status' => false, 'data' => []]);
+        }
+    }
+
+    public function jneShippingFee(Request $request)
+    {
+        $destination = $request->input('destination');
+        if (!$destination) {
+            return response()->json(['error' => 'Destination code is required'], 400);
+        }
+
+        // Hardcoded values
+        $origin = 'BKI10000';
+        $weight = 1;
+
+        $url = 'https://www.jne.co.id/shipping-fee?origin=' . $origin . '&destination=' . urlencode($destination) . '&weight=' . $weight;
+
+        try {
+            $arrContextOptions = [
+                "ssl" => [
+                    "verify_peer" => false,
+                    "verify_peer_name" => false,
+                ],
+                "http" => [
+                    "header" => "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36\r\n"
+                ]
+            ];
+            $response = file_get_contents($url, false, stream_context_create($arrContextOptions));
+            
+            if ($response === false) {
+                return response()->json(['error' => 'Failed to fetch from JNE'], 500);
+            }
+
+            // Extract section with class "lainnya hero"
+            $dom = new \DOMDocument();
+            libxml_use_internal_errors(true); // Suppress HTML parsing errors
+            $dom->loadHTML($response);
+            libxml_clear_errors();
+
+            $xpath = new \DOMXPath($dom);
+            
+            // Extract table rows
+            $rows = $xpath->query('//table/tbody/tr');
+            $options = [];
+
+            foreach ($rows as $row) {
+                $cols = $xpath->query('td', $row);
+                if ($cols->length >= 4) {
+                    $service = trim($cols->item(0)->textContent);
+                    $type = trim($cols->item(1)->textContent);
+                    $priceStr = trim($cols->item(2)->textContent); // e.g. "IDR 10.000"
+                    $etd = trim($cols->item(3)->textContent);
+
+                    // Parse price: remove "IDR " and dots
+                    $priceVal = (float) str_replace(['IDR', '.', ' '], '', $priceStr);
+
+                    $options[] = [
+                        'service' => $service,
+                        'description' => $type,
+                        'price' => $priceVal,
+                        'price_formatted' => $priceStr,
+                        'etd' => $etd,
+                        'label' => "{$service} - {$priceStr} ({$etd})"
+                    ];
+                }
+            }
+
+            if (empty($options)) {
+                 return response()->json(['error' => 'No shipping options found'], 404);
+            }
+            
+            return response()->json([
+                'status' => true,
+                'data' => $options
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('JNE Shipping Fee Error', ['error' => $e->getMessage()]);
+            return response()->json(['error' => 'Internal Server Error: ' . $e->getMessage()], 500);
+        }
+    }
+
     public function customerDashboard(): View
     {
         $customer = \App\Models\MasterCustomer::where('sys_user_id', auth()->id())->first();

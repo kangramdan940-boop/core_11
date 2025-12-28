@@ -13,6 +13,38 @@
     <link rel="apple-touch-icon-precomposed" href="{{ asset('front/images/logo/168.png')}}" />
     <title>Beli Ready || Jajan Emas</title>
     <script>if (localStorage.toggled === "dark-theme") { document.documentElement.classList.add('dark-theme'); }</script>
+    <style>
+        @keyframes bounce-vertical {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .shipping-alert-bubble {
+            animation: bounce-vertical 1s infinite;
+            background: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            white-space: nowrap;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            position: absolute;
+            top: -45px;
+            right: 0;
+            z-index: 10;
+            display: none;
+        }
+        .shipping-alert-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            right: 20px;
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid #dc3545;
+        }
+    </style>
 </head>
 <body>
     <div class="header fixed-top">
@@ -57,14 +89,21 @@
                 @csrf
                 <input type="hidden" name="ready_stock_id" value="{{ encrypt((string) $stock->id) }}">
                 <div class="form-field form-2 mt-24">
-                    <div class="label h7">Tipe Penerimaan</div>
-                    <fieldset class="mt-12">
-                        <select name="delivery_type" class="form-select">
-                            <option value="ship" @selected(old('delivery_type')=='ship')>Dikirim</option>
-                            <option value="pickup" @selected(old('delivery_type')=='pickup')>Ambil di Agen</option>
-                        </select>
+                    <div class="label h7">Metode Pengiriman</div>
+                    <fieldset class="mt-12 d-flex gap-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="delivery_type" id="delivery_ship" value="ship" @checked(old('delivery_type', 'ship') == 'ship')>
+                            <label class="form-check-label" for="delivery_ship">
+                                Pakai Ekspedisi
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="delivery_type" id="delivery_pickup" value="pickup" @checked(old('delivery_type') == 'pickup')>
+                            <label class="form-check-label" for="delivery_pickup">
+                                Ambil Sendiri
+                            </label>
+                        </div>
                     </fieldset>
-                    <div class="small text-muted mt-8">Isi data pengiriman jika memilih "Dikirim".</div>
                 </div>
 
                 @php $isShip = old('delivery_type') === 'ship'; @endphp
@@ -90,17 +129,43 @@
                             @error('shipping_address')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                         </fieldset>
                     </div>
-                    <div class="form-field form-2 mt-24">
-                        <div class="label h7">Kota</div>
-                        <fieldset class="mt-12">
-                            <input type="text" name="shipping_city" class="form-control @error('shipping_city') is-invalid @enderror" value="{{ old('shipping_city', $customer->kota ?? '') }}" {{ $isShip ? 'required' : '' }}>
-                            @error('shipping_city')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                    <div class="form-field form-2 mt-24 position-relative">
+                        <div class="label h7">Kota Tujuan Pengiriman</div>
+                        <fieldset class="mt-12 d-flex gap-2">
+                            <div class="position-relative w-100">
+                                <input type="text" id="shipping_city_input" name="shipping_city" class="form-control @error('shipping_city') is-invalid @enderror" placeholder="Masukan Kota Tujuan (min. 4 huruf)" value="{{ old('shipping_city', $customer->kota ?? '') }}" autocomplete="off">
+                                <input type="hidden" name="destination_code" id="shipping_city_code" value="{{ old('destination_code') }}">
+                                <div id="city-results" class="list-group position-absolute w-100 start-0" style="display:none; z-index: 1000; max-height: 250px; overflow-y: auto; top: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></div>
+                                @error('shipping_city')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="position-relative" style="flex-shrink: 0;">
+                                <div id="shipping-indicator" class="shipping-alert-bubble">
+                                    👇 Klik "Hitung" di sini!
+                                </div>
+                                <button type="button" id="btnCheckOngkir" class="tf-btn primary" style="width: auto; padding: 0 20px; height: 100%;">Hitung</button>
+                            </div>
                         </fieldset>
+                        
+                        <div id="jne-result" class="mt-20" style="display:none;">
+                            <div class="label h7 mb-12">Pilih Layanan Pengiriman</div>
+                            <select id="shipping_service" name="shipping_service" class="form-select">
+                            </select>
+                            <input type="hidden" name="shipping_cost" id="shipping_cost" value="0">
+                        </div>
                     </div>
                     <div class="form-field form-2 mt-24">
                         <div class="label h7">Provinsi</div>
                         <fieldset class="mt-12">
-                            <input type="text" name="shipping_province" class="form-control @error('shipping_province') is-invalid @enderror" value="{{ old('shipping_province', $customer->provinsi ?? '') }}" {{ $isShip ? 'required' : '' }}>
+                            @php
+                                $path = base_path('resources/views/front/customer/ready/provinsi.json');
+                                $provinces = file_exists($path) ? json_decode(file_get_contents($path), true) : [];
+                            @endphp
+                            <select name="shipping_province" class="form-select @error('shipping_province') is-invalid @enderror" {{ $isShip ? 'required' : '' }}>
+                                <option value="">Pilih Provinsi</option>
+                                @foreach($provinces as $province)
+                                    <option value="{{ $province['name'] }}" @selected(old('shipping_province', $customer->provinsi ?? '') == $province['name'])>{{ $province['name'] }}</option>
+                                @endforeach
+                            </select>
                             @error('shipping_province')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                         </fieldset>
                     </div>
@@ -126,9 +191,12 @@
                         <div class="w-100">
                             <div class="d-flex justify-content-between align-items-center font-monospace">
                                 <span class="fw-semibold">Estimasi Bayar</span>
-                                <span id="estimasiTotal" class="fw-bold text-success fs-3 lh-1">{{ 'Rp ' . number_format($hargaItem, 0, ',', '.') }}</span>
+                                <span id="estimasiTotalDisplay" class="fw-bold text-success fs-3 lh-1">{{ 'Rp ' . number_format($hargaItem, 0, ',', '.') }}</span>
                             </div>
-                            <div class="small text-muted fw-semibold">Per item: <span id="estimasiHarga">{{ 'Rp ' . number_format($hargaItem, 0, ',', '.') }}</span> × <span id="estimasiQty">1</span> pcs</div>
+                            <div class="small text-muted fw-semibold">
+                                Item: <span id="estimasiHarga">{{ 'Rp ' . number_format($hargaItem, 0, ',', '.') }}</span> × <span id="estimasiQty">1</span>
+                                <span id="ongkirDisplay" style="display:none;"> + Ongkir <span id="ongkirValue">0</span></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -141,7 +209,7 @@
                 </div>
 
                 <div class="mt-24">
-                    <button class="tf-btn primary">Buat Transaksi</button>
+                    <button id="btnSubmit" class="tf-btn primary">Buat Transaksi</button>
                 </div>
             </form>
         </div>
@@ -156,15 +224,183 @@
     <script type="text/javascript" src="{{ asset('front/js/main.js')}}"></script>
     <script>
         (function($){
-            function toggleShipping(){
-                var v = $('select[name="delivery_type"]').val();
-                var isShip = v === 'ship';
-                $('#shippingFields').toggle(isShip);
+            var basePrice = {{ $hargaItem }};
+            var currentQty = 1;
+
+            function formatRupiah(amount) {
+                return 'Rp ' + new Intl.NumberFormat('id-ID').format(amount);
             }
-            $(document).ready(function(){
-                toggleShipping();
-                $('select[name="delivery_type"]').on('change', toggleShipping);
+
+            function updateTotal() {
+                var cost = parseFloat($('#shipping_cost').val()) || 0;
+                var total = (basePrice * currentQty) + cost;
+                
+                $('#estimasiTotalDisplay').text(formatRupiah(total));
+                
+                if(cost > 0) {
+                    $('#ongkirDisplay').show();
+                    $('#ongkirValue').text(formatRupiah(cost));
+                } else {
+                    $('#ongkirDisplay').hide();
+                }
+            }
+
+            // Delivery Type Toggle
+            $('input[name="delivery_type"]').on('change', function() {
+                var type = $('input[name="delivery_type"]:checked').val();
+                if (type === 'pickup') {
+                    $('#shippingFields').hide();
+                    $('#shipping_cost').val(0);
+                    updateTotal();
+                } else {
+                    $('#shippingFields').show();
+                    var cost = $('#shipping_service').val();
+                    if(cost) {
+                        $('#shipping_cost').val(cost);
+                    } else {
+                        $('#shipping_cost').val(0);
+                    }
+                    updateTotal();
+                }
             });
+
+            // Trigger change on load to set initial state
+            $('input[name="delivery_type"]:checked').trigger('change');
+
+            // City Search
+            var searchTimer;
+            $('#shipping_city_input').on('input', function() {
+                var query = $(this).val();
+                var $results = $('#city-results');
+                
+                clearTimeout(searchTimer);
+                
+                if(query.length >= 4) {
+                    searchTimer = setTimeout(function() {
+                        $.ajax({
+                            url: '{{ route("customer.api.jne.cities") }}',
+                            data: { search: query },
+                            method: 'GET',
+                            success: function(response) {
+                                if(response.status && response.data && response.data.length > 0) {
+                                    var html = '';
+                                    $.each(response.data, function(i, item){
+                                        html += '<a href="#" class="list-group-item list-group-item-action city-item" data-code="'+item.code+'" data-label="'+item.label+'">'+item.label+'</a>';
+                                    });
+                                    $results.html(html).show();
+                                } else {
+                                    $results.hide();
+                                }
+                            },
+                            error: function() {
+                                $results.hide();
+                            }
+                        });
+                    }, 500);
+                } else {
+                    $results.hide();
+                }
+            });
+
+            $(document).on('click', '.city-item', function(e) {
+                e.preventDefault();
+                var label = $(this).data('label');
+                var code = $(this).data('code');
+                $('#shipping_city_input').val(label);
+                $('#shipping_city_code').val(code);
+                $('#city-results').hide();
+            });
+
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.form-field').length) {
+                    $('#city-results').hide();
+                }
+            });
+
+            // Button Hitung Ongkir
+            $('#btnCheckOngkir').on('click', function() {
+                $('#shipping-indicator').fadeOut();
+                var code = $('#shipping_city_code').val();
+                if(!code) {
+                    alert('Silakan pilih kota tujuan terlebih dahulu dari dropdown pencarian.');
+                    return;
+                }
+                
+                var $btn = $(this);
+                var originalText = $btn.text();
+                $btn.prop('disabled', true).text('Loading...');
+
+                $.ajax({
+                    url: '{{ route("customer.api.jne.shipping-fee") }}',
+                    method: 'GET',
+                    data: { destination: code },
+                    success: function(response) {
+                        if(response.status && response.data && response.data.length > 0) {
+                            var $select = $('#shipping_service');
+                            $select.empty().append('');
+                            
+                            var hasReg = false;
+                            $.each(response.data, function(i, item){
+                                var isReg = item.service === 'REG';
+                                if(isReg) hasReg = true;
+                                
+                                $select.append($('<option>', {
+                                    value: item.price,
+                                    text: item.label,
+                                    'data-service': item.service,
+                                    'data-etd': item.etd,
+                                    selected: isReg,
+                                    disabled: !isReg
+                                }));
+                            });
+                            
+                            if(hasReg) {
+                                $select.trigger('change');
+                            } else {
+                                alert('Layanan REG tidak tersedia untuk tujuan ini.');
+                            }
+                            
+                            $('#jne-result').show();
+                        } else {
+                            alert('Tidak ada layanan pengiriman yang tersedia.');
+                        }
+                    },
+                    error: function() {
+                        alert('Gagal mengambil ongkir. Coba lagi nanti.');
+                    },
+                    complete: function() {
+                        $btn.prop('disabled', false).text(originalText);
+                    }
+                });
+            });
+
+            $('#shipping_service').on('change', function() {
+                var cost = $(this).val();
+                $('#shipping_cost').val(cost);
+                updateTotal();
+            });
+
+            // Submit Validation
+            $('#btnSubmit').on('click', function(e) {
+                var type = $('input[name="delivery_type"]:checked').val();
+                if(type === 'ship') {
+                    var cost = $('#shipping_cost').val();
+                    if(!cost || parseFloat(cost) <= 0) {
+                        e.preventDefault();
+                        
+                        $('#shipping-indicator').fadeIn();
+                        $('html, body').animate({
+                            scrollTop: $("#shipping-section").offset().top - 100
+                        }, 500);
+
+                        alert('Mohon klik tombol "Hitung" untuk melihat ongkos kirim terlebih dahulu.');
+                        return false;
+                    }
+                }
+            });
+            
+            // Init
+            updateTotal();
         })(jQuery);
     </script>
 </body>

@@ -24,6 +24,38 @@
             document.documentElement.classList.add('dark-theme');
         }
     </script>
+    <style>
+        @keyframes bounce-vertical {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .shipping-alert-bubble {
+            animation: bounce-vertical 1s infinite;
+            background: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            white-space: nowrap;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            position: absolute;
+            top: -45px;
+            right: 0;
+            z-index: 10;
+            display: none;
+        }
+        .shipping-alert-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            right: 20px;
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid #dc3545;
+        }
+    </style>
 </head>
 
 <body>
@@ -110,6 +142,46 @@
                         @enderror
                     </fieldset>
                 </div>
+                <div class="form-field form-2 mt-24">
+                    <div class="label h7">Metode Pengiriman</div>
+                    <fieldset class="mt-12 d-flex gap-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="delivery_type" id="delivery_ship" value="ship" checked>
+                            <label class="form-check-label" for="delivery_ship">
+                                Pakai Ekspedisi
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="delivery_type" id="delivery_pickup" value="pickup">
+                            <label class="form-check-label" for="delivery_pickup">
+                                Ambil Sendiri
+                            </label>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div id="shipping-section" class="form-field form-2 mt-24 position-relative">
+                    <div class="label h7">Kota Tujuan Pengiriman</div>
+                    <fieldset class="mt-12 d-flex gap-2">
+                        <div class="position-relative w-100">
+                            <input type="text" id="shipping_city_input" name="shipping_city" class="form-control" placeholder="Masukan Kota Tujuan (min. 4 huruf)" value="{{ old('shipping_city') }}" autocomplete="off">
+                            <input type="hidden" name="shipping_city_code" id="shipping_city_code" value="{{ old('shipping_city_code') }}">
+                            <div id="city-results" class="list-group position-absolute w-100 start-0" style="display:none; z-index: 1000; max-height: 250px; overflow-y: auto; top: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></div>
+                        </div>
+                        <div class="position-relative" style="flex-shrink: 0;">
+                            <div id="shipping-indicator" class="shipping-alert-bubble">
+                                👇 Klik "Hitung" di sini!
+                            </div>
+                            <button type="button" id="btnCheckOngkir" class="tf-btn primary" style="width: auto; padding: 0 20px; height: 100%;">Hitung</button>
+                        </div>
+                    </fieldset>
+                    <div id="jne-result" class="mt-20" style="display:none;">
+                        <div class="label h7 mb-12">Pilih Layanan Pengiriman</div>
+                        <select id="shipping_service" name="shipping_service" class="form-select">
+                        </select>
+                        <input type="hidden" name="shipping_cost" id="shipping_cost" value="0">
+                    </div>
+                </div>
                 <div class="card-body mt-20">
                     <div class="alert alert-primary light alert-dismissible fade show mb-10" role="alert">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3.27 15.084c.693-1.457 1.04-2.186 1.644-2.607q.074-.051.15-.098C5.691 12 6.461 12 8 12s2.308 0 2.937.38q.075.046.149.096c.604.422.951 1.15 1.645 2.608c1.034 2.173 1.55 3.26 1.112 4.058l-.052.089C13.308 20 12.161 20 9.87 20H6.13c-2.292 0-3.439 0-3.922-.77l-.052-.088c-.439-.798.078-1.885 1.112-4.058Z"/><path stroke-linecap="round" d="M14.547 12.02c.396-.02.869-.02 1.452-.02c1.538 0 2.308 0 2.937.38q.075.046.149.096c.604.422.951 1.15 1.645 2.608c1.034 2.173 1.55 3.26 1.112 4.058q-.024.045-.052.089c-.483.769-1.63.769-3.922.769h-1.129m.868-11a41 41 0 0 0-.876-1.916c-.694-1.457-1.04-2.186-1.645-2.607a3 3 0 0 0-.15-.098C14.309 4 13.54 4 12 4s-2.308 0-2.937.38q-.075.045-.15.096c-.603.422-.95 1.15-1.644 2.608c-.361.76-.66 1.388-.876 1.916"/></g></svg>
@@ -118,7 +190,10 @@
                                 <span class="fw-semibold">Estimasi Bayar</span>
                                 <span id="estimasiTotal" class="fw-bold text-success fs-3 lh-1">Rp 0</span>
                             </div>
-                            <div class="small text-muted fw-semibold">Per item: <span id="estimasiHarga">Rp 0</span> × <span id="estimasiQty">1</span> pcs</div>
+                            <div class="small text-muted fw-semibold">
+                                Per item: <span id="estimasiHarga">Rp 0</span> × <span id="estimasiQty">1</span> pcs<br>
+                                <span id="ongkirInfo" style="display:none;">+ Ongkir: <span id="ongkirVal">Rp 0</span></span>
+                            </div>
                         </div>
                     </div>
                 </div>      
@@ -134,7 +209,7 @@
                     </div>
                 </div>        
                 <div class="mt-24">
-                    <button class="tf-btn primary">Lanjutkan</button>
+                    <button id="btnSubmit" class="tf-btn primary">Lanjutkan</button>
                 </div>
             </form>
 
@@ -157,15 +232,178 @@
                 var jasa = Number(opt.data('jasa')) || 0;
                 var gram = Number(opt.data('gram')) || 0;
                 var qty = Number($('#qty').val()) || 1;
+                var ongkir = Number($('#shipping_cost').val()) || 0;
+
                 var perItem = harga + jasa;
+                var total = (perItem * qty) + ongkir;
+
                 $('#estimasiHarga').text(formatIDR(perItem));
                 $('#estimasiQty').text(qty);
-                $('#estimasiTotal').text(formatIDR(perItem * qty));
+                $('#estimasiTotal').text(formatIDR(total));
                 $('#totalGram').val((gram * qty).toFixed(3));
+                
+                if(ongkir > 0) {
+                    $('#ongkirVal').text(formatIDR(ongkir));
+                    $('#ongkirInfo').show();
+                } else {
+                    $('#ongkirInfo').hide();
+                }
             }
             $(document).ready(function(){
                 $('select[name="id_master_produk_dan_layanan"], #qty').on('change', updateEstimasi);
                 updateEstimasi();
+
+                // Delivery Type Toggle
+                $('input[name="delivery_type"]').on('change', function() {
+                    var type = $('input[name="delivery_type"]:checked').val();
+                    if (type === 'pickup') {
+                        $('#shipping-section').hide();
+                        $('#shipping_cost').val(0);
+                        updateEstimasi();
+                    } else {
+                        $('#shipping-section').show();
+                        var cost = $('#shipping_cost').val();
+                        updateEstimasi();
+                    }
+                });
+
+                // JNE City Search
+                var searchTimer;
+                $('#shipping_city_input').on('input', function() {
+                    var query = $(this).val();
+                    var $results = $('#city-results');
+                    
+                    clearTimeout(searchTimer);
+                    
+                    if(query.length >= 4) {
+                        searchTimer = setTimeout(function() {
+                            $.ajax({
+                                url: '{{ route("customer.api.jne.cities") }}',
+                                data: { search: query },
+                                method: 'GET',
+                                success: function(response) {
+                                    if(response.status && response.data && response.data.length > 0) {
+                                        var html = '';
+                                        $.each(response.data, function(i, item){
+                                            html += '<a href="#" class="list-group-item list-group-item-action city-item" data-code="'+item.code+'" data-label="'+item.label+'">'+item.label+'</a>';
+                                        });
+                                        $results.html(html).show();
+                                    } else {
+                                        $results.hide();
+                                    }
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error('Error fetching cities:', error);
+                                    // Fallback or silence? Keep silent for UI, user can still type manually if needed
+                                    $results.hide();
+                                }
+                            });
+                        }, 500);
+                    } else {
+                        $results.hide();
+                    }
+                });
+
+                $(document).on('click', '.city-item', function(e) {
+                    e.preventDefault();
+                    var label = $(this).data('label');
+                    var code = $(this).data('code');
+                    $('#shipping_city_input').val(label);
+                    $('#shipping_city_code').val(code);
+                    $('#city-results').hide();
+                });
+
+                // Hide dropdown when clicking outside
+                $(document).on('click', function(e) {
+                    if (!$(e.target).closest('.form-field').length) {
+                        $('#city-results').hide();
+                    }
+                });
+
+                // Button Hitung Ongkir Handler
+                $('#btnCheckOngkir').on('click', function() {
+                    $('#shipping-indicator').fadeOut(); // Hide indicator
+                    var code = $('#shipping_city_code').val();
+                    if(!code) {
+                        alert('Silakan pilih kota tujuan terlebih dahulu dari dropdown pencarian.');
+                        return;
+                    }
+                    
+                    var $btn = $(this);
+                    var originalText = $btn.text();
+                    $btn.prop('disabled', true).text('Loading...');
+
+                    $.ajax({
+                        url: '{{ route("customer.api.jne.shipping-fee") }}',
+                        method: 'GET',
+                        data: { destination: code },
+                        success: function(response) {
+                            if(response.status && response.data && response.data.length > 0) {
+                                var $select = $('#shipping_service');
+                                $select.empty().append('');
+                                
+                                var hasReg = false;
+                                $.each(response.data, function(i, item){
+                                    var isReg = item.service === 'REG';
+                                    if(isReg) hasReg = true;
+                                    
+                                    // Value stores price
+                                    $select.append($('<option>', {
+                                        value: item.price,
+                                        text: item.label,
+                                        'data-service': item.service,
+                                        'data-etd': item.etd,
+                                        selected: isReg,
+                                        disabled: !isReg // Disable non-REG options
+                                    }));
+                                });
+                                
+                                if(hasReg) {
+                                    $select.trigger('change'); // Trigger change to update hidden input
+                                } else {
+                                    alert('Layanan REG tidak tersedia untuk tujuan ini.');
+                                }
+                                
+                                $('#jne-result').show();
+                            } else {
+                                alert('Tidak ada layanan pengiriman yang tersedia.');
+                            }
+                        },
+                        error: function(xhr) {
+                            console.error('Error fetching shipping fee:', xhr);
+                            alert('Gagal mengambil ongkir. Coba lagi nanti.');
+                        },
+                        complete: function() {
+                            $btn.prop('disabled', false).text(originalText);
+                        }
+                    });
+                });
+
+                $('#shipping_service').on('change', function() {
+                    var cost = $(this).val();
+                    $('#shipping_cost').val(cost);
+                    updateEstimasi();
+                });
+
+                // Submit Button Handler
+                $('#btnSubmit').on('click', function(e) {
+                    var type = $('input[name="delivery_type"]:checked').val();
+                    if(type === 'ship') {
+                        var cost = $('#shipping_cost').val();
+                        if(!cost || parseFloat(cost) <= 0) {
+                            e.preventDefault();
+                            
+                            // Show indicator with animation
+                            $('#shipping-indicator').fadeIn();
+                            $('html, body').animate({
+                                scrollTop: $("#shipping-section").offset().top - 100
+                            }, 500);
+
+                            alert('Mohon klik tombol "Hitung" untuk melihat ongkos kirim terlebih dahulu.');
+                            return false;
+                        }
+                    }
+                });
             });
         })(jQuery);
     </script>

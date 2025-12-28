@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    
+<title>JNE Menyambung Kebahagiaan Dari Generasi ke Generasi</title>
+<meta name="title" content="JNE Menyambung Kebahagiaan Dari Generasi ke Generasi">
+<meta name="description" content="PT. Tiki Jalur Nugraha Ekakurir atau biasa dikenal sebagai JNE merupakan salah satu perusahaan ekspedisi barang terbesar di Indonesia.">
+<meta name="keywords" content="PT. Tiki Jalur Nugraha Ekakurir atau biasa dikenal sebagai JNE merupakan salah satu perusahaan ekspedisi barang terbesar di Indonesia.">
+<meta name="url" content="https://www.jne.co.id/shipping-fee">
+<meta name="image" content="">
+<meta name="fb::app_id" content="">
+<meta name="article:author" content="">
+
+<meta name="og:type" content="website">
+<meta name="og:title" content="JNE Menyambung Kebahagiaan Dari Generasi ke Generasi">
+<meta name="og:description" content="PT. Tiki Jalur Nugraha Ekakurir atau biasa dikenal sebagai JNE merupakan salah satu perusahaan ekspedisi barang terbesar di Indonesia.">
+<meta name="og:url" content="https://www.jne.co.id/shipping-fee">
+<meta name="og:image" content="">
+<meta name="og:author" content="">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JNE Menyambung Kebahagiaan Dari Generasi ke Generasi">
+<meta name="twitter:description" content="PT. Tiki Jalur Nugraha Ekakurir atau biasa dikenal sebagai JNE merupakan salah satu perusahaan ekspedisi barang terbesar di Indonesia.">
+<meta name="twitter:twitter-id" content="">
+<meta name="twitter:image" content="">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-7V32MGQLQ4"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-7V32MGQLQ4', {
+    cookie_domain: '.jne.co.id', 
+    cookie_flags: 'SameSite=None;Secure'
+  });
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WP6QSF5T');</script>
+<!-- End Google Tag Manager —>
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WP6QSF5T"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-W3VJP5P');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W3VJP5P"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1058956608607048');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1058956608607048&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+
+<script
+    src="https://www.datadoghq-browser-agent.com/us1/v6/datadog-rum.js"
+    type= "text/javascript">
+</script>
+<script>
+    window.DD_RUM && window.DD_RUM.init({
+      clientToken: 'pubf0519c46df4161c44ac36be8f7477538',
+      applicationId: 'f658ea7b-670c-4f3a-a8b4-885f7d8496b8',
+      site: 'datadoghq.com',
+      service: 'webjne',
+      env: 'prod',
+      // Specify a version number to identify the deployed version of your application in Datadog
+      // version: '1.0.0',
+      allowedTracingUrls: ['https://jne.co.id','https://cekresi.jne.co.id','https://mec.jne.co.id','https://geoloc.jne.co.id'],
+      sessionSampleRate: 100,
+      sessionReplaySampleRate: 100,
+      trackBfcacheViews: true,
+      defaultPrivacyLevel: 'mask-user-input',
+    });
+</script>
+<link rel="icon" type="image/png" href="https://www.jne.co.id/cfind/thumbs/images/thumb_32_32_contain_jne-express-1.png" sizes="32x32">
+<link rel="canonical" href="https://www.jne.co.id/shipping-fee" />
+<meta name="robots" content="index, follow">
+
+    <!--Style-->
+<link rel="stylesheet" href="https://www.jne.co.id/css/reset.css" preload>
+<link rel="stylesheet" href="https://www.jne.co.id/css/milligram.css" preload>
+<link rel="stylesheet" href="https://www.jne.co.id/fonts/webarq-icons/style.css" preload>
+<!--endbuild-->
+
+<!--js-->
+<script async type="text/javascript" src="https://www.jne.co.id/js/app.js"></script>
+<!--endbuild-->
+    <link rel="stylesheet" type="text/css" href="https://www.jne.co.id/css/lainnya.css" preload>
+</head>
+
+<body>
+        <body>
+
+<script src="https://app-chat-j.sociomile.net/66ed0ee545fc5e26125970f6" async></script>
+
+</body>
+    <!-- header -->
+    <header>
+        <header class="navbar">
+	<nav class="wrapper">
+		<div class="navbar-logo">
+			<a href="https://www.jne.co.id">
+				<img src="https://www.jne.co.id/cfind/source/images/logo.svg">
+			</a>
+		</div>
+
+		<div class="navbar-collapse offcanvas">
+			<div class="offcanvas-overlay"></div>
+			<div class="offcanvas-body">
+				<ul class="navbar-nav">
+																				<li class="nav-item dropdown ">
+						<!-- 						<a href="https://www.jne.co.id/perusahaan" class="nav-link">Perusahaan</a>
+						 -->
+						<a href="https://www.jne.co.id/perusahaan" class="nav-link">Perusahaan</a>
+
+						<span class="nav-arrow ic-chevron-down"></span>
+
+						<div class="dropdown-menu-lg">
+							<div class="bg-line">
+								<div class="line-solid"></div>
+								<div class="line-dashed"></div>
+								<div class="line-point">
+									<div class="circle-point"></div>
+								</div>
+							</div>
+							<div class="wrapper">
+								<div class="row">
+																		<div class="column column-33">
+										<a href="https://www.jne.co.id/profil-perusahaan" class="nav-link-title">Profil Perusahaan</a>
+																				<p>Cari tahu lebih lanjut mengenai JNE</p>
+																				<a href="https://www.jne.co.id/profil-perusahaan" class="button button-clear button-arrow">Pelajari Lebih Lanjut</a>
+									</div>
+																		<div class="column column-33">
+										<a href="https://www.jne.co.id/penghargaan" class="nav-link-title">Penghargaan</a>
+																				<p>Beberapa apresiasi yang kami terima</p>
+																				<a href="https://www.jne.co.id/penghargaan" class="button button-clear button-arrow">Pelajari Lebih Lanjut</a>
+									</div>
+																		<div class="column column-33">
+										<a href="https://www.jne.co.id/keberlanjutan" class="nav-link-title">CSR</a>
+																				<p>Sesuai dengan nilai perusahaan, kami sangat aktif dalam bidang kemanusiaan.</p>
+																				<a href="https://www.jne.co.id/keberlanjutan" class="button button-clear button-arrow">Pelajari Lebih Lanjut</a>
+									</div>
+									
+								</div>
+							</div>
+						</div>
+					</li>
+																				<li class="nav-item dropdown ">
+						<!-- 						<a href="https://www.jne.co.id/produk-dan-layanan" class="nav-link">Produk dan Layanan</a>
+						 -->
+						<a href="https://www.jne.co.id/produk-dan-layanan" class="nav-link">Produk dan Layanan</a>
+
+						<span class="nav-arrow ic-chevron-down"></span>
+
+						<div class="dropdown-menu-lg">
+							<div class="bg-line">
+								<div class="line-solid"></div>
+								<div class="line-dashed"></div>
+								<div class="line-point">
+									<div class="circle-point"></div>
+								</div>
+							</div>
+							<div class="wrapper">
+								<div class="row">
+																		<div class="column column-33">
+										<a href="https://www.jne.co.id/produk" class="nav-link-title">Produk</a>
+																				<p>Pengiriman aman dan nyaman bersama ekspedisi terpercaya</p>
+																				<a href="https://www.jne.co.id/produk" class="button button-clear button-arrow">Pelajari Lebih Lanjut</a>
+									</div>
+																		<div class="column column-33">
+										<a href="https://www.jne.co.id/layanan" class="nav-link-title">Layanan</a>
+																				<p>Nikmati layanan yang dapat mengantarkan kebahagiaan</p>
+																				<a href="https://www.jne.co.id/layanan" class="button button-clear button-arrow">Pelajari Lebih Lanjut</a>
+									</div>
+									
+								</div>
+							</div>
+						</div>
+					</li>
+																				<li class="nav-item dropdown ">
+						<!-- 						<a href="javascript:void(0)" class="nav-link">Solusi Bisnis</a>
+						 -->
+						<a href="https://www.jne.co.id/solusi-bisnis" class="nav-link">Solusi Bisnis</a>
+
+						<span class="nav-arrow ic-chevron-down"></span>
+
+						<div class="dropdown-menu-lg">
+							<div class="bg-line">
+								<div class="line-solid"></div>
+								<div class="line-dashed"></div>
+								<div class="line-point">
+									<div class="circle-point"></div>
+								</div>
+							</div>
+							<div class="wrapper">
+								<div class="row">
+																		<div class="column column-33">
+										<a href="https://www.jne.co.id/kemitraan" class="nav-link-title">Kemitraan</a>
+																				<p>Kembangkan bisnismu bersama JNE</p>
+																				<a href="https://www.jne.co.id/kemitraan" class="button button-clear button-arrow">Pelajari Lebih Lanjut</a>
+									</div>
+									
+								</div>
+							</div>
+						</div>
+					</li>
+																				<li class="nav-item ">
+												<a href="https://www.jne.co.id/hubungi-kami" class="nav-link">Hubungi Kami</a>
+											</li>
+																				<li class="nav-item ">
+												<a href="https://www.jne.co.id/berita" class="nav-link">Berita</a>
+											</li>
+																				<li class="nav-item ">
+												<a href="https://recruitment.jne.co.id/" class="nav-link">Karir</a>
+											</li>
+										
+					<li class="nav-item">
+						<button type="button" class="nav-search">
+							<i class="ic-search"></i>
+						</button>
+					</li>
+				</ul>
+
+				<form action="https://www.jne.co.id/search" class="navbar-search">
+					<div class="input-group">
+						<i class="ic-search"></i>
+							<input type="text" placeholder="Cari atau masukan nomor resi" name="search" value=" ">
+						<button type="button" class="nav-close-search">
+							<span>Batalkan</span>
+							<i class="ic-cross"></i>
+						</button>
+					</div>
+				</form>
+
+				<ul class="navbar-lang">
+										<li class="nav-item">
+						<a href="https://www.jne.co.id/shipping-fee?origin=BKI10000&amp;destination=BDO10045&amp;weight=1" class="  active  ">INDONESIA</a>
+					</li>
+										<li class="nav-item">
+						<a href="https://www.jne.co.id/en/shipping-fee?origin=BKI10000&amp;destination=BDO10045&amp;weight=1" class="">ENGLISH</a>
+					</li>
+					
+				</ul>
+			</div>
+		</div>
+		<div class="navbar-other">
+			<ul class="navbar-nav">
+
+
+				<li class="nav-item dropdown">
+
+					<div class="nav-lang">
+						<i class="ic-globe"></i>
+																		<span>INDONESIA</span>
+																													</div>
+
+					<div class="dropdown-menu">
+						<ul>
+														<li class="dropdown-item   active  ">
+								<a href="https://www.jne.co.id/shipping-fee?origin=BKI10000&amp;destination=BDO10045&amp;weight=1" class="dropdown-link">INDONESIA</a>
+							</li>
+														<li class="dropdown-item ">
+								<a href="https://www.jne.co.id/en/shipping-fee?origin=BKI10000&amp;destination=BDO10045&amp;weight=1" class="dropdown-link">ENGLISH</a>
+							</li>
+							
+						</ul>
+					</div>
+				</li>
+			</ul>
+
+			<div class="navbar-toggle">
+				<button type="button" class="nav-toggler">
+					<span></span>
+					<span></span>
+					<span></span>
+				</button>
+			</div>
+		</div>
+	</nav>
+</header>
+    </header>
+    <!-- end of header -->
+
+    <section class="lainnya hero">
+  <div class="bg">
+    <img src="https://www.jne.co.id/images/material/line-car-full.svg" alt="">
+  </div>
+  <div class="bg-line-detail bg-line-ongkir">
+    <div class="line-solid-1">
+      <div class="line-point">
+        <div class="circle-point"></div>
+      </div>
+    </div>
+    <div class="line-dashed-1"></div>
+  </div>
+  <div class="wrapper">
+    <h2>Cek Ongkir</h2>
+    <p>Cek tarif kirimanmu.</p>
+    <div class="wrap-middle">
+      <form>
+        <div class="box-ongkir">
+          <div class="field field-from field-autocomplete">
+            <i class="ico">
+              <img src="https://www.jne.co.id/images/material/ico-cek-map.svg">
+            </i>
+            <input type="text" placeholder="BEKASI " autocomplete="off" params="1" required>
+            <input type="hidden" name="origin">
+            <div class="autocomplete-box"></div>
+          </div>
+          <div class="field field-to field-autocomplete">
+            <i class="ico">
+              <img src="https://www.jne.co.id/images/material/ico-cek-to.svg">
+            </i>
+            <input type="text" placeholder="BANDUNG KIDUL,BANDUNG " autocomplete="off" params="2" required>
+            <input type="hidden" name="destination">
+            <div class="autocomplete-box"></div>
+          </div>
+        </div>
+        <div class="field field-weight">
+          <i class="ico">
+            <img src="https://www.jne.co.id/images/material/ico-cek-weight.svg">
+          </i>
+          <input type="text" placeholder="1" name="weight" required>
+          <span class="weight">kg</span>
+        </div>
+        <div class="wrap-button"><button>Lihat Harga</button></div>
+      </form>
+            <div class="box-tujuan">
+        <div class="box-tujuan__list">
+          <h6>Dari</h6>
+          <span>:</span>
+          <p>BEKASI</p>
+        </div>
+        <div class="box-tujuan__list">
+          <h6>Tujuan</h6>
+          <span>:</span>
+          <p>BANDUNG KIDUL,BANDUNG</p>
+        </div>
+        <div class="box-tujuan__list">
+          <h6>Berat (Kg)</h6>
+          <span>:</span>
+          <p>1</p>
+        </div>
+      </div>
+      <div class="wrap-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Nama Layanan</th>
+              <th>Jenis Kiriman</th>
+              <th>Tarif</th>
+              <th>ETD (Estimates Days)</th>
+            </tr>
+          </thead>
+          <tbody>
+                        <tr>
+              <td data-label="Nama Layanan">REG</td>
+              <td data-label="Jenis Kiriman">Document/Paket</td>
+              <td data-label="Tarif">IDR 12.000</td>
+              <td data-label="ETD (Estimates Days)">1-2 D</td>
+            </tr>
+                        <tr>
+              <td data-label="Nama Layanan">YES</td>
+              <td data-label="Jenis Kiriman">Document/Paket</td>
+              <td data-label="Tarif">IDR 24.000</td>
+              <td data-label="ETD (Estimates Days)">1-1 D</td>
+            </tr>
+                        <tr>
+              <td data-label="Nama Layanan">SPS</td>
+              <td data-label="Jenis Kiriman">Document/Paket</td>
+              <td data-label="Tarif">IDR 403.000</td>
+              <td data-label="ETD (Estimates Days)">1-1 D</td>
+            </tr>
+                        <tr>
+              <td data-label="Nama Layanan">JTR</td>
+              <td data-label="Jenis Kiriman">Paket</td>
+              <td data-label="Tarif">IDR 45.000</td>
+              <td data-label="ETD (Estimates Days)">3-4 D</td>
+            </tr>
+                        <tr>
+              <td data-label="Nama Layanan">JTR&lt;130</td>
+              <td data-label="Jenis Kiriman">Paket</td>
+              <td data-label="Tarif">IDR 450.000</td>
+              <td data-label="ETD (Estimates Days)">3-4 D</td>
+            </tr>
+                        <tr>
+              <td data-label="Nama Layanan">JTR&gt;130</td>
+              <td data-label="Jenis Kiriman">Paket</td>
+              <td data-label="Tarif">IDR 750.000</td>
+              <td data-label="ETD (Estimates Days)">3-4 D</td>
+            </tr>
+                        <tr>
+              <td data-label="Nama Layanan">JTR&gt;200</td>
+              <td data-label="Jenis Kiriman">Paket</td>
+              <td data-label="Tarif">IDR 800.000</td>
+              <td data-label="ETD (Estimates Days)">3-4 D</td>
+            </tr>
+                                  </tbody>
+        </table>
+      </div>
+          </div>
+  </div>
+</section>
+
+
+
+    <div class="cookies-box" id="cookies">
+    <div class="wrapper">
+                <p> Kami menggunakan cookie untuk meningkatkan pengalaman Anda. Dengan mengklik 'Setuju', Anda menyetujui <a href="https://www.jne.co.id/kebijakan-privasi-dan-pengamanan">Kebijakan Cookie</a>.</p>
+        <button onclick="setCookie('jnecookies', 'jnec', 3);">Setuju</button>
+    </div>
+</div>
+
+<script>
+    function setCookie(name, value, days) {
+
+        var formattedExpires = "";
+        if (days) {
+            var expires = new Date();
+            expires.setDate(expires.getDate() + days);
+            var options = {
+                timeZone: 'Asia/Jakarta'
+            };
+            var formattedExpires = expires.toLocaleString('en-US', options);
+        }
+        document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + formattedExpires + ';path=/';
+        var element = document.getElementById('cookies');
+        element.style.display = 'none';
+    }
+
+
+    function getCurrentTimeIndonesia() {
+        var currentTime = new Date();
+        var options = {
+            timeZone: 'Asia/Jakarta',
+            hour12: false
+        };
+        return currentTime.toLocaleString('en-US', options);
+    }
+
+    function checkCookieAndHideElement() {
+        var cookieName = 'jnecookies';
+        var element = document.getElementById('cookies');
+
+        var cookieValue = getCookieValue(cookieName);
+        if (cookieValue !== '') {
+            element.style.display = 'none';
+        } else {
+            element.style.display = 'block';
+        }
+    }
+
+    function getCookieValue(cookieName) {
+        var name = cookieName + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var cookieArray = decodedCookie.split(';');
+
+        for (var i = 0; i < cookieArray.length; i++) {
+            var cookie = cookieArray[i];
+
+            while (cookie.charAt(0) === ' ') {
+                cookie = cookie.substring(1);
+            }
+
+            if (cookie.indexOf(name) === 0) {
+                return cookie.substring(name.length, cookie.length);
+            }
+        }
+
+        return "";
+    }
+
+    checkCookieAndHideElement();
+</script>
+    <!--Footer -->
+    <a class="floating-chat">
+    <img src="https://www.jne.co.id/images/material/ask-joni.png">
+</a>
+<footer>
+    <div class="footer-top">
+        <div class="wrapper wrap-footer-top">
+            <div class="wrap-footer-top__left">
+                <div class="box-cs">
+                    <h5>CUSTOMER SERVICE</h5>
+                    <p>
+                        <a class="phone" href="tel:(021)29278888">
+                            <i><img src="https://www.jne.co.id/images/material/ico-cs-call.svg" alt=""></i>(021) 2927 8888
+                        </a>
+                    </p>
+                    <p>
+                        <a class="email" href="mailto:customercare@jne.co.id">
+                            <i><img src="https://www.jne.co.id/images/material/ico-cs-email.svg" alt=""></i>customercare@jne.co.id
+                        </a>
+                    </p>
+                </div>
+                <div class="box-socmed">
+                                        <a href="https://www.instagram.com/jne_id/" target="_blank nofollow"><img src="https://www.jne.co.id/cfind/source/images/ico-socmed-instagram.svg" alt=""></a>
+                                        <a href="https://www.tiktok.com/@jne_id" target="_blank nofollow"><img src="https://www.jne.co.id/cfind/source/images/ico-socmed-tiktok.svg" alt=""></a>
+                                        <a href="https://twitter.com/JNE_ID" target="_blank nofollow"><img src="https://www.jne.co.id/cfind/source/images/x.svg" alt=""></a>
+                                        <a href="https://www.linkedin.com/company/pt--tiki-jalur-nugraha-ekakurir-jne-/mycompany/?viewAsMember=true" target="_blank nofollow"><img src="https://www.jne.co.id/cfind/source/images/untitled.svg" alt=""></a>
+                                        <a href="https://www.facebook.com/JNEPusat" target="_blank nofollow"><img src="https://www.jne.co.id/cfind/source/images/untitled-_1__1.svg" alt=""></a>
+                    
+                </div>
+            </div>
+
+            <div class="wrap-footer-top__right">
+                <div class="box-nav">
+                                        <div class="box-nav__column">
+                        <div class="nav-foot">
+                            <h5>PERUSAHAAN</h5>
+                            <ul>
+                                                                                                <li><a href="https://www.jne.co.id/profil-perusahaan"   target="_blank nofollow"
+                                        >Profil Perusahaan</a></li>
+                                                                                                <li><a href="https://www.jne.co.id/penghargaan"   target="_blank nofollow"
+                                        >Penghargaan</a></li>
+                                                                                                <li><a href="https://www.jne.co.id/keberlanjutan"   target="_blank nofollow"
+                                        >CSR</a></li>
+                                                                                                <li><a href="https://www.jne.co.id/hubungi-kami"   target="_blank nofollow"
+                                        >Hubungi Kami</a></li>
+                                                                                                <li><a href="https://recruitment.jne.co.id/"   target="_blank nofollow"
+                                        >Karir</a></li>
+                                                            </ul>
+                        </div>
+                    </div>
+                    <div class="box-nav__column">
+                        <div class="nav-foot">
+                            <h5>PRODUK</h5>
+                            <ul>
+                                                                                                <li><a href="https://www.jne.co.id/produk#product-1">JNE Express</a></li>
+                                                                <li><a href="https://www.jne.co.id/produk#product-2">JNE Logistics</a></li>
+                                                                <li><a href="https://www.jne.co.id/produk#product-3">JNE Freight</a></li>
+                                                                <li><a href="https://www.jne.co.id/produk#product-5">Roket Indonesia</a></li>
+                                                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="box-nav__column">
+                        <div class="nav-foot">
+                            <h5>LAINNYA</h5>
+                            <ul>
+                                
+
+                                                                
+
+                                                                                                <li><a href="https://jne.co.id/tracking-package"   target="_blank nofollow"
+                                        >Lacak Pengiriman</a></li>
+
+                                                                
+
+                                                                                                <li><a href="https://jne.co.id/shipping-fee"   target="_blank nofollow"
+                                        >Cek Tarif</a></li>
+
+                                                                
+
+                                                                                                <li><a href="https://geoloc.jne.co.id/jne-public/"   target="_blank nofollow"
+                                        >Lokasi</a></li>
+
+                                                                
+
+                                                                
+
+                                                                
+
+                                                                                                <li><a href="https://www.jne.co.id/berita"   target="_blank nofollow"
+                                        >Berita</a></li>
+
+                                                                
+
+                                                                                                <li><a href="https://www.jne.co.id/promo-id"   target="_blank nofollow"
+                                        >Promo</a></li>
+
+                                                                
+
+                                                                                                <li><a href="https://www.jne.co.id/bantuan"   target="_blank nofollow"
+                                        >FAQ</a></li>
+
+                                                                                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="box-nav__column">
+                        <div class="nav-foot">
+                            <h5>SOLUSI BISNIS</h5>
+                            <ul>
+                                
+                                                                <li><a href="https://www.jne.co.id/kemitraan"   target="_blank nofollow"
+                                        >Kemitraan</a></li>
+                                                            </ul>
+                        </div>
+                    </div>
+                    <div class="box-nav__column">
+                        <div class="nav-foot">
+                            <h5>LAYANAN</h5>
+                            <ul>
+                                                                                                                                <li><a href="https://www.jne.co.id/myjne-id" >MyJNE</a></li>
+                                                                                                                                <li><a href="https://www.jne.co.id/pesona-id" >PESONA</a></li>
+                                                                                                                                <li><a href="https://www.jne.co.id/jne-loyalty-card" >JNE Loyalty Card</a></li>
+                                                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-app">
+                    <h6><b>Download Aplikasi MyJNE!</b> #JadiLebihLengkap</h6>
+                    <div class="box-app__list">
+                                                <a href="https://apps.apple.com/id/app/my-jne/id1447606780?l=id" target="_blank nofollow"><img src="https://www.jne.co.id/cfind/source/images/app-apple.svg" alt=""></a>
+                                                <a href="https://play.google.com/store/apps/details?id=com.indivara.jneone&amp;hl=id&amp;gl=US" target="_blank nofollow"><img src="https://www.jne.co.id/cfind/source/images/app-google.svg" alt=""></a>
+                                            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div class="wrapper wrap-footer-bottom">
+            <div class="wrap-footer-bottom__left">
+
+                <p class="copyright">
+                    2025 copyright JNE
+                </p>
+            </div>
+
+        </div>
+    </div>
+</footer>    <script async type="text/javascript" src="https://www.jne.co.id/js/lainnya.js"></script>
+
+<script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function() {
+    let searchInputs = document.querySelectorAll(".field-autocomplete");
+    searchInputs.forEach((searchInput) => {
+      let input = searchInput.querySelector(".field-autocomplete input[type='text']");
+      let inputHidden = searchInput.querySelector(".field-autocomplete input[type='hidden']");
+      let liContainer = searchInput.querySelector(".field-autocomplete .autocomplete-box");
+      let debounceTimer;
+      let currentRequest = null;
+      input.addEventListener("keyup", function() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(function() {
+          let inputValue = input.value.trim();
+          if (inputValue.length < 3 || inputValue.length > 50) {
+            searchInput.classList.remove("active");
+            return;
+          }
+          let source = input.getAttribute("params") || "1";
+          let route = "https://www.jne.co.id/api-origin";
+          if (source === "2") {
+            route = "https://www.jne.co.id/api-destination";
+          }
+          if (currentRequest && currentRequest.readyState !== 4) {
+            currentRequest.abort();
+          }
+          liContainer.innerHTML =
+            `<li style="text-align:center;">
+                        <span class="spinner-border spinner-border-sm" role="status"></span> Memuat data...
+                    </li>`;
+          searchInput.classList.add("active");
+          currentRequest = $.ajax({
+            url: route,
+            method: "GET",
+            data: {
+              search: inputValue
+            },
+            success: function(data) {
+              let result = Array.isArray(data.data) ? data.data : [];
+              let filteredWord = result.filter(word =>
+                (word.label || "").toLowerCase().includes(inputValue.toLowerCase())
+              );
+              suggestionWordsGenerator(filteredWord);
+            },
+            error: function(xhr, status) {
+              if (status !== "abort") {
+                liContainer.textContent = "Gagal memuat data";
+              }
+            },
+            complete: function() {
+              currentRequest = null;
+            },
+          });
+        }, 500);
+      });
+
+      function suggestionWordsGenerator(wordArray) {
+        liContainer.innerHTML = "";
+        if (!wordArray.length) {
+          liContainer.textContent = "Tidak ada hasil";
+          return;
+        }
+        wordArray.forEach(function(word) {
+          let li = document.createElement("li");
+          li.dataset.id = word.code || "";
+          li.textContent = word.label || "-";
+          li.addEventListener("click", function() {
+            input.value = this.textContent;
+            inputHidden.value = this.dataset.id;
+            searchInput.classList.remove("active");
+          });
+          liContainer.appendChild(li);
+        });
+      }
+    });
+    let autoSelectInputs = document.querySelectorAll(
+      'input[id="origin"], input[id="destination"], input[name="weight"]'
+    );
+    autoSelectInputs.forEach((input) => {
+      input.addEventListener("focus", function() {
+        setTimeout(() => this.select(), 10);
+      });
+    });
+    let weightInputs = document.querySelectorAll('input[name="weight"]');
+    weightInputs.forEach((weightInput) => {
+      weightInput.setAttribute("inputmode", "numeric");
+      weightInput.setAttribute("pattern", "[0-9]*");
+      weightInput.addEventListener("input", function() {
+        this.value = this.value.replace(/[^0-9]/g, "");
+      });
+      weightInput.addEventListener("paste", function(e) {
+        let paste = (e.clipboardData || window.clipboardData).getData("text");
+        if (/[^0-9]/.test(paste)) e.preventDefault();
+      });
+    });
+  });
+</script>
+    <!--end of Footer -->
+</body>
+
+</html>

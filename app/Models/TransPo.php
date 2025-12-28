@@ -21,6 +21,7 @@ class TransPo extends Model
         'qty',
         'total_gram',
         'total_amount',
+        'shipping_cost',
         'status',
         'delivery_type',
         'shipping_name',
@@ -47,6 +48,7 @@ class TransPo extends Model
         'harga_per_keping' => 'decimal:2',
         'total_gram'     => 'decimal:3',
         'total_amount'   => 'decimal:2',
+        'shipping_cost'  => 'decimal:2',
         'qty'            => 'integer',
         'ordered_at'     => 'datetime',
         'paid_at'        => 'datetime',
@@ -94,7 +96,8 @@ class TransPo extends Model
         float $totalGram,
         string $deliveryType = 'ship',
         array $shipping = [],
-        ?string $catatan = null
+        ?string $catatan = null,
+        float $shippingCost = 0.0
     ): array {
         $selectedProduk = $produkId ? MasterProdukDanLayanan::find($produkId) : null;
         $selectedGram = (float) optional($selectedProduk?->gramasi)->gramasi;
@@ -109,10 +112,10 @@ class TransPo extends Model
                 ->first();
             $hargaSpot = (float) ($spotProduk->harga_hariini ?? 0.0);
         }
-        $totalAmountBase = ($hargaPerGram * $qty) + ($jasa * $qty);
+        $totalAmountBase = ($hargaPerGram * $qty) + ($jasa * $qty) + $shippingCost;
         $uniqueCode = mt_rand(100, 999);
         $totalAmount = $totalAmountBase + $uniqueCode;
-         $randomAgenId = MasterAgen::inRandomOrder()->value('id');
+        $randomAgenId = MasterAgen::inRandomOrder()->value('id');
          
         return [
             'kode_po'                     => self::generateKodePo(),
@@ -124,6 +127,7 @@ class TransPo extends Model
             'qty'                          => (int) $qty,
             'total_gram'                  => $totalGram,
             'total_amount'                => $totalAmount,
+            'shipping_cost'               => $shippingCost,
             'status'                      => 'pending_payment',
             'delivery_type'               => $deliveryType,
             'shipping_name'               => $shipping['name'] ?? null,

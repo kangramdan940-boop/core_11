@@ -32,6 +32,7 @@ class CustomerPoController extends Controller
             'shipping_province'            => ['nullable', 'string', 'max:100'],
             'shipping_postal_code'         => ['nullable', 'string', 'max:10'],
             'catatan'                      => ['nullable', 'string'],
+            'shipping_cost'                => ['nullable', 'numeric', 'min:0'],
         ]);
 
         $data['delivery_type'] = 'ship';
@@ -59,6 +60,7 @@ class CustomerPoController extends Controller
         $jasa = (float)$produk->harga_jasa;
         $mgramasi = MasterGramasiEmas::findOrFail((int) $produk->id_gramasi);
         $hargaPerGram = (float) $produk->harga_hariini;
+        $shippingCost = (float) ($data['shipping_cost'] ?? 0);
 
         $attrs = TransPo::buildAttributesForDraft(
             customerId: (int) $customer->id,
@@ -70,7 +72,8 @@ class CustomerPoController extends Controller
             totalGram: (float) $mgramasi->gramasi,
             deliveryType: $data['delivery_type'],
             shipping: $shipping,
-            catatan: $data['catatan'] ?? null
+            catatan: $data['catatan'] ?? null,
+            shippingCost: $shippingCost
         );
 
         $attempts = 0;
@@ -85,7 +88,8 @@ class CustomerPoController extends Controller
                 totalGram: (float) $mgramasi->gramasi,
                 deliveryType: $data['delivery_type'],
                 shipping: $shipping,
-                catatan: $data['catatan'] ?? null
+                catatan: $data['catatan'] ?? null,
+                shippingCost: $shippingCost
             );
             $attempts++;
         }
@@ -157,6 +161,5 @@ class CustomerPoController extends Controller
             ->route('customer.po.show', encrypt($po->id))
             ->with('success', 'Konfirmasi pembayaran terkirim. Menunggu verifikasi agen.');
     }
-       
 }
 
