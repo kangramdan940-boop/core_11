@@ -70,6 +70,10 @@ Route::prefix('customer')->name('customer.')->group(function () {
         Route::put('/profile', [FrontController::class, 'updateCustomerProfile'])->name('profile.update');
         Route::get('/all-order', [FrontController::class, 'customerAllOrders'])->name('all-order');
 
+        // Proxy API
+        Route::get('/api/jne/cities', [FrontController::class, 'jneCities'])->name('api.jne.cities');
+        Route::get('/api/jne/shipping-fee', [FrontController::class, 'jneShippingFee'])->name('api.jne.shipping-fee');
+
         // PO / Pre-order emas
         Route::get('/po/create', [FrontController::class, 'customerPoCreate'])->name('po.create');
         Route::get('/pre-order-emas', [FrontController::class, 'customerPoCreate'])->name('pre-order-emas');
