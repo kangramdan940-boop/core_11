@@ -137,6 +137,21 @@
                             <option value="3" @selected(old('qty','1')=='3')>3 pcs</option>
                             <option value="4" @selected(old('qty','1')=='4')>4 pcs</option>
                             <option value="5" @selected(old('qty','1')=='5')>5 pcs</option>
+                            <option value="6" @selected(old('qty','1')=='6')>6 pcs</option>
+                            <option value="7" @selected(old('qty','1')=='7')>7 pcs</option>
+                            <option value="8" @selected(old('qty','1')=='8')>8 pcs</option>
+                            <option value="9" @selected(old('qty','1')=='9')>9 pcs</option>
+                            <option value="10" @selected(old('qty','1')=='10')>10 pcs</option>
+                            <option value="11" @selected(old('qty','1')=='11')>11 pcs</option>
+                            <option value="12" @selected(old('qty','1')=='12')>12 pcs</option>
+                            <option value="13" @selected(old('qty','1')=='13')>13 pcs</option>
+                            <option value="14" @selected(old('qty','1')=='14')>14 pcs</option>
+                            <option value="15" @selected(old('qty','1')=='15')>15 pcs</option>
+                            <option value="16" @selected(old('qty','1')=='16')>16 pcs</option>
+                            <option value="17" @selected(old('qty','1')=='17')>17 pcs</option>
+                            <option value="18" @selected(old('qty','1')=='18')>18 pcs</option>
+                            <option value="19" @selected(old('qty','1')=='19')>19 pcs</option>
+                            <option value="20" @selected(old('qty','1')=='20')>20 pcs</option>
                         </select>
                         @error('gramasi_emas')<div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
@@ -344,26 +359,26 @@
                                 
                                 var hasReg = false;
                                 $.each(response.data, function(i, item){
-                                    var isReg = item.service === 'REG';
-                                    if(isReg) hasReg = true;
-                                    
-                                    // Value stores price
+                                    if(item.service === 'REG') hasReg = true;
                                     $select.append($('<option>', {
                                         value: item.price,
                                         text: item.label,
                                         'data-service': item.service,
-                                        'data-etd': item.etd,
-                                        selected: isReg,
-                                        disabled: !isReg // Disable non-REG options
+                                        'data-etd': item.etd
                                     }));
                                 });
                                 
                                 if(hasReg) {
-                                    $select.trigger('change'); // Trigger change to update hidden input
+                                    $select.find('option').each(function(){
+                                        var isReg = $(this).data('service') === 'REG';
+                                        $(this).prop('disabled', !isReg);
+                                        if(isReg) $(this).prop('selected', true);
+                                    });
                                 } else {
-                                    alert('Layanan REG tidak tersedia untuk tujuan ini.');
+                                    $select.find('option').prop('disabled', false).first().prop('selected', true);
                                 }
                                 
+                                $select.trigger('change');
                                 $('#jne-result').show();
                             } else {
                                 alert('Tidak ada layanan pengiriman yang tersedia.');

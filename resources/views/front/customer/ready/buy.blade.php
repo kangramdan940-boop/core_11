@@ -341,25 +341,26 @@
                             
                             var hasReg = false;
                             $.each(response.data, function(i, item){
-                                var isReg = item.service === 'REG';
-                                if(isReg) hasReg = true;
-                                
+                                if(item.service === 'REG') hasReg = true;
                                 $select.append($('<option>', {
                                     value: item.price,
                                     text: item.label,
                                     'data-service': item.service,
-                                    'data-etd': item.etd,
-                                    selected: isReg,
-                                    disabled: !isReg
+                                    'data-etd': item.etd
                                 }));
                             });
                             
                             if(hasReg) {
-                                $select.trigger('change');
+                                $select.find('option').each(function(){
+                                    var isReg = $(this).data('service') === 'REG';
+                                    $(this).prop('disabled', !isReg);
+                                    if(isReg) $(this).prop('selected', true);
+                                });
                             } else {
-                                alert('Layanan REG tidak tersedia untuk tujuan ini.');
+                                $select.find('option').prop('disabled', false).first().prop('selected', true);
                             }
                             
+                            $select.trigger('change');
                             $('#jne-result').show();
                         } else {
                             alert('Tidak ada layanan pengiriman yang tersedia.');
