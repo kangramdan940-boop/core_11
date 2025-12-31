@@ -103,6 +103,14 @@
                                         <i class="bi bi-whatsapp"></i>
                                     </a>
                                 @endif
+                                @if ($p->status === 'paid' && !empty(optional($p->customer)->email))
+                                    <form action="{{ route('admin.trans.po.send-email', $p) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="btn icon-btn-sm btn-light-warning" title="Kirim Email">
+                                            <i class="bi bi-envelope"></i>
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
                         </td>
                     </tr>

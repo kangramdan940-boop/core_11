@@ -150,6 +150,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware(['auth', 'admin_or_agen'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard/stats', [DashboardController::class, 'stats'])->name('dashboard.stats');
+        Route::get('/email-logs', [\App\Http\Controllers\Admin\EmailLogController::class, 'index'])->name('email-logs.index');
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
     });
 
@@ -307,6 +308,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 Route::post('/{po}/reject-payment', [TransPoController::class, 'rejectPayment'])->name('reject-payment');
                 Route::post('/{po}/status', [TransPoController::class, 'updateStatus'])->name('update-status');
                 Route::post('/{po}/shipping', [TransPoController::class, 'updateShipping'])->name('update-shipping');
+                Route::post('/{po}/send-email', [TransPoController::class, 'sendPaidEmail'])->name('send-email');
                 Route::post('/cancel-pending', [TransPoController::class, 'cancelPendingAll'])->name('cancel-pending-all');
 
                 // Mitra Komisi assign/remove (nama & URL sama seperti awal)

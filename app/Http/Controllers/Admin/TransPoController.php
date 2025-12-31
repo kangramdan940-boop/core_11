@@ -9,6 +9,7 @@ use App\Models\TransPoLog;
 use App\Models\TransPoMobilitas;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Mail;
 
 class TransPoController extends Controller
 {
@@ -221,5 +222,61 @@ class TransPoController extends Controller
         });
 
         return redirect()->route('admin.trans.po.index')->with('success', 'Berhasil membatalkan ' . $count . ' transaksi pending.');
+    }
+
+    public function sendPaidEmail(Request $request, TransPo $po)
+    {
+        if ($po->status !== 'paid') {
+            return back()->withErrors(['email' => 'Email hanya dapat dikirim untuk transaksi berstatus PAID.']);
+        }
+
+        $email = trim((string) optional($po->customer)->email);
+        if ($email === '') {
+            return back()->withErrors(['email' => 'Email pelanggan tidak tersedia.']);
+        }
+
+        $subject = 'Konfirmasi Pembayaran PO ' . ($po->kode_po ?? ('PO-' . $po->id));
+        $html = view('emails.po_paid', compact('po'))->render();
+
+        try {
+            Mail::html($html, function ($message) use ($email, $subject, $po) {
+                $message->to($email, (string) (optional($po->customer)->full_name ?? 'Pelanggan'))
+                        ->subject($subject);
+            });
+
+            \App\Models\EmailLog::create([
+                'recipient_email' => $email,
+                'recipient_name'  => optional($po->customer)->full_name,
+                'subject'         => $subject,
+                'status'          => 'success',
+                'mail_type'       => 'po_paid',
+                'related_type'    => get_class($po),
+                'related_id'      => $po->id,
+                'user_id'         => auth()->id(),
+            ]);
+
+            TransPoLog::create([
+                'trans_po_id' => $po->id,
+                'status'      => $po->status,
+                'description' => 'Email notifikasi pembayaran dikirim ke ' . $email . ' pada ' . now(),
+            ]);
+
+            return back()->with('success', 'Email notifikasi pembayaran telah dikirim.');
+
+        } catch (\Exception $e) {
+            \App\Models\EmailLog::create([
+                'recipient_email' => $email,
+                'recipient_name'  => optional($po->customer)->full_name,
+                'subject'         => $subject,
+                'status'          => 'failed',
+                'error_message'   => $e->getMessage(),
+                'mail_type'       => 'po_paid',
+                'related_type'    => get_class($po),
+                'related_id'      => $po->id,
+                'user_id'         => auth()->id(),
+            ]);
+
+            return back()->withErrors(['email' => 'Gagal mengirim email: ' . $e->getMessage()]);
+        }
     }
 }
