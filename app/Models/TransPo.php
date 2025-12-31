@@ -41,6 +41,7 @@ class TransPo extends Model
         'payment_reference',
         'catatan',
         'estimasi_emas_diterima',
+        'notify_transfer_sent_at',
     ];
 
     protected $casts = [
@@ -58,6 +59,7 @@ class TransPo extends Model
         'completed_at'   => 'datetime',
         'cancelled_at'   => 'datetime',
         'estimasi_emas_diterima' => 'date',
+        'notify_transfer_sent_at' => 'datetime',
     ];
 
     public function customer()

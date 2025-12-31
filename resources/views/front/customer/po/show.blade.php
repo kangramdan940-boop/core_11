@@ -124,10 +124,40 @@
                     }
                 @endphp
                 <div class="col-md-6"><strong>Estimasi Diterima</strong><br>{{ $estimasiDisplay }}</div>
+                 
             </div>
         </div>
     </div>
-
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <h6 class="mb-3">Notifikasi "Saya Sudah Transfer"</h6>
+            <p class="text-muted small mb-3">Jika Anda sudah melakukan transfer tetapi belum sempat mengunggah bukti, kirim notifikasi email ke agen untuk mempercepat pengecekan.</p>
+            @if ($po->notify_transfer_sent_at)
+                <div class="alert alert-success light">Notifikasi telah dikirim pada {{ optional($po->notify_transfer_sent_at)->format('Y-m-d H:i') }}.</div>
+            @else
+                <form id="notifyTransferForm" action="{{ route('customer.po.notify-transfer', $po) }}" method="POST" class="d-inline">
+                    @csrf
+                    <button id="notifyTransferBtn" type="submit" class="btn btn-outline-primary">Kirim Notifikasi</button>
+                </form>
+                <div id="notifyOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.3);z-index:1050;"></div>
+                <script>
+                (function(){
+                    var form = document.getElementById('notifyTransferForm');
+                    var btn = document.getElementById('notifyTransferBtn');
+                    var ov = document.getElementById('notifyOverlay');
+                    var busy = false;
+                    function lock(){
+                        if (busy) return;
+                        busy = true;
+                        if (btn){ btn.disabled = true; btn.setAttribute('aria-disabled','true'); btn.innerHTML = 'Mengirim... <span class="spinner-border spinner-border-sm ms-1" role="status" aria-hidden="true"></span>'; }
+                        if (ov){ ov.style.display = 'block'; }
+                    }
+                    if (form){ form.addEventListener('submit', function(){ lock(); }); }
+                })();
+                </script>
+            @endif
+        </div>
+    </div>
     @if ($po->status === 'pending_payment')
     @php $pendingManual = ($paymentLogs ?? collect())
         ->filter(function($pl){ return ($pl->payment_method === 'manual_transfer') && ($pl->status === 'pending'); })
@@ -189,6 +219,8 @@
             @endif
         </div>
     </div>
+
+
    
     @endif
 

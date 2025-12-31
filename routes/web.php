@@ -81,6 +81,7 @@ Route::prefix('customer')->name('customer.')->group(function () {
         Route::post('/po', [CustomerPoController::class, 'store'])->name('po.store');
         Route::get('/po/{po}', [CustomerPoController::class, 'show'])->name('po.show');
         Route::post('/po/{po}/confirm-payment', [CustomerPoController::class, 'confirmPayment'])->name('po.confirm-payment');
+        Route::post('/po/{po}/notify-transfer', [CustomerPoController::class, 'notifyTransfer'])->name('po.notify-transfer');
 
         // Ready
         Route::get('/ready', [CustomerReadyController::class, 'index'])->name('ready.index');

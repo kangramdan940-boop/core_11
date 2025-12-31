@@ -14,6 +14,7 @@ use App\Models\MasterGramasiEmas;
 use App\Models\TransPoLog;
 use App\Models\TransPaymentLog;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
 use App\Models\MasterAgen;
 
 class CustomerPoController extends Controller
@@ -160,6 +161,71 @@ class CustomerPoController extends Controller
         return redirect()
             ->route('customer.po.show', encrypt($po->id))
             ->with('success', 'Konfirmasi pembayaran terkirim. Menunggu verifikasi agen.');
+    }
+
+    public function notifyTransfer(Request $request, TransPo $po)
+    {
+        $customer = MasterCustomer::where('sys_user_id', Auth::id())->firstOrFail();
+        if ((int) $po->master_customer_id !== (int) $customer->id) {
+            abort(404);
+        }
+        if ($po->status !== 'pending_payment') {
+            return back()->withErrors(['status' => 'Notifikasi hanya untuk transaksi berstatus pending_payment.']);
+        }
+        if ($po->notify_transfer_sent_at) {
+            return redirect()->route('customer.po.show', encrypt($po->id))->with('error', 'Notifikasi email sudah dikirim untuk transaksi ini.');
+        }
+        $email = trim((string) optional($po->agen)->email);
+        if ($email === '') {
+            return back()->withErrors(['email' => 'Email agen tidak tersedia.']);
+        }
+        $amountDisplay = 'Rp ' . number_format((float)$po->total_amount, 0, ',', '.');
+        $subject = '[' . $amountDisplay . '] Konfirmasi Customer Sudah Transfer - ' . ($po->kode_po ?? ('PO-' . $po->id));
+        $html = view('emails.po_transfer_notify', compact('po'))->render();
+        try {
+            Mail::html($html, function ($message) use ($email, $subject, $po) {
+                $message->to($email, (string) (optional($po->agen)->name ?? 'Agen'))
+                        ->subject($subject);
+            });
+
+            \App\Models\EmailLog::create([
+                'recipient_email' => $email,
+                'recipient_name'  => optional($po->agen)->name,
+                'subject'         => $subject,
+                'status'          => 'success',
+                'mail_type'       => 'po_transfer_notify',
+                'related_type'    => get_class($po),
+                'related_id'      => $po->id,
+                'user_id'         => auth()->id(),
+            ]);
+
+            $po->notify_transfer_sent_at = now();
+            $po->save();
+
+            TransPoLog::create([
+                'trans_po_id' => $po->id,
+                'status'      => $po->status,
+                'description' => 'Customer mengirim notifikasi sudah transfer (tanpa bukti) ke agen pada ' . now(),
+            ]);
+
+            return redirect()
+                ->route('customer.po.show', encrypt($po->id))
+                ->with('success', 'Notifikasi email dikirim ke agen.');
+        } catch (\Exception $e) {
+            \App\Models\EmailLog::create([
+                'recipient_email' => $email,
+                'recipient_name'  => optional($po->agen)->name,
+                'subject'         => $subject,
+                'status'          => 'failed',
+                'error_message'   => $e->getMessage(),
+                'mail_type'       => 'po_transfer_notify',
+                'related_type'    => get_class($po),
+                'related_id'      => $po->id,
+                'user_id'         => auth()->id(),
+            ]);
+
+            return back()->withErrors(['email' => 'Gagal mengirim email: ' . $e->getMessage()]);
+        }
     }
 }
 
