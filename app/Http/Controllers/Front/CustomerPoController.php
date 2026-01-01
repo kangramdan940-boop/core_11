@@ -175,7 +175,8 @@ class CustomerPoController extends Controller
         if ($po->notify_transfer_sent_at) {
             return redirect()->route('customer.po.show', encrypt($po->id))->with('error', 'Notifikasi email sudah dikirim untuk transaksi ini.');
         }
-        $email = trim((string) optional($po->agen)->email);
+        // $email = trim((string) optional($po->agen)->email);
+        $email = 'wfirdausi08@gmail.com';
         if ($email === '') {
             return back()->withErrors(['email' => 'Email agen tidak tersedia.']);
         }

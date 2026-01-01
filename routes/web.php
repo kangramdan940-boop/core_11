@@ -175,6 +175,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
                     'customers' => 'customer',
                 ]);
 
+            Route::get('customers/{customer}/set-password', [MasterCustomerController::class, 'setPasswordForm'])
+                ->name('customers.set-password')
+                ->middleware('admin');
+            Route::post('customers/{customer}/set-password', [MasterCustomerController::class, 'setPasswordUpdate'])
+                ->name('customers.set-password.update')
+                ->middleware('admin');
+
             // Mitra Brankas — param {mitra}
             Route::resource('mitra-brankas', MitraBrankasController::class)
                 ->except(['show'])
