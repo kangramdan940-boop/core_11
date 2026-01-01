@@ -18,6 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => AdminOnly::class,
             'admin_or_agen' => AdminOrAgen::class,
         ]);
+
+        $middleware->append(\Illuminate\Http\Middleware\HandleCors::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
