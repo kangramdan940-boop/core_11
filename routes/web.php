@@ -289,6 +289,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
                     'settings' => 'setting',
                 ])
                 ->middleware('admin');
+
+            Route::resource('mobile-app-configs', \App\Http\Controllers\Admin\MasterMobileAppConfigController::class)
+                ->except(['show'])
+                ->names('mobile-app-configs')
+                ->parameters([
+                    'mobile-app-configs' => 'config',
+                ])
+                ->middleware('admin');
         });
 
         /*
@@ -376,4 +384,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
             ->names('roles')
             ->middleware('admin');
     });
+});
+
+Route::prefix('v1/public')->group(function () {
+    Route::get('/mobile-informations', [\App\Http\Controllers\Api\MobileInformationController::class, 'show'])->name('public.mobile-informations');
 });
