@@ -95,7 +95,7 @@
                 <div class="mt-20 d-flex justify-content-between">
                     <div class="box-check-remember">
                         <input class="tf-switch-check" id="checkRemember" type="checkbox" name="remember">
-                        <label for="checkRemember" class="body-2 text-dark-4">Remember Me</label>
+                        <label for="checkRemember" class="body-2 text-dark-4">Ingat login saya</label>
                     </div>
                 </div>
 

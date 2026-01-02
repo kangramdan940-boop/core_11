@@ -60,6 +60,6 @@ final class LoginManagementController extends Controller
 
         return redirect()
             ->route('admin.login-management.index')
-            ->with('status', 'User telah di-logout dari semua device dan remember me dinonaktifkan.');
+            ->with('status', 'User telah di-logout dari semua device dan Ingat login saya dinonaktifkan.');
     }
 }

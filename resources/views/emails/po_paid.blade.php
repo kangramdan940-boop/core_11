@@ -51,18 +51,14 @@
                 <tr>
                     <td class="invoice-label">Detail Barang</td>
                     <td class="invoice-colon">:</td>
-                    <td class="invoice-value">{{ (int)($po->qty ?? 0) }} pcs @ {{ number_format((float)($po->total_gram ?? 0) / (int)($po->qty ?? 1), 3, ',', '.') }} gr</td>
+                    <td class="invoice-value">{{ (int)($po->qty ?? 0) }} pcs @ {{ number_format(((float)($po->total_gram ?? 0)), 3, ',', '.') }} gr</td>
                 </tr>
                 <tr>
                     <td class="invoice-label">Total Berat</td>
                     <td class="invoice-colon">:</td>
-                    <td class="invoice-value">{{ number_format((float)($po->total_gram ?? 0), 3, ',', '.') }} gr</td>
+                    <td class="invoice-value">{{ number_format((float)($po->total_gram*$po->qty ?? 0), 3, ',', '.') }} gr</td>
                 </tr>
-                <tr>
-                    <td class="invoice-label">Metode Pengiriman</td>
-                    <td class="invoice-colon">:</td>
-                    <td class="invoice-value">{{ strtoupper($po->delivery_type ?? '-') }}</td>
-                </tr>
+               
                 @if(($po->delivery_type ?? '') == 'shipping')
                 <tr>
                     <td class="invoice-label">Kurir</td>
