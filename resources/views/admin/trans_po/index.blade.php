@@ -59,7 +59,9 @@
                     <th width="10px;">No</th>
                     <th>Kode PO</th>
                     <th>Customer</th>
-                    <th>Agen</th>
+                    <th>Gramasi (Qty)</th>
+                    <th>Total Gram</th>
+                    <th>Biaya Pengiriman</th>
                     <th>Total (IDR)</th>
                     <th>Status</th>
                     <th>Dibuat</th>
@@ -72,7 +74,9 @@
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $p->kode_po }}</td>
                         <td>{{ optional($p->customer)->full_name ?? '-' }}</td>
-                        <td>{{ optional($p->agen)->name ?? '-' }}</td>
+                        <td>{{ number_format((float)($p->total_gram ?? 0), 0, ',', '.') }} Gram x ({{ (int)($p->qty ?? 0) }} Keping)</td>
+                        <td>{{ (int)($p->qty * $p->total_gram ) }} Gram</td>
+                        <td>{!! ((float)($p->shipping_cost ?? 0)) > 0 ? number_format((float)($p->shipping_cost ?? 0), 2, ',', '.') : '<span class="badge bg-danger">Follow Up Ongkir</span>' !!}</td>
                         <td>{{ number_format((float)$p->total_amount, 2, ',', '.') }}</td>
                         <td>
                             @php($st = $p->status)

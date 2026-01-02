@@ -82,6 +82,7 @@
             <a class="nav-link {{ request()->routeIs('admin.permissions.*') ? 'active' : '' }}" href="{{ route('admin.permissions.users.index') }}">🔐 Hak Akses</a>
             <a class="nav-link {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}" href="{{ route('admin.roles.index') }}">🛡️ Roles</a>
         @endif
+        <a class="nav-link {{ request()->routeIs('admin.login-management.*') ? 'active' : '' }}" href="{{ route('admin.login-management.index') }}">👥 Management Login List</a>
         <a class="nav-link" href="#">🔔 Notifikasi</a>
     </aside>
 
