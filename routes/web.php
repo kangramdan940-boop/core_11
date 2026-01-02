@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\TransCicilanPaymentController;
 use App\Http\Controllers\Admin\MitraWithdrawalController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\LoginManagementController;
 
 use App\Http\Controllers\Front\CustomerAuthController;
 use App\Http\Controllers\Front\MitraAuthController;
@@ -369,6 +370,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->name('mitra-withdrawals.upload-proof');
         });
 
+        Route::get('/login-management', [LoginManagementController::class, 'index'])
+            ->name('login-management.index')
+            ->middleware('admin');
+        Route::post('/login-management/kick', [LoginManagementController::class, 'kick'])
+            ->name('login-management.kick')
+            ->middleware('admin');
+
         /*
         |--------------------------------------------------------------------------
         | ROLE & PERMISSION MANAGEMENT
@@ -386,6 +394,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 });
 
-Route::prefix('v1/public')->group(function () {
+Route::prefix('v1/public')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->group(function () {
     Route::get('/mobile-informations', [\App\Http\Controllers\Api\MobileInformationController::class, 'show'])->name('public.mobile-informations');
+    Route::post('/customer/register', [\App\Http\Controllers\Api\CustomerAuthApiController::class, 'register'])->name('public.customer.register');
+    Route::post('/customer/login', [\App\Http\Controllers\Api\CustomerAuthApiController::class, 'login'])->name('public.customer.login');
 });
