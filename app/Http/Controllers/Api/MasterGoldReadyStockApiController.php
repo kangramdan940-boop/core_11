@@ -72,6 +72,7 @@ class MasterGoldReadyStockApiController extends Controller
             'jumlahTerjual' => $s->jumlah_terjual !== null ? (int) $s->jumlah_terjual : null,
             'acara' => $s->acara ?? null,
             'negaraAsal' => $s->negara_asal ?? null,
+            'tags' => $s->tags ?? null,
             'isCustom' => (bool) ($s->is_custom ?? false),
             'isMysteryBox' => (bool) ($s->is_mystery_box ?? false),
             'images' => $this->resolveUrls($s->images),
