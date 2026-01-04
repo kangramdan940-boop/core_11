@@ -24,6 +24,7 @@
             [ 'type' => 'link', 'icon' => 'ri-group-line', 'text' => 'Agen', 'url' => route('admin.master.agens.index'), 'routeIs' => 'admin.master.agens.*' ],
             [ 'type' => 'link', 'icon' => 'ri-bank-line', 'text' => 'Mitra Brankas', 'url' => route('admin.master.mitra-brankas.index'), 'routeIs' => 'admin.master.mitra-brankas.*' ],
             [ 'type' => 'link', 'icon' => 'ri-shield-user-line', 'text' => 'Admin', 'url' => route('admin.master.admins.index'), 'routeIs' => 'admin.master.admins.*' ],
+            [ 'type' => 'link', 'icon' => 'ri-folder-line', 'text' => 'Master Asset', 'url' => route('admin.master.assets.index'), 'routeIs' => 'admin.master.assets.*' ],
 
             [ 'type' => 'title', 'text' => 'Emas' ],
             [ 'type' => 'link', 'icon' => 'ri-bar-chart-2-line', 'text' => 'Harga Emas', 'url' => route('admin.master.gold-prices.index'), 'routeIs' => 'admin.master.gold-prices.*' ],

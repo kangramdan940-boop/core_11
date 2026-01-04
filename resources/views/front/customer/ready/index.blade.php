@@ -40,12 +40,12 @@
                     <div class="box-app">
                         <div class="info-box">
                             <a href="{{ route('customer.ready.stock', ['stock' => encrypt((string)$s->id)]) }}" class="logo">
-                                <img src="{{ asset('front/images/golds/antam_2.jpg') }}" alt="logo">
+                                <img src="{{ ($s->images && is_array($s->images) && count($s->images) > 0) ? (Str::startsWith($s->images[0], ['http://','https://']) ? $s->images[0] : asset($s->images[0])) : asset('front/images/golds/antam_2.jpg') }}" alt="logo">
                             </a>
                             <div class="content">
                                 <div class="h7 text-dark">
                                     <a href="{{ route('customer.ready.stock', ['stock' => encrypt((string)$s->id)]) }}">
-                                        {{ strtoupper($s->brand) }} {{ number_format((float) ($s->gramasi ?? 0), 3) }} gr
+                                        {{ $s->nama_produk ?? (strtoupper($s->brand).' '.number_format((float) ($s->gramasi ?? 0), 3).' gr') }}
                                     </a>
                                     <span class="dot"></span>
                                     <span class="body-6 text-dark-4">Harga: Rp {{ number_format((float) ($s->harga_jual_fix ?? $s->harga_jual_minimal ?? 0), 0) }}</span>

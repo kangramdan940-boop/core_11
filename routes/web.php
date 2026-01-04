@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\MitraWithdrawalController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\LoginManagementController;
+use App\Http\Controllers\Admin\MasterAssetController;
 
 use App\Http\Controllers\Front\CustomerAuthController;
 use App\Http\Controllers\Front\MitraAuthController;
@@ -296,6 +297,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->names('mobile-app-configs')
                 ->parameters([
                     'mobile-app-configs' => 'config',
+                ])
+                ->middleware('admin');
+
+            Route::resource('assets', MasterAssetController::class)
+                ->except(['show'])
+                ->names('assets')
+                ->parameters([
+                    'assets' => 'asset',
                 ])
                 ->middleware('admin');
         });

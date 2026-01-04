@@ -30,7 +30,14 @@
         <div class="card-body">
             <h1 class="h6 mb-3">Detail Stok Emas Ready</h1>
 
+            <div class="mb-3">
+                @if($stock->images && is_array($stock->images) && count($stock->images) > 0)
+                    <img src="{{ Str::startsWith($stock->images[0], ['http://','https://']) ? $stock->images[0] : asset($stock->images[0]) }}" alt="gambar" style="max-height:160px;object-fit:contain;">
+                @endif
+            </div>
+
             <div class="row g-3">
+                <div class="col-md-4"><strong>Nama Produk</strong><br>{{ $stock->nama_produk ?? '-' }}</div>
                 <div class="col-md-4"><strong>Kode Item</strong><br>{{ $stock->kode_item }}</div>
                 <div class="col-md-4"><strong>Brand</strong><br>{{ strtoupper($stock->brand) }}</div>
                 <div class="col-md-4"><strong>Gramasi</strong><br>{{ number_format((float)$stock->gramasi, 3, ',', '.') }} g</div>
@@ -38,7 +45,13 @@
                 <div class="col-md-4"><strong>Status</strong><br>{{ strtoupper($stock->status) }}</div>
                 <div class="col-md-4"><strong>Harga Jual</strong><br>{{ number_format((float)($stock->harga_jual_fix ?? $stock->harga_jual_minimal ?? 0), 2, ',', '.') }} IDR</div>
                 <div class="col-md-12"><strong>Lokasi Simpan</strong><br>{{ $stock->lokasi_simpan ?? '-' }}</div>
+                <div class="col-md-4"><strong>Negara Asal</strong><br>{{ $stock->negara_asal ?? '-' }}</div>
+                <div class="col-md-4"><strong>Acara</strong><br>{{ $stock->acara ?? '-' }}</div>
                 <div class="col-md-12"><strong>Catatan</strong><br>{{ $stock->catatan ?? '-' }}</div>
+                <div class="col-md-12"><strong>Deskripsi Pengiriman</strong><br>{{ $stock->deskripsi_pengiriman ?? '-' }}</div>
+                @if($stock->video_url)
+                    <div class="col-md-12"><strong>Video</strong><br><a href="{{ $stock->video_url }}" target="_blank" rel="noopener">Lihat Video</a></div>
+                @endif
             </div>
 
             <hr>

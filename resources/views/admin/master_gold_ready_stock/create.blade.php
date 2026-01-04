@@ -12,7 +12,7 @@
             <form action="{{ route('admin.master.ready-stocks.store') }}" method="POST">
                 @csrf
 
-                @include('admin.master_gold_ready_stock._form', ['stock' => null, 'agens' => $agens])
+                @include('admin.master_gold_ready_stock._form', ['stock' => null, 'agens' => $agens, 'assets' => $assets])
 
                 <div class="d-flex justify-content-end mt-5 gap-2">
                     <a href="{{ route('admin.master.ready-stocks.index') }}" class="btn btn-outline-secondary">Batal</a>

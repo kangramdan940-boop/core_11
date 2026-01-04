@@ -139,11 +139,98 @@
         @error('catatan') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 
-    <div class="col-md-3 d-flex align-items-center mt-4">
+    <div class="col-md-4">
+        <label class="form-label">Nama Produk</label>
+        <div class="input-group">
+            <span class="input-group-text"><i class="ri-article-line"></i></span>
+            <input type="text" name="nama_produk" class="form-control @error('nama_produk') is-invalid @enderror" value="{{ old('nama_produk', $stock->nama_produk ?? '') }}">
+        </div>
+        @error('nama_produk') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    </div>
+
+    <div class="col-md-4">
+        <label class="form-label">Video URL</label>
+        <div class="input-group">
+            <span class="input-group-text"><i class="ri-video-line"></i></span>
+            <input type="text" name="video_url" class="form-control @error('video_url') is-invalid @enderror" value="{{ old('video_url', $stock->video_url ?? '') }}">
+        </div>
+        @error('video_url') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    </div>
+
+    <div class="col-md-4">
+        <label class="form-label">Deskripsi Pengiriman</label>
+        <div class="input-group">
+            <span class="input-group-text"><i class="ri-truck-line"></i></span>
+            <input type="text" name="deskripsi_pengiriman" class="form-control @error('deskripsi_pengiriman') is-invalid @enderror" value="{{ old('deskripsi_pengiriman', $stock->deskripsi_pengiriman ?? '') }}">
+        </div>
+        @error('deskripsi_pengiriman') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label">Images (satu URL per baris)</label>
+        <div class="input-group">
+            <span class="input-group-text"><i class="ri-image-line"></i></span>
+            <textarea name="images" rows="3" class="form-control @error('images') is-invalid @enderror">{{ old('images', (isset($stock->images) && is_array($stock->images)) ? implode("\n", $stock->images) : ($stock->images ?? '')) }}</textarea>
+        </div>
+        @error('images') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        <div class="mt-2">
+            <select class="form-select" id="assetSuggest" onchange="(function(s){var ta=document.querySelector('textarea[name=\'images\']');var v=s.value.trim();if(ta&&v){ta.value=(ta.value?ta.value+'\n':'')+v;s.value='';}})(this)">
+                <option value="">- Pilih dari Asset -</option>
+                @foreach(($assets ?? []) as $as)
+                    <option value="{{ $as->url }}">{{ $as->title ?? basename($as->url) }}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <label class="form-label">Jumlah Terjual</label>
+        <div class="input-group">
+            <span class="input-group-text"><i class="ri-shopping-bag-3-line"></i></span>
+            <input type="number" min="0" name="jumlah_terjual" class="form-control @error('jumlah_terjual') is-invalid @enderror" value="{{ old('jumlah_terjual', $stock->jumlah_terjual ?? '') }}">
+        </div>
+        @error('jumlah_terjual') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    </div>
+
+    <div class="col-md-2">
+        <label class="form-label">Acara</label>
+        <div class="input-group">
+            <span class="input-group-text"><i class="ri-calendar-event-line"></i></span>
+            <input type="text" name="acara" class="form-control @error('acara') is-invalid @enderror" value="{{ old('acara', $stock->acara ?? '') }}">
+        </div>
+        @error('acara') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    </div>
+
+    <div class="col-md-2">
+        <label class="form-label">Negara Asal</label>
+        <div class="input-group">
+            <span class="input-group-text"><i class="ri-flag-line"></i></span>
+            <input type="text" name="negara_asal" class="form-control @error('negara_asal') is-invalid @enderror" value="{{ old('negara_asal', $stock->negara_asal ?? '') }}">
+        </div>
+        @error('negara_asal') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label">Tags</label>
+        <div class="input-group">
+            <span class="input-group-text"><i class="ri-price-tag-3-line"></i></span>
+            <textarea name="tags" rows="2" class="form-control @error('tags') is-invalid @enderror">{{ old('tags', $stock->tags ?? '') }}</textarea>
+        </div>
+        @error('tags') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    </div>
+
+    <div class="col-md-3 d-flex align-items-center mt-4" style="gap: 24px;">
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="is_active" id="is_active"
-                   {{ old('is_active', $stock->is_active ?? true) ? 'checked' : '' }}>
+            <input class="form-check-input" type="checkbox" name="is_active" id="is_active" {{ old('is_active', $stock->is_active ?? true) ? 'checked' : '' }}>
             <label class="form-check-label" for="is_active">Aktif</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="is_custom" id="is_custom" {{ old('is_custom', $stock->is_custom ?? false) ? 'checked' : '' }}>
+            <label class="form-check-label" for="is_custom">Custom</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="is_mystery_box" id="is_mystery_box" {{ old('is_mystery_box', $stock->is_mystery_box ?? false) ? 'checked' : '' }}>
+            <label class="form-check-label" for="is_mystery_box">Mystery Box</label>
         </div>
     </div>
 </div>

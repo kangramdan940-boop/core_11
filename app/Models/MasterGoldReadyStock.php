@@ -26,6 +26,16 @@ class MasterGoldReadyStock extends Model
         'lokasi_simpan',
         'catatan',
         'is_active',
+        'nama_produk',
+        'images',
+        'video_url',
+        'deskripsi_pengiriman',
+        'jumlah_terjual',
+        'acara',
+        'negara_asal',
+        'is_custom',
+        'is_mystery_box',
+        'tags',
     ];
 
     protected $casts = [
@@ -35,6 +45,10 @@ class MasterGoldReadyStock extends Model
         'harga_jual_fix'     => 'decimal:2',
         'tahun_cetak'        => 'integer',
         'is_active'          => 'boolean',
+        'images'             => 'array',
+        'jumlah_terjual'     => 'integer',
+        'is_custom'          => 'boolean',
+        'is_mystery_box'     => 'boolean',
     ];
 
     public function agen()
