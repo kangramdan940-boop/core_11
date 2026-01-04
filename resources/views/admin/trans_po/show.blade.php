@@ -113,52 +113,190 @@
             </div>
         </div>
     </div>
-
-    <div class="card shadow-sm mb-3">
+     <div class="card shadow-sm mb-3">
         <div class="card-body">
-            <h6 class="mb-3 fs-5"># Data Pengiriman</h6>
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <strong>Nama</strong>
-                    <div class="mt-1">{{ $po->shipping_name ?? '-' }}</div>
+            <h6 class="mb-3 fs-5"># Biaya & Mobilitas</h6>
+            @php
+                $feePerUnit = (float) optional($po->produk)->harga_jasa;
+                $qtyUnit = (int) ($po->qty ?? 1);
+                $feePool = (float) number_format($feePerUnit * $qtyUnit, 2, '.', '');
+                $mobilities = collect($mobilities ?? []);
+                $totalMobilitas = (float) number_format($mobilities->sum(function($x){
+                    $v = is_array($x) ? ($x['amount'] ?? 0) : ($x->amount ?? 0);
+                    return (float) $v;
+                }), 2, '.', '');
+                $sisaFee = (float) number_format(max(0, $feePool - $totalMobilitas), 2, '.', '');
+            @endphp
+            <div class="row g-3 mb-3">
+                <div class="col-md-3"><strong>Fee per Unit</strong><br>{{ number_format($feePerUnit, 2, ',', '.') }}</div>
+                <div class="col-md-3"><strong>Qty</strong><br>{{ $qtyUnit }} pcs</div>
+                <div class="col-md-3"><strong>Total Fee Pool</strong><br>{{ number_format($feePool, 2, ',', '.') }}</div>
+                <div class="col-md-3"><strong>Total Biaya Mobilitas</strong><br>{{ number_format($totalMobilitas, 2, ',', '.') }}</div>
+                <div class="col-md-3"><strong>Sisa Fee</strong><br>{{ number_format($sisaFee, 2, ',', '.') }}</div>
+                <div class="col-md-9 d-flex justify-content-end align-items-start">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambahMobilitas">Tambah Biaya Mobilitas</button>
                 </div>
-                <div class="col-md-6">
-                    <strong>WhatsApp</strong>
-                    <div class="mt-1">{{ $po->shipping_phone ?? '-' }}</div>
-                </div>
-                <div class="col-md-12">
-                    <strong>Alamat</strong>
-                    <div class="mt-1">{{ $po->shipping_address ?? '-' }}</div>
-                </div>
-                <div class="col-md-4">
-                    <strong>Kota</strong>
-                    <div class="mt-1">{{ $po->shipping_city ?? '-' }}</div>
-                </div>
-                <div class="col-md-4">
-                    <strong>Provinsi</strong>
-                    <div class="mt-1">{{ $po->shipping_province ?? '-' }}</div>
-                </div>
-                <div class="col-md-4">
-                    <strong>Kode Pos</strong>
-                    <div class="mt-1">{{ $po->shipping_postal_code ?? '-' }}</div>
+                <div class="col-12">
+                    @if($mobilities->count() > 0)
+                        <div class="table-responsive mt-2">
+                            <table class="table table-sm table-bordered table-striped table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th>Kategori</th>
+                                        <th>Deskripsi</th>
+                                        <th>Amount</th>
+                                        <th>Created At</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($mobilities as $m)
+                                        @php
+                                            $tgl = is_array($m) ? ($m['tanggal'] ?? null) : ($m->tanggal ?? null);
+                                            $kat = is_array($m) ? ($m['kategori'] ?? null) : ($m->kategori ?? null);
+                                            $desk = is_array($m) ? ($m['deskripsi'] ?? null) : ($m->deskripsi ?? null);
+                                            $amt = (float) (is_array($m) ? ($m['amount'] ?? 0) : ($m->amount ?? 0));
+                                            $created = is_array($m) ? ($m['created_at'] ?? null) : ($m->created_at ?? null);
+                                        @endphp
+                                        <tr>
+                                            <td>{{ optional($tgl)->format('Y-m-d') ?? (is_string($tgl) ? $tgl : '-') }}</td>
+                                            <td>{{ $kat ?? '-' }}</td>
+                                            <td>{{ $desk ?? '-' }}</td>
+                                            <td>{{ number_format($amt, 2, ',', '.') }}</td>
+                                            <td>{{ optional($created)->format('Y-m-d H:i') ?? (is_string($created) ? $created : '-') }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="3" class="text-end">Total</th>
+                                        <th>{{ number_format($totalMobilitas, 2, ',', '.') }}</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    @else
+                        <br>-
+                    @endif
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="card shadow-sm mb-3">
+    <div class="modal fade" id="modalTambahMobilitas" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tambah Biaya Mobilitas</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('admin.trans.po.mobilitas.store', $po) }}" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Tanggal</label>
+                                <input type="date" name="tanggal" class="form-control" value="{{ date('Y-m-d') }}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Kategori</label>
+                                <input type="text" name="kategori" class="form-control" placeholder="Contoh: Print, Pengiriman" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Amount</label>
+                                <input type="number" name="amount" step="0.01" min="0.00" class="form-control" placeholder="0.00" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Deskripsi</label>
+                                <textarea name="deskripsi" rows="2" class="form-control" placeholder="Opsional"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+ <div class="card shadow-sm mb-3">
         <div class="card-body">
             <h6 class="mb-3">Pembagian Komisi Mitra (Assign)</h6>
             @php
                 $mitras = \App\Models\MasterMitraBrankas::where('is_active', true)->orderBy('nama_lengkap')->get();
                 $allocated = (float) (\App\Models\TransPoMitraKomisi::where('trans_po_id', $po->id)->sum('jumlah_gram') ?? 0);
                 $remainingPo = max(0, (float)$po->total_gram - $allocated);
+                $assignedNames = \App\Models\TransPoMitraKomisi::with('mitra')
+                    ->where('trans_po_id', $po->id)
+                    ->get()
+                    ->map(fn($x) => optional($x->mitra)->nama_lengkap)
+                    ->filter()
+                    ->unique()
+                    ->implode(', ');
+                $assignedMitras = \App\Models\TransPoMitraKomisi::with('mitra')
+                    ->where('trans_po_id', $po->id)
+                    ->get()
+                    ->map(fn($x) => $x->mitra)
+                    ->filter()
+                    ->unique('id')
+                    ->values();
+                $assignedSummary = \App\Models\TransPoMitraKomisi::with('mitra')
+                    ->where('trans_po_id', $po->id)
+                    ->get()
+                    ->groupBy('master_mitra_brankas_id')
+                    ->map(function($items){
+                        $m = optional($items->first()->mitra);
+                        return [
+                            'nama' => $m->nama_lengkap,
+                            'email' => $m->email,
+                            'kode' => $m->kode_mitra,
+                            'phone' => $m->phone_wa,
+                            'total_gram' => (float) $items->sum('jumlah_gram'),
+                            'last_created' => $items->max('created_at'),
+                        ];
+                    })
+                    ->values();
             @endphp
             <div class="row g-3 mb-3">
                 <div class="col-md-3"><strong>Total Gram PO</strong><br>{{ number_format((float)$po->total_gram, 3, ',', '.') }} g</div>
                 <div class="col-md-3"><strong>Sudah Dialokasikan</strong><br>{{ number_format($allocated, 3, ',', '.') }} g</div>
                 <div class="col-md-3"><strong>Sisa Gram PO</strong><br>{{ number_format($remainingPo, 3, ',', '.') }} g</div>
                 <div class="col-md-3"><strong>Status</strong><br>{{ strtoupper($po->status) }}</div>
+                <div class="col-md-12">
+                    <strong>Mitra (Assigned)</strong>
+                    @if(($assignedSummary ?? collect())->count() > 0)
+                        <div class="table-responsive mt-2">
+                            <table class="table table-sm table-bordered table-striped table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Nama</th>
+                                        <th>Kode Mitra</th>
+                                        <th>Email</th>
+                                        <th>WhatsApp</th>
+                                        <th>Dialokasikan (g)</th>
+                                        <th>Created At</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($assignedSummary as $row)
+                                        <tr>
+                                            <td>{{ $row['nama'] ?? '-' }}</td>
+                                            <td>{{ $row['kode'] ?? '-' }}</td>
+                                            <td>{{ $row['email'] ?? '-' }}</td>
+                                            <td>{{ $row['phone'] ?? '-' }}</td>
+                                            <td>{{ number_format((float)($row['total_gram'] ?? 0), 3, ',', '.') }}</td>
+                                            <td>{{ optional($row['last_created'])->format('Y-m-d H:i') ?? '-' }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <br>-
+                    @endif
+                </div>
             </div>
 
             @if (in_array($po->status, ['paid','processing','ready_at_agen','shipped','completed']))
@@ -197,6 +335,88 @@
             @endif
         </div>
     </div>
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0 fs-5"># Data Pengiriman</h6>
+                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditShipping">Edit</button>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <strong>Nama</strong>
+                    <div class="mt-1">{{ $po->shipping_name ?? '-' }}</div>
+                </div>
+                <div class="col-md-6">
+                    <strong>WhatsApp</strong>
+                    <div class="mt-1">{{ $po->shipping_phone ?? '-' }}</div>
+                </div>
+                <div class="col-md-12">
+                    <strong>Alamat</strong>
+                    <div class="mt-1">{{ $po->shipping_address ?? '-' }}</div>
+                </div>
+                <div class="col-md-4">
+                    <strong>Kota</strong>
+                    <div class="mt-1">{{ $po->shipping_city ?? '-' }}</div>
+                </div>
+                <div class="col-md-4">
+                    <strong>Provinsi</strong>
+                    <div class="mt-1">{{ $po->shipping_province ?? '-' }}</div>
+                </div>
+                <div class="col-md-4">
+                    <strong>Kode Pos</strong>
+                    <div class="mt-1">{{ $po->shipping_postal_code ?? '-' }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalEditShipping" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Data Pengiriman</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('admin.trans.po.update-shipping', $po) }}" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nama</label>
+                                <input type="text" name="shipping_name" class="form-control" value="{{ $po->shipping_name }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">WhatsApp</label>
+                                <input type="text" name="shipping_phone" class="form-control" value="{{ $po->shipping_phone }}">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Alamat</label>
+                                <textarea name="shipping_address" rows="2" class="form-control" required>{{ $po->shipping_address }}</textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Kota</label>
+                                <input type="text" name="shipping_city" class="form-control" value="{{ $po->shipping_city }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Provinsi</label>
+                                <input type="text" name="shipping_province" class="form-control" value="{{ $po->shipping_province }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Kode Pos</label>
+                                <input type="text" name="shipping_postal_code" class="form-control" value="{{ $po->shipping_postal_code }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+   
      
     <div class="card shadow-sm">
         <div class="card-body">

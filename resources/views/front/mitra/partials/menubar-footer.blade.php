@@ -1,10 +1,21 @@
 <div class="menubar-footer footer-fixed" style="position: fixed; bottom: 0; left: 0; right: 0; z-index: 1030;">
     <ul class="inner-bar">
-        <li class="{{ ($active ?? '') === 'dashboard' ? 'active active-tab' : '' }}">
+           <li class="{{ ($active ?? '') === 'dashboard' ? 'active active-tab' : '' }}">
             <a href="{{ route('mitra.dashboard') }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 19v-6.733a4 4 0 0 0-1.245-2.9L13.378 3.31a2 2 0 0 0-2.755 0L4.245 9.367A4 4 0 0 0 3 12.267V19a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2"/></svg>
             </a>
         </li>
+        <li class="{{ ($active ?? '') === 'calendar' ? 'active active-tab' : '' }}">
+            <a href="{{ route('mitra.calendar') }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path stroke-linecap="round" d="M16 3v4M8 3v4M3 10h18"/></g></svg>
+            </a>
+        </li>
+        <li class="action-add {{ ($active ?? '') === 'komisi-add' ? 'center-active' : '' }}"><a href="{{ $poHref ?? route('mitra.dashboard') }}">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12H18" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 18V6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </a></li>
         <li class="{{ ($active ?? '') === 'komisi' ? 'active active-tab' : '' }}">
             <a href="{{ route('mitra.komisi.index') }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 10v8M12 6v12M17 13v5" stroke-linecap="round"/></g></svg>

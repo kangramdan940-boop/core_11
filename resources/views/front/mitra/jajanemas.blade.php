@@ -41,16 +41,16 @@
                     <h5 class="mb-2">1. Kualifikasi Mitra</h5>
                     <ul class="mb-0">
                         <li>Memiliki identitas resmi dan kontak yang valid.</li>
-                        <li>Memiliki kemampuan operasional dasar untuk layanan penjualan/pengiriman emas.</li>
-                        <li>Bersedia mengikuti peraturan internal dan kebijakan yang berlaku.</li>
+                        <li>Memiliki kemampuan Brankas Antam yang valid.</li>
+                        <li>Domisili sesuai dengan KTP</li>
                     </ul>
                 </div>
 
                 <div class="card card-body mb-3">
                     <h5 class="mb-2">2. Pendaftaran & Aktivasi</h5>
                     <ul class="mb-0">
-                        <li>Pendaftaran dilakukan melalui kanal resmi JajanEmas.</li>
-                        <li>Aktivasi akun dilakukan setelah proses verifikasi oleh tim JajanEmas.</li>
+                        <li>Pendaftaran dilakukan melalui kanal resmi JajanEmas.com</li>
+                        <li>Mengirim bukti brankas antam masih berlaku, mengirim domisili sesuai dengan KTP, menyertakan nomor whatsapp</li>
                         <li>JajanEmas berhak menolak pendaftaran tanpa kewajiban memberikan alasan.</li>
                     </ul>
                 </div>
@@ -58,8 +58,8 @@
                 <div class="card card-body mb-3">
                     <h5 class="mb-2">3. Tanggung Jawab Mitra</h5>
                     <ul class="mb-0">
+                        <li>Menyelesaikan Tugas mendapatkan antam setiap hari.</li>
                         <li>Menjaga akurasi informasi dan kerahasiaan akun.</li>
-                        <li>Mematuhi standar layanan, termasuk waktu proses dan kualitas pelayanan kepada pelanggan.</li>
                         <li>Tidak melakukan praktik yang melanggar hukum atau merugikan pelanggan.</li>
                     </ul>
                 </div>
@@ -67,7 +67,7 @@
                 <div class="card card-body mb-3">
                     <h5 class="mb-2">4. Komisi & Pembayaran</h5>
                     <ul class="mb-0">
-                        <li>Besaran komisi mengikuti ketentuan pada sistem dan dapat berubah sewaktu-waktu.</li>
+                        <li>Besaran komisi mengikuti ketentuan pada system dan dapat berubah sewaktu-waktu.</li>
                         <li>Pembayaran komisi dilakukan sesuai siklus yang ditetapkan dan bukti transaksi yang sah.</li>
                     </ul>
                 </div>

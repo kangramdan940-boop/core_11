@@ -20,8 +20,10 @@ use App\Http\Controllers\Admin\TransPoController;
 use App\Http\Controllers\Admin\TransCicilanController;
 use App\Http\Controllers\Admin\TransReadyController;
 use App\Http\Controllers\Admin\TransCicilanPaymentController;
+use App\Http\Controllers\Admin\MitraWithdrawalController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\LoginManagementController;
 
 use App\Http\Controllers\Front\CustomerAuthController;
 use App\Http\Controllers\Front\MitraAuthController;
@@ -69,6 +71,10 @@ Route::prefix('customer')->name('customer.')->group(function () {
         Route::put('/profile', [FrontController::class, 'updateCustomerProfile'])->name('profile.update');
         Route::get('/all-order', [FrontController::class, 'customerAllOrders'])->name('all-order');
 
+        // Proxy API
+        Route::get('/api/jne/cities', [FrontController::class, 'jneCities'])->name('api.jne.cities');
+        Route::get('/api/jne/shipping-fee', [FrontController::class, 'jneShippingFee'])->name('api.jne.shipping-fee');
+
         // PO / Pre-order emas
         Route::get('/po/create', [FrontController::class, 'customerPoCreate'])->name('po.create');
         Route::get('/pre-order-emas', [FrontController::class, 'customerPoCreate'])->name('pre-order-emas');
@@ -76,6 +82,7 @@ Route::prefix('customer')->name('customer.')->group(function () {
         Route::post('/po', [CustomerPoController::class, 'store'])->name('po.store');
         Route::get('/po/{po}', [CustomerPoController::class, 'show'])->name('po.show');
         Route::post('/po/{po}/confirm-payment', [CustomerPoController::class, 'confirmPayment'])->name('po.confirm-payment');
+        Route::post('/po/{po}/notify-transfer', [CustomerPoController::class, 'notifyTransfer'])->name('po.notify-transfer');
 
         // Ready
         Route::get('/ready', [CustomerReadyController::class, 'index'])->name('ready.index');
@@ -119,6 +126,12 @@ Route::prefix('mitra')->name('mitra.')->group(function () {
         Route::get('/komisi', [FrontController::class, 'mitraKomisiIndex'])->name('komisi.index');
         Route::get('/profile', [FrontController::class, 'mitraProfile'])->name('profile');
         Route::put('/profile', [FrontController::class, 'updateMitraProfile'])->name('profile.update');
+        Route::get('/calendar', [FrontController::class, 'mitraCalendar'])->name('calendar');
+        Route::get('/calendar/data', [FrontController::class, 'mitraCalendarData'])->name('calendar.data');
+        Route::get('/calendar/day/{date}', [FrontController::class, 'mitraCalendarDay'])->name('calendar.day');
+
+        Route::get('/withdrawals/request', [\App\Http\Controllers\Front\MitraWithdrawalController::class, 'create'])->name('withdrawals.create');
+        Route::post('/withdrawals', [\App\Http\Controllers\Front\MitraWithdrawalController::class, 'store'])->name('withdrawals.store');
 
         Route::post('/logout', [MitraAuthController::class, 'logout'])->name('logout');
     });
@@ -139,6 +152,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware(['auth', 'admin_or_agen'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard/stats', [DashboardController::class, 'stats'])->name('dashboard.stats');
+        Route::get('/email-logs', [\App\Http\Controllers\Admin\EmailLogController::class, 'index'])->name('email-logs.index');
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
     });
 
@@ -162,6 +176,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
                     'customers' => 'customer',
                 ]);
 
+            Route::get('customers/{customer}/set-password', [MasterCustomerController::class, 'setPasswordForm'])
+                ->name('customers.set-password')
+                ->middleware('admin');
+            Route::post('customers/{customer}/set-password', [MasterCustomerController::class, 'setPasswordUpdate'])
+                ->name('customers.set-password.update')
+                ->middleware('admin');
+
             // Mitra Brankas — param {mitra}
             Route::resource('mitra-brankas', MitraBrankasController::class)
                 ->except(['show'])
@@ -169,6 +190,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->parameters([
                     'mitra-brankas' => 'mitra',
                 ]);
+
+            Route::get('mitra-brankas/{mitra}/set-password', [MitraBrankasController::class, 'setPasswordForm'])
+                ->name('mitra-brankas.set-password')
+                ->middleware('admin');
+            Route::post('mitra-brankas/{mitra}/set-password', [MitraBrankasController::class, 'setPasswordUpdate'])
+                ->name('mitra-brankas.set-password.update')
+                ->middleware('admin');
 
             // Agens — param {agen}
             Route::resource('agens', MasterAgenController::class)
@@ -262,6 +290,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
                     'settings' => 'setting',
                 ])
                 ->middleware('admin');
+
+            Route::resource('mobile-app-configs', \App\Http\Controllers\Admin\MasterMobileAppConfigController::class)
+                ->except(['show'])
+                ->names('mobile-app-configs')
+                ->parameters([
+                    'mobile-app-configs' => 'config',
+                ])
+                ->middleware('admin');
         });
 
         /*
@@ -288,6 +324,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 Route::post('/{po}/approve-payment', [TransPoController::class, 'approvePayment'])->name('approve-payment');
                 Route::post('/{po}/reject-payment', [TransPoController::class, 'rejectPayment'])->name('reject-payment');
                 Route::post('/{po}/status', [TransPoController::class, 'updateStatus'])->name('update-status');
+                Route::post('/{po}/shipping', [TransPoController::class, 'updateShipping'])->name('update-shipping');
+                Route::post('/{po}/send-email', [TransPoController::class, 'sendPaidEmail'])->name('send-email');
                 Route::post('/cancel-pending', [TransPoController::class, 'cancelPendingAll'])->name('cancel-pending-all');
 
                 // Mitra Komisi assign/remove (nama & URL sama seperti awal)
@@ -295,6 +333,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
                     ->name('mitra-komisi.store');
                 Route::delete('mitra-komisi/{assignment}', [\App\Http\Controllers\Admin\TransPoMitraKomisiController::class, 'destroy'])
                     ->name('mitra-komisi.destroy');
+
+                // Biaya Mobilitas
+                Route::post('{po}/mobilitas', [\App\Http\Controllers\Admin\TransPoMobilitasController::class, 'store'])
+                    ->name('mobilitas.store');
             });
 
             // Cicilan
@@ -316,7 +358,24 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->name('cicilan-payments.index');
             Route::get('/cicilan-payments/{payment}', [TransCicilanPaymentController::class, 'show'])
                 ->name('cicilan-payments.show');
+
+            // Mitra Withdrawals
+            Route::get('/mitra-withdrawals', [MitraWithdrawalController::class, 'index'])
+                ->name('mitra-withdrawals.index');
+            Route::get('/mitra-withdrawals/{withdrawal}', [MitraWithdrawalController::class, 'show'])
+                ->name('mitra-withdrawals.show');
+            Route::post('/mitra-withdrawals/{withdrawal}/status', [MitraWithdrawalController::class, 'updateStatus'])
+                ->name('mitra-withdrawals.update-status');
+            Route::post('/mitra-withdrawals/{withdrawal}/upload-proof', [MitraWithdrawalController::class, 'uploadProof'])
+                ->name('mitra-withdrawals.upload-proof');
         });
+
+        Route::get('/login-management', [LoginManagementController::class, 'index'])
+            ->name('login-management.index')
+            ->middleware('admin');
+        Route::post('/login-management/kick', [LoginManagementController::class, 'kick'])
+            ->name('login-management.kick')
+            ->middleware('admin');
 
         /*
         |--------------------------------------------------------------------------
@@ -333,4 +392,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
             ->names('roles')
             ->middleware('admin');
     });
+});
+
+Route::prefix('v1/public')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->group(function () {
+    Route::get('/mobile-informations', [\App\Http\Controllers\Api\MobileInformationController::class, 'show'])->name('public.mobile-informations');
+    Route::post('/customer/register', [\App\Http\Controllers\Api\CustomerAuthApiController::class, 'register'])->name('public.customer.register');
+    Route::post('/customer/login', [\App\Http\Controllers\Api\CustomerAuthApiController::class, 'login'])->name('public.customer.login');
 });

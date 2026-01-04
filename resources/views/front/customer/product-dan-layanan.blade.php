@@ -88,10 +88,15 @@
                                 <div class="content">
                                     <div class="h7 text-dark">
                                         <a href="{{ ($p->is_allow_po ? route('customer.po.create', ['pid' => encrypt((string)$p->id)]) : ($p->is_allow_ready ? route('customer.ready.index') : '#')) }}">
-                                            {{ $p->gramasi?->nama ?? 'Produk' }} {{ number_format((float) ($p->gramasi?->gramasi ?? 0), 3) }} gr
+                                            {{ $p->gramasi?->nama ?? 'Produk' }} {{ number_format((float) ($p->gramasi?->gramasi ?? 0), 3) }} gr <span style="font-family: monospace !important;"> (Harga : Rp {{ number_format((float) (($p->harga_hariini ?? 0) + ($p->harga_jasa ?? 0)), 0) }})</span>
                                         </a>
+                                       
                                     </div>
                                     <div class="box-map-date">
+                                        <div class="d-flex gap-4 align-items-center">
+                                            <i class="icon icon-wallet-2 text-primary"></i>
+                                            <span class="body-3 text-dark-4">Harga: Rp {{ number_format((float) ($p->harga_hariini ?? 0), 0) }}</span>
+                                        </div>
                                         <div class="d-flex gap-4 align-items-center">
                                             <i class="icon icon-wallet-2 text-primary"></i>
                                             <span class="body-3 text-dark-4">Jasa: Rp {{ number_format((float) ($p->harga_jasa ?? 0), 0) }}</span>
@@ -99,13 +104,20 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="box-btn">
-                                @if($p->is_allow_po)
-                                    <a href="{{ route('customer.po.create', ['pid' => encrypt((string)$p->id)]) }}" class="btn-app button-1">Jastip Emas</a>
-                                @endif
-                                @if($p->is_allow_ready)
-                                    <a href="{{ route('customer.ready.index') }}" class="btn-app button-1 view-app">Emas Ready</a>
-                                @endif
+                            <div class="">
+                                @php $hasPo = (bool)($p->is_allow_po ?? false); $hasReady = (bool)($p->is_allow_ready ?? false); $colClass = ($hasPo && $hasReady) ? 'col-6' : 'col-12'; @endphp
+                                <div class="row g-2">
+                                    @if($hasPo)
+                                        <div class="{{ $colClass }}">
+                                            <a href="{{ route('customer.po.create', ['pid' => encrypt((string)$p->id)]) }}" class="btn-app button-1 w-100">Jastip Emas</a>
+                                        </div>
+                                    @endif
+                                    @if($hasReady)
+                                        <div class="{{ $colClass }}">
+                                            <a href="{{ route('customer.ready.index') }}" class="btn-app button-1 view-app w-100">Emas Ready</a>
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     @endforeach

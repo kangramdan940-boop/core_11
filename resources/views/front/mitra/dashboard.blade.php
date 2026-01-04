@@ -56,7 +56,7 @@
 
     <div class="app-content style-2">
         <div class="tf-container">
-            <div id="profil" class="mt-24">
+            <div id="profil">
                 <div class="brankas-card" style="display:flex;border-radius:16px;overflow:hidden;background:#0d1f36;height:240px;">
                     <div style="flex:1;background:#0b1a2d;color:#fff;padding:16px;display:flex;flex-direction:column;justify-content:space-between;">
                         <div>
@@ -106,7 +106,21 @@
                 @else
                 @endif
 
-                <div id="alokasi-komisi" class="card shadow-sm p-3 mt-16">
+                <div id="withdrawal-komisi" class="card shadow-sm p-3 mt-16">
+                    <h5 class="mb-2">Withdrawal Komisi</h5>
+                    <div class="row g-3 mb-2">
+                        <div class="col-6"><strong>Saldo Tersedia</strong><br>Rp {{ number_format((float)($saldoKomisi ?? 0), 2, ',', '.') }}</div>
+                        <div class="col-6"><strong>Sedang Diproses</strong><br>Rp {{ number_format((float)($wdPendingAmount ?? 0), 2, ',', '.') }}</div>
+                        <div class="col-6"><strong>Sukses WD</strong><br>Rp {{ number_format((float)($wdCompletedAmount ?? 0), 2, ',', '.') }}</div>
+                        @php $totalKomisiAll = (float)($saldoKomisi ?? 0) + (float)($wdPendingAmount ?? 0) + (float)($wdCompletedAmount ?? 0); @endphp
+                        <div class="col-6"><strong>Total Komisi</strong><br>Rp {{ number_format($totalKomisiAll, 2, ',', '.') }}</div>
+                    </div>
+                    <div class="mt-2">
+                        <a href="{{ route('mitra.withdrawals.create') }}" class="btn btn-primary w-100">Request WD</a>
+                    </div>
+                </div>
+
+                <div id="alokasi-komisi" class="card shadow-sm p-3 mt-16" style="margin-bottom: 70px;">
                     <h5 class="mb-2">Komisi Saya (Terbaru)</h5>
                     <div class="row g-3 mb-2">
                         <div class="col-6"><strong>Limit Harian</strong><br>{{ number_format((float)($limitHarian ?? 0), 3, ',', '.') }} g</div>
@@ -116,7 +130,7 @@
                         @forelse(($assignments ?? []) as $a)
                             <div class="box-app">
                                 <div class="info-box mb-0">
-                                    <a href="javascript:void(0);" class="logo">
+                                    <a href="{{ route('mitra.calendar.day', ['date' => optional($a->tanggal_komisi)->format('Y-m-d')]) }}" class="logo">
                                         <img src="{{ asset('front/images/golds/antam_1.jpg') }}" alt="logo">
                                     </a>
                                     <div class="content">
@@ -124,7 +138,7 @@
                                             <div class="info">
                                                 <span class="body-6">{{ optional($a->tanggal_komisi)->format('Y-m-d') ?? '-' }}</span>
                                                 <div class="h7 text-dark">
-                                                    <a href="javascript:void(0);">{{ optional($a->po)->kode_po ?? '-' }}</a>
+                                                    <a href="{{ route('mitra.calendar.day', ['date' => optional($a->tanggal_komisi)->format('Y-m-d')]) }}">{{ optional($a->po)->kode_po ?? '-' }}</a>
                                                 </div>
                                                 <div class="body-6 text-dark-4">
                                                     {{ number_format((float)$a->jumlah_gram, 3, ',', '.') }} g • {{ number_format((float)$a->komisi_persen, 2, ',', '.') }}% • Rp {{ number_format((float)$a->komisi_amount, 2, ',', '.') }}

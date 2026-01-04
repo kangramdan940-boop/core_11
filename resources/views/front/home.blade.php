@@ -62,7 +62,7 @@
                          <div class="content-boarding text-center">
                              <h1 class="title">{!! nl2br(e($slide['title'])) !!}</h1>
                              @if(!empty($slide['description']))
-                             <p class="desc">{!! nl2br(e($slide['description'])) !!}</p>
+                             <p class="desc">{!! $slide['description'] !!}</p>
                              @endif
                          </div>
                      </div>
@@ -80,12 +80,12 @@
          </div>
          <div class="fixed-button group-btn-boarding">
             <div class="row g-2">
-                <div class="col-8 text-center">
+                <div class="col-12 text-center">
                     <a href="{{ route('customer.login') }}" class="tf-btn primary d-block w-100 mb-0">Beli Emas</a>
                 </div>
-                <div class="col-4 text-center">
+               <!-- <div class="col-4 text-center">
                     <a href="{{ route('mitra.jajanemas') }}" class="tf-btn primary d-block w-100 mb-0">Mekanisme Mitra Jajanemas</a>
-                </div>
+                </div> -->
             </div>
         </div>
      </section>

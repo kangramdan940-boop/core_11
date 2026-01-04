@@ -46,6 +46,9 @@
                                 <a href="{{ route('admin.master.mitra-brankas.edit', $m) }}" class="btn icon-btn-sm btn-light-primary">
                                     <i class="ri-pencil-line"></i>
                                 </a>
+                                <a href="{{ route('admin.master.mitra-brankas.set-password', $m) }}" class="btn icon-btn-sm btn-light-warning" title="Set Password Sys User">
+                                    <i class="ri-key-2-line"></i>
+                                </a>
                                 <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
                                     data-action="{{ route('admin.master.mitra-brankas.destroy', $m) }}"
                                     data-label="{{ $m->nama_lengkap ? $m->nama_lengkap : ('#' . $m->id) }}">

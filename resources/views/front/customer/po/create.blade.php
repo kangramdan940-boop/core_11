@@ -24,6 +24,38 @@
             document.documentElement.classList.add('dark-theme');
         }
     </script>
+    <style>
+        @keyframes bounce-vertical {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .shipping-alert-bubble {
+            animation: bounce-vertical 1s infinite;
+            background: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            white-space: nowrap;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            position: absolute;
+            top: -45px;
+            right: 0;
+            z-index: 10;
+            display: none;
+        }
+        .shipping-alert-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            right: 20px;
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid #dc3545;
+        }
+    </style>
 </head>
 
 <body>
@@ -86,7 +118,7 @@
                                 }
                             @endphp
                             @foreach($produkPo as $p)
-                                <option value="{{ encrypt((string)$p->id) }}" data-harga="{{ (float)($p->harga_hariini ?? 0) }}" data-gram="{{ (float)optional($p->gramasi)->gramasi }}" {{ (string)$selectedId === (string)$p->id ? 'selected' : '' }}>
+                                <option value="{{ encrypt((string)$p->id) }}" data-harga="{{ (float)($p->harga_hariini ?? 0) }}" data-jasa="{{ (float)($p->harga_jasa ?? 0) }}" data-gram="{{ (float)optional($p->gramasi)->gramasi }}" {{ (string)$selectedId === (string)$p->id ? 'selected' : '' }}>
                                     {{ optional($p->gramasi)->nama }} - {{ number_format((float)optional($p->gramasi)->gramasi, 3, ',', '.') }} gram
                                 </option>
                             @endforeach
@@ -105,10 +137,65 @@
                             <option value="3" @selected(old('qty','1')=='3')>3 pcs</option>
                             <option value="4" @selected(old('qty','1')=='4')>4 pcs</option>
                             <option value="5" @selected(old('qty','1')=='5')>5 pcs</option>
+                            <option value="6" @selected(old('qty','1')=='6')>6 pcs</option>
+                            <option value="7" @selected(old('qty','1')=='7')>7 pcs</option>
+                            <option value="8" @selected(old('qty','1')=='8')>8 pcs</option>
+                            <option value="9" @selected(old('qty','1')=='9')>9 pcs</option>
+                            <option value="10" @selected(old('qty','1')=='10')>10 pcs</option>
+                            <option value="11" @selected(old('qty','1')=='11')>11 pcs</option>
+                            <option value="12" @selected(old('qty','1')=='12')>12 pcs</option>
+                            <option value="13" @selected(old('qty','1')=='13')>13 pcs</option>
+                            <option value="14" @selected(old('qty','1')=='14')>14 pcs</option>
+                            <option value="15" @selected(old('qty','1')=='15')>15 pcs</option>
+                            <option value="16" @selected(old('qty','1')=='16')>16 pcs</option>
+                            <option value="17" @selected(old('qty','1')=='17')>17 pcs</option>
+                            <option value="18" @selected(old('qty','1')=='18')>18 pcs</option>
+                            <option value="19" @selected(old('qty','1')=='19')>19 pcs</option>
+                            <option value="20" @selected(old('qty','1')=='20')>20 pcs</option>
                         </select>
                         @error('gramasi_emas')<div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                     </fieldset>
+                </div>
+                <div class="form-field form-2 mt-24">
+                    <div class="label h7">Metode Pengiriman</div>
+                    <fieldset class="mt-12 d-flex gap-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="delivery_type" id="delivery_ship" value="ship" checked>
+                            <label class="form-check-label" for="delivery_ship">
+                                Pakai Ekspedisi
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="delivery_type" id="delivery_pickup" value="pickup">
+                            <label class="form-check-label" for="delivery_pickup">
+                                Ambil Sendiri
+                            </label>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div id="shipping-section" class="form-field form-2 mt-24 position-relative">
+                    <div class="label h7">Kota Tujuan Pengiriman</div>
+                    <fieldset class="mt-12 d-flex gap-2">
+                        <div class="position-relative w-100">
+                            <input type="text" id="shipping_city_input" name="shipping_city" class="form-control" placeholder="Masukan Kota Tujuan (min. 4 huruf)" value="{{ old('shipping_city') }}" autocomplete="off">
+                            <input type="hidden" name="shipping_city_code" id="shipping_city_code" value="{{ old('shipping_city_code') }}">
+                            <div id="city-results" class="list-group position-absolute w-100 start-0" style="display:none; z-index: 1000; max-height: 250px; overflow-y: auto; top: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></div>
+                        </div>
+                        <div class="position-relative" style="flex-shrink: 0;">
+                            <div id="shipping-indicator" class="shipping-alert-bubble">
+                                👇 Klik "Hitung" di sini!
+                            </div>
+                            <button type="button" id="btnCheckOngkir" class="tf-btn primary" style="width: auto; padding: 0 20px; height: 100%;">Hitung</button>
+                        </div>
+                    </fieldset>
+                    <div id="jne-result" class="mt-20" style="display:none;">
+                        <div class="label h7 mb-12">Pilih Layanan Pengiriman</div>
+                        <select id="shipping_service" name="shipping_service" class="form-select">
+                        </select>
+                        <input type="hidden" name="shipping_cost" id="shipping_cost" value="0">
+                    </div>
                 </div>
                 <div class="card-body mt-20">
                     <div class="alert alert-primary light alert-dismissible fade show mb-10" role="alert">
@@ -118,7 +205,10 @@
                                 <span class="fw-semibold">Estimasi Bayar</span>
                                 <span id="estimasiTotal" class="fw-bold text-success fs-3 lh-1">Rp 0</span>
                             </div>
-                            <div class="small text-muted fw-semibold">Per item: <span id="estimasiHarga">Rp 0</span> × <span id="estimasiQty">1</span> pcs</div>
+                            <div class="small text-muted fw-semibold">
+                                Per item: <span id="estimasiHarga">Rp 0</span> × <span id="estimasiQty">1</span> pcs<br>
+                                <span id="ongkirInfo" style="display:none;">+ Ongkir: <span id="ongkirVal">Rp 0</span></span>
+                            </div>
                         </div>
                     </div>
                 </div>      
@@ -134,7 +224,7 @@
                     </div>
                 </div>        
                 <div class="mt-24">
-                    <button class="tf-btn primary">Lanjutkan</button>
+                    <button id="btnSubmit" class="tf-btn primary">Lanjutkan</button>
                 </div>
             </form>
 
@@ -154,16 +244,181 @@
                 var $prod = $('select[name="id_master_produk_dan_layanan"]');
                 var opt = $prod.find('option:selected');
                 var harga = Number(opt.data('harga')) || 0;
+                var jasa = Number(opt.data('jasa')) || 0;
                 var gram = Number(opt.data('gram')) || 0;
                 var qty = Number($('#qty').val()) || 1;
-                $('#estimasiHarga').text(formatIDR(harga));
+                var ongkir = Number($('#shipping_cost').val()) || 0;
+
+                var perItem = harga + jasa;
+                var total = (perItem * qty) + ongkir;
+
+                $('#estimasiHarga').text(formatIDR(perItem));
                 $('#estimasiQty').text(qty);
-                $('#estimasiTotal').text(formatIDR(harga * qty));
+                $('#estimasiTotal').text(formatIDR(total));
                 $('#totalGram').val((gram * qty).toFixed(3));
+                
+                if(ongkir > 0) {
+                    $('#ongkirVal').text(formatIDR(ongkir));
+                    $('#ongkirInfo').show();
+                } else {
+                    $('#ongkirInfo').hide();
+                }
             }
             $(document).ready(function(){
                 $('select[name="id_master_produk_dan_layanan"], #qty').on('change', updateEstimasi);
                 updateEstimasi();
+
+                // Delivery Type Toggle
+                $('input[name="delivery_type"]').on('change', function() {
+                    var type = $('input[name="delivery_type"]:checked').val();
+                    if (type === 'pickup') {
+                        $('#shipping-section').hide();
+                        $('#shipping_cost').val(0);
+                        updateEstimasi();
+                    } else {
+                        $('#shipping-section').show();
+                        var cost = $('#shipping_cost').val();
+                        updateEstimasi();
+                    }
+                });
+
+                // JNE City Search
+                var searchTimer;
+                $('#shipping_city_input').on('input', function() {
+                    var query = $(this).val();
+                    var $results = $('#city-results');
+                    
+                    clearTimeout(searchTimer);
+                    
+                    if(query.length >= 4) {
+                        searchTimer = setTimeout(function() {
+                            $.ajax({
+                                url: '{{ route("customer.api.jne.cities") }}',
+                                data: { search: query },
+                                method: 'GET',
+                                success: function(response) {
+                                    if(response.status && response.data && response.data.length > 0) {
+                                        var html = '';
+                                        $.each(response.data, function(i, item){
+                                            html += '<a href="#" class="list-group-item list-group-item-action city-item" data-code="'+item.code+'" data-label="'+item.label+'">'+item.label+'</a>';
+                                        });
+                                        $results.html(html).show();
+                                    } else {
+                                        $results.hide();
+                                    }
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error('Error fetching cities:', error);
+                                    // Fallback or silence? Keep silent for UI, user can still type manually if needed
+                                    $results.hide();
+                                }
+                            });
+                        }, 500);
+                    } else {
+                        $results.hide();
+                    }
+                });
+
+                $(document).on('click', '.city-item', function(e) {
+                    e.preventDefault();
+                    var label = $(this).data('label');
+                    var code = $(this).data('code');
+                    $('#shipping_city_input').val(label);
+                    $('#shipping_city_code').val(code);
+                    $('#city-results').hide();
+                });
+
+                // Hide dropdown when clicking outside
+                $(document).on('click', function(e) {
+                    if (!$(e.target).closest('.form-field').length) {
+                        $('#city-results').hide();
+                    }
+                });
+
+                // Button Hitung Ongkir Handler
+                $('#btnCheckOngkir').on('click', function() {
+                    $('#shipping-indicator').fadeOut(); // Hide indicator
+                    var code = $('#shipping_city_code').val();
+                    if(!code) {
+                        alert('Silakan pilih kota tujuan terlebih dahulu dari dropdown pencarian.');
+                        return;
+                    }
+                    
+                    var $btn = $(this);
+                    var originalText = $btn.text();
+                    $btn.prop('disabled', true).text('Loading...');
+
+                    $.ajax({
+                        url: '{{ route("customer.api.jne.shipping-fee") }}',
+                        method: 'GET',
+                        data: { destination: code },
+                        success: function(response) {
+                            if(response.status && response.data && response.data.length > 0) {
+                                var $select = $('#shipping_service');
+                                $select.empty().append('');
+                                
+                                var hasReg = false;
+                                $.each(response.data, function(i, item){
+                                    if(item.service === 'REG') hasReg = true;
+                                    $select.append($('<option>', {
+                                        value: item.price,
+                                        text: item.label,
+                                        'data-service': item.service,
+                                        'data-etd': item.etd
+                                    }));
+                                });
+                                
+                                if(hasReg) {
+                                    $select.find('option').each(function(){
+                                        var isReg = $(this).data('service') === 'REG';
+                                        $(this).prop('disabled', !isReg);
+                                        if(isReg) $(this).prop('selected', true);
+                                    });
+                                } else {
+                                    $select.find('option').prop('disabled', false).first().prop('selected', true);
+                                }
+                                
+                                $select.trigger('change');
+                                $('#jne-result').show();
+                            } else {
+                                alert('Tidak ada layanan pengiriman yang tersedia.');
+                            }
+                        },
+                        error: function(xhr) {
+                            console.error('Error fetching shipping fee:', xhr);
+                            alert('Gagal mengambil ongkir. Coba lagi nanti.');
+                        },
+                        complete: function() {
+                            $btn.prop('disabled', false).text(originalText);
+                        }
+                    });
+                });
+
+                $('#shipping_service').on('change', function() {
+                    var cost = $(this).val();
+                    $('#shipping_cost').val(cost);
+                    updateEstimasi();
+                });
+
+                // Submit Button Handler
+                $('#btnSubmit').on('click', function(e) {
+                    var type = $('input[name="delivery_type"]:checked').val();
+                    if(type === 'ship') {
+                        var cost = $('#shipping_cost').val();
+                        if(!cost || parseFloat(cost) <= 0) {
+                            e.preventDefault();
+                            
+                            // Show indicator with animation
+                            $('#shipping-indicator').fadeIn();
+                            $('html, body').animate({
+                                scrollTop: $("#shipping-section").offset().top - 100
+                            }, 500);
+
+                            alert('Mohon klik tombol "Hitung" untuk melihat ongkos kirim terlebih dahulu.');
+                            return false;
+                        }
+                    }
+                });
             });
         })(jQuery);
     </script>

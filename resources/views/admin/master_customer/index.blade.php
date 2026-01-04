@@ -45,6 +45,9 @@
                                 <a href="{{ route('admin.master.customers.edit', $c) }}" class="btn icon-btn-sm btn-light-primary">
                                     <i class="ri-pencil-line"></i>
                                 </a>
+                                <a href="{{ route('admin.master.customers.set-password', $c) }}" class="btn icon-btn-sm btn-light-warning">
+                                    <i class="ri-key-2-line"></i>
+                                </a>
                                 <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
                                     data-action="{{ route('admin.master.customers.destroy', $c) }}"
                                     data-label="{{ $c->full_name ? $c->full_name : ($c->email ? $c->email : ('#' . $c->id)) }}">

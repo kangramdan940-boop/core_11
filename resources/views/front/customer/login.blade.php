@@ -15,7 +15,7 @@
     <!-- Favicon and Touch Icons  -->
     <link rel="shortcut icon" href="{{ asset('front/images/logo/168.png') }}" />
     <link rel="apple-touch-icon-precomposed" href="{{ asset('front/images/logo/168.png') }}" />
-    <title>Sign In</title>
+    <title>Masuk ke jajan emas</title>
     <script>
         if (localStorage.toggled === "dark-theme") {
             document.documentElement.classList.add('dark-theme');
@@ -59,11 +59,11 @@
             <div class="logo-account mt-20">
                 <img class="logo-white" src="{{ asset('front/images/logo/logo-light.png') }}" alt="">
             </div>
-            <p class="mt-16 body-2 text-dark-4">Give creadential to sign in your account</p>
+            <p class="mt-16 body-2 text-dark-4">Masukkan akunmu untuk masuk</p>
             <form method="post" action="{{ route('customer.login.submit') }}">
                 @csrf
                 @if ($errors->any())
-                    <div class="alert alert-danger mt-3">{{ $errors->first() }}</div>
+                    <div class="alert alert-danger light alert-dismissible fade show mb-10 mt-3">{{ $errors->first() }}</div>
                 @endif
                 <div class="mt-32 form-field">
                     <h6 class="label">Email</h6>
@@ -123,13 +123,13 @@
                 <div class="mt-20 d-flex justify-content-between">
                     <div class="box-check-remember">
                         <input class="tf-switch-check" id="checkRemember" type="checkbox" name="remember">
-                        <label for="checkRemember" class="body-2 text-dark-4">Remember Me</label>
+                        <label for="checkRemember" class="body-2 text-dark-4">Ingat login saya</label>
                     </div>
-                    <a href="{{ route('customer.forgot-password') }}" class="button-1 text-primary">Forgot Password?</a>
+                    <a href="{{ route('customer.forgot-password') }}" class="button-1 text-primary">Lupa Password?</a>
                 </div>
-                <button class="mt-40 tf-btn primary">Sign In</button>
+                <button class="mt-40 tf-btn primary">Masuk</button>
             </form>
-            <p class="mt-35 text-center body-2 text-dark-4">Don’t have account? <a href="{{ route('customer.register') }}" class="text-primary button-1">Sign Up</a></p>
+            <p class="mt-35 text-center body-2 text-dark-4">Tidak punya akun, ? <a href="{{ route('customer.register') }}" class="text-primary button-1">Daftar disini</a></p>
         </div>
 
     </div>

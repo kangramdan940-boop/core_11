@@ -20,6 +20,7 @@ class TransReady extends Model
         'qty',
         'harga_jual_satuan',
         'total_amount',
+        'shipping_cost',
         'status',
         'delivery_type',
         'shipping_name',
@@ -42,6 +43,7 @@ class TransReady extends Model
     protected $casts = [
         'harga_jual_satuan' => 'decimal:2',
         'total_amount'      => 'decimal:2',
+        'shipping_cost'     => 'decimal:2',
         'ordered_at'        => 'datetime',
         'paid_at'           => 'datetime',
         'shipped_at'        => 'datetime',
@@ -89,9 +91,10 @@ class TransReady extends Model
         float $hargaJualSatuan,
         string $deliveryType = 'ship',
         array $shipping = [],
-        ?string $catatan = null
+        ?string $catatan = null,
+        float $shippingCost = 0.0
     ): array {
-        $totalAmount = self::calculateAmount($hargaJualSatuan, $qty);
+        $totalAmount = self::calculateAmount($hargaJualSatuan, $qty) + $shippingCost;
 
         return [
             'kode_trans'                  => self::generateKodeTrans(),
@@ -102,6 +105,7 @@ class TransReady extends Model
             'qty'                         => $qty,
             'harga_jual_satuan'           => $hargaJualSatuan,
             'total_amount'                => $totalAmount,
+            'shipping_cost'               => $shippingCost,
             'status'                      => 'pending_payment',
             'delivery_type'               => $deliveryType,
             'shipping_name'               => $shipping['name'] ?? null,

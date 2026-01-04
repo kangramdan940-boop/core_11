@@ -65,6 +65,7 @@ class CustomerReadyController extends Controller
             'shipping_province'            => ['nullable', 'string', 'max:100'],
             'shipping_postal_code'         => ['nullable', 'string', 'max:10'],
             'catatan'                      => ['nullable', 'string'],
+            'shipping_cost'                => ['nullable', 'numeric', 'min:0'],
         ]);
 
         $data['qty'] = isset($data['qty']) ? (int)$data['qty'] : 1;
@@ -99,6 +100,8 @@ class CustomerReadyController extends Controller
             'postal_code' => $data['shipping_postal_code'],
         ];
 
+        $shippingCost = (float) ($data['shipping_cost'] ?? 0);
+
         $produkId = isset($data['id_master_produk_dan_layanan']) ? (int) $data['id_master_produk_dan_layanan'] : null;
         if (!$produkId) {
             $gramasi = MasterGramasiEmas::where('gramasi', $stock->gramasi)->first();
@@ -119,7 +122,8 @@ class CustomerReadyController extends Controller
             hargaJualSatuan: (float) $hargaJualSatuan,
             deliveryType: $data['delivery_type'],
             shipping: $shipping,
-            catatan: $data['catatan'] ?? null
+            catatan: $data['catatan'] ?? null,
+            shippingCost: $shippingCost
         );
         $attrs['id_master_gold_ready_stock'] = (int) $stock->id;
         $attrs['rekening_nomor'] = $stock->master_agen_id

@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\TransPo;
 use App\Models\TransPaymentLog;
 use App\Models\TransPoLog;
+use App\Models\TransPoMobilitas;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Mail;
 
 class TransPoController extends Controller
 {
@@ -15,6 +17,7 @@ class TransPoController extends Controller
     {
         $status = (string) $request->query('status', '');
         $dateFilter = (string) $request->query('date', '');
+        $createdDate = (string) $request->query('created_date', '');
 
         $query = TransPo::with(['customer', 'agen'])
             ->orderByDesc('id');
@@ -30,7 +33,27 @@ class TransPoController extends Controller
             $query->whereDate('created_at', now()->toDateString());
         }
 
-        $pos = $query->get();
+        if ($createdDate !== '') {
+            $query->whereDate('created_at', $createdDate);
+        }
+
+        $pos = $query->get()->map(function ($p) {
+            $waRaw = optional($p->customer)->phone_wa;
+            $waDigits = $waRaw ? preg_replace('/\D+/', '', $waRaw) : null;
+            if ($waDigits && substr($waDigits, 0, 1) === '0') {
+                $waDigits = '62' . substr($waDigits, 1);
+            }
+            $gramText = number_format((float) ($p->total_gram ?? 0), 3, ',', '.');
+            $amountText = number_format((float) ($p->total_amount ?? 0), 2, ',', '.');
+            $qtyText = number_format((int) ($p->qty ?? 0), 0, ',', '.');
+            $customerName = trim((string) (optional($p->customer)->full_name ?? ''));
+            $sapaan = $customerName !== '' ? ('Kak ' . $customerName) : 'Kak';
+            $waText = "Assalamu’alaikum " . $sapaan . " 🙏\n\nKami dari jajanemas.com ingin follow up transaksi emas berikut:\n\n📄 Kode Pesanan : " . ($p->kode_po ?? '-') . "\n⚖️ Emas        : " . $gramText . " gram\n📦 Qty         : " . $qtyText . "\n💰 Nominal TF  : Rp " . $amountText . "\n\nApakah transaksi akan dilanjutkan, dibatalkan,\natau ada kendala yang bisa kami bantu?\n\nTerima kasih 🙏\nTim jajanemas.com";
+            $p->wa_url = ($p->status === 'pending_payment' && $waDigits)
+                ? ('https://wa.me/' . $waDigits . '?text=' . rawurlencode($waText))
+                : null;
+            return $p;
+        });
 
         return view('admin.trans_po.index', compact('pos'));
     }
@@ -42,7 +65,11 @@ class TransPoController extends Controller
             ->orderByDesc('id')
             ->get();
 
-        return view('admin.trans_po.show', compact('po', 'paymentLogs'));
+        $mobilities = TransPoMobilitas::where('trans_po_id', $po->id)
+            ->orderByDesc('id')
+            ->get();
+
+        return view('admin.trans_po.show', compact('po', 'paymentLogs', 'mobilities'));
     }
 
     public function approvePayment(Request $request, TransPo $po)
@@ -150,6 +177,36 @@ class TransPoController extends Controller
         return redirect()->route('admin.trans.po.show', $po)->with('success', 'Status PO diperbarui.');
     }
 
+    public function updateShipping(Request $request, TransPo $po)
+    {
+        $data = $request->validate([
+            'shipping_name' => ['required', 'string', 'max:150'],
+            'shipping_phone' => ['nullable', 'string', 'max:30'],
+            'shipping_address' => ['required', 'string'],
+            'shipping_city' => ['nullable', 'string', 'max:100'],
+            'shipping_province' => ['nullable', 'string', 'max:100'],
+            'shipping_postal_code' => ['nullable', 'string', 'max:20'],
+        ]);
+
+        $po->fill([
+            'shipping_name' => $data['shipping_name'],
+            'shipping_phone' => $data['shipping_phone'] ?? null,
+            'shipping_address' => $data['shipping_address'],
+            'shipping_city' => $data['shipping_city'] ?? null,
+            'shipping_province' => $data['shipping_province'] ?? null,
+            'shipping_postal_code' => $data['shipping_postal_code'] ?? null,
+        ]);
+        $po->save();
+
+        TransPoLog::create([
+            'trans_po_id' => $po->id,
+            'status' => $po->status,
+            'description' => 'Update data pengiriman oleh ' . ($request->user()?->name ?? 'SYSTEM') . ' pada ' . now(),
+        ]);
+
+        return redirect()->route('admin.trans.po.show', $po)->with('success', 'Data pengiriman diperbarui.');
+    }
+
     public function cancelPendingAll(Request $request)
     {
         $count = 0;
@@ -165,5 +222,61 @@ class TransPoController extends Controller
         });
 
         return redirect()->route('admin.trans.po.index')->with('success', 'Berhasil membatalkan ' . $count . ' transaksi pending.');
+    }
+
+    public function sendPaidEmail(Request $request, TransPo $po)
+    {
+        if ($po->status !== 'paid') {
+            return back()->withErrors(['email' => 'Email hanya dapat dikirim untuk transaksi berstatus PAID.']);
+        }
+
+        $email = trim((string) optional($po->customer)->email);
+        if ($email === '') {
+            return back()->withErrors(['email' => 'Email pelanggan tidak tersedia.']);
+        }
+
+        $subject = 'Konfirmasi Pembayaran PO ' . ($po->kode_po ?? ('PO-' . $po->id));
+        $html = view('emails.po_paid', compact('po'))->render();
+
+        try {
+            Mail::html($html, function ($message) use ($email, $subject, $po) {
+                $message->to($email, (string) (optional($po->customer)->full_name ?? 'Pelanggan'))
+                        ->subject($subject);
+            });
+
+            \App\Models\EmailLog::create([
+                'recipient_email' => $email,
+                'recipient_name'  => optional($po->customer)->full_name,
+                'subject'         => $subject,
+                'status'          => 'success',
+                'mail_type'       => 'po_paid',
+                'related_type'    => get_class($po),
+                'related_id'      => $po->id,
+                'user_id'         => auth()->id(),
+            ]);
+
+            TransPoLog::create([
+                'trans_po_id' => $po->id,
+                'status'      => $po->status,
+                'description' => 'Email notifikasi pembayaran dikirim ke ' . $email . ' pada ' . now(),
+            ]);
+
+            return back()->with('success', 'Email notifikasi pembayaran telah dikirim.');
+
+        } catch (\Exception $e) {
+            \App\Models\EmailLog::create([
+                'recipient_email' => $email,
+                'recipient_name'  => optional($po->customer)->full_name,
+                'subject'         => $subject,
+                'status'          => 'failed',
+                'error_message'   => $e->getMessage(),
+                'mail_type'       => 'po_paid',
+                'related_type'    => get_class($po),
+                'related_id'      => $po->id,
+                'user_id'         => auth()->id(),
+            ]);
+
+            return back()->withErrors(['email' => 'Gagal mengirim email: ' . $e->getMessage()]);
+        }
     }
 }

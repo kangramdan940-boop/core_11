@@ -81,4 +81,40 @@ class MitraBrankasController extends Controller
             ->route('admin.master.mitra-brankas.index')
             ->with('success', 'Mitra Brankas berhasil dihapus.');
     }
+
+    public function setPasswordForm(MasterMitraBrankas $mitra)
+    {
+        $user = $mitra->user;
+        return view('admin.master_mitra_brankas.set_password', compact('mitra', 'user'));
+    }
+
+    public function setPasswordUpdate(Request $request, MasterMitraBrankas $mitra)
+    {
+        $data = $request->validate([
+            'password' => ['required', 'string', 'min:8'],
+            'password_confirmation' => ['required', 'same:password'],
+        ]);
+
+        $user = $mitra->user;
+        if (!$user) {
+            if (!empty($mitra->email)) {
+                $user = \App\Models\User::create([
+                    'name' => $mitra->nama_lengkap ?? ('Mitra ' . $mitra->id),
+                    'email' => $mitra->email,
+                    'password' => $data['password'],
+                    'role' => 'mitra',
+                    'is_active' => true,
+                ]);
+                $mitra->sys_user_id = $user->id;
+                $mitra->save();
+            } else {
+                return back()->withErrors(['email' => 'Email mitra belum diisi, tidak dapat membuat akun sys_user.']);
+            }
+        } else {
+            $user->password = $data['password'];
+            $user->save();
+        }
+
+        return redirect()->route('admin.master.mitra-brankas.index')->with('success', 'Password sys_user mitra diperbarui.');
+    }
 }

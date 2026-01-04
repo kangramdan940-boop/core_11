@@ -57,7 +57,7 @@
 
         <div class="right">
            
-            <a class="box-icon" href="#notification" data-bs-toggle="offcanvas" aria-controls="offcanvasBottom">
+            <!-- <a class="box-icon" href="#notification" data-bs-toggle="offcanvas" aria-controls="offcanvasBottom">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 6.44043V9.77043" stroke="#1A1528" stroke-width="1.5" stroke-miterlimit="10"
                         stroke-linecap="round" />
@@ -68,9 +68,9 @@
                         d="M15.3299 18.8203C15.3299 20.6503 13.8299 22.1503 11.9999 22.1503C11.0899 22.1503 10.2499 21.7703 9.64992 21.1703C9.04992 20.5703 8.66992 19.7303 8.66992 18.8203"
                         stroke="#1A1528" stroke-width="1.5" stroke-miterlimit="10" />
                 </svg>
-            </a>
-                <a href="#" class="icon logout-btn" onclick="event.preventDefault(); document.getElementById('logoutForm').submit();" title="Logout">
-                    <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 3h5a1 1 0 011 1v9a1 1 0 01-1 1H6" stroke="#121927" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8.5h6M5 6l-2.5 2.5L5 11" stroke="#121927" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a> -->
+                <a href="#" class="box-icon logout-btn" onclick="event.preventDefault(); if (window.confirm('Anda yakin ingin logout?')) { document.getElementById('logoutForm').submit(); }" title="Logout">
+                    <svg width="24" height="24" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 3h5a1 1 0 011 1v9a1 1 0 01-1 1H6" stroke="#1A1528" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8.5h6M5 6l-2.5 2.5L5 11" stroke="#1A1528" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </a>
                 <form id="logoutForm" action="{{ route('customer.logout') }}" method="POST" style="display:none;">
                     @csrf
@@ -101,7 +101,7 @@
                         </div>
                     </div>
                     <div style="margin-top:8px;border-top:1px solid rgba(255,255,255,.4);padding-top:10px;display:flex;align-items:center;justify-content:space-between;">
-                        <div style="font-size:16px;font-weight:600;">Saldo 1.0 gr</div>
+                        <div style="font-size:16px;font-weight:600;">Saldo {{ number_format((float)$poGramTotal, 3, ',', '.') }} gr</div>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7z" stroke="white" stroke-width="1.5" />
                             <circle cx="12" cy="12" r="3" stroke="white" stroke-width="1.5" />
@@ -147,11 +147,11 @@
                 </div>
                 <div class="mt-24 mb-50">
             <div class="list-app">
-                @php $produkCount = ($produk->count()); @endphp
+                @php $produkFiltered = ($produk ?? collect())->filter(function ($p) { return ($p->is_allow_po ?? false) || ($p->is_allow_ready ?? false); }); $produkCount = $produkFiltered->count(); @endphp
                 @if($produkCount === 0)
                     <div class="text-center text-muted py-3">Produk belum tersedia.</div>
                 @else
-                    @foreach($produk as $p)
+                    @foreach($produkFiltered as $p)
                         <div class="box-app">
                             <div class="info-box">
                                 <a href="{{ ($p->is_allow_po ? route('customer.po.create', ['pid' => encrypt((string)$p->id)]) : ($p->is_allow_ready ? route('customer.ready.index') : '#')) }}" class="logo">
@@ -161,11 +161,15 @@
                                 <div class="content">
                                     <div class="h7 text-dark">
                                         <a href="{{ ($p->is_allow_po ? route('customer.po.create', ['pid' => encrypt((string)$p->id)]) : ($p->is_allow_ready ? route('customer.ready.index') : '#')) }}">
-                                            {{ $p->gramasi?->nama ?? 'Produk' }} {{ number_format((float) ($p->gramasi?->gramasi ?? 0), 3) }} gr
+                                            {{ $p->gramasi?->nama ?? 'Produk' }} {{ number_format((float) ($p->gramasi?->gramasi ?? 0), 3) }} gr <span style="font-family: monospace !important;"> (Harga : Rp {{ number_format((float) (($p->harga_hariini ?? 0) + ($p->harga_jasa ?? 0)), 0) }})</span>
                                         </a>
                                        
                                     </div>
                                     <div class="box-map-date">
+                                        <div class="d-flex gap-4 align-items-center">
+                                            <i class="icon icon-wallet-2 text-primary"></i>
+                                            <span class="body-3 text-dark-4">Harga: Rp {{ number_format((float) ($p->harga_hariini ?? 0), 0) }}</span>
+                                        </div>
                                         <div class="d-flex gap-4 align-items-center">
                                             <i class="icon icon-wallet-2 text-primary"></i>
                                             <span class="body-3 text-dark-4">Jasa: Rp {{ number_format((float) ($p->harga_jasa ?? 0), 0) }}</span>
@@ -173,13 +177,20 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="box-btn">
-                                @if($p->is_allow_po)
-                                    <a href="{{ route('customer.po.create', ['pid' => encrypt((string)$p->id)]) }}" class="btn-app button-1">Jastip Emas</a>
-                                @endif
-                                @if($p->is_allow_ready)
-                                    <a href="{{ route('customer.ready.index') }}" class="btn-app button-1 view-app">Emas Ready</a>
-                                @endif
+                            <div class="">
+                                @php $hasPo = (bool)($p->is_allow_po ?? false); $hasReady = (bool)($p->is_allow_ready ?? false); $colClass = ($hasPo && $hasReady) ? 'col-6' : 'col-12'; @endphp
+                                <div class="row g-2">
+                                    @if($hasPo)
+                                        <div class="{{ $colClass }}">
+                                            <a href="{{ route('customer.po.create', ['pid' => encrypt((string)$p->id)]) }}" class="btn-app button-1 w-100">Jastip Emas</a>
+                                        </div>
+                                    @endif
+                                    @if($hasReady)
+                                        <div class="{{ $colClass }}">
+                                            <a href="{{ route('customer.ready.index') }}" class="btn-app button-1 view-app w-100">Emas Ready</a>
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     @endforeach

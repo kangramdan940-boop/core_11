@@ -72,7 +72,6 @@
                 @endforelse
             </div>
             <div class="p-2">
-                {{ $stocks->links() }}
             </div>
         </div>
     </div>
