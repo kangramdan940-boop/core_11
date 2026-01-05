@@ -101,6 +101,7 @@ class MasterGoldReadyStockApiController extends Controller
             'acara' => $s->acara ?? null,
             'negaraAsal' => $s->negara_asal ?? null,
             'tags' => $s->tags ?? null,
+            'catatan' => $s->catatan ?? null,
             'isCustom' => (bool) ($s->is_custom ?? false),
             'isMysteryBox' => (bool) ($s->is_mystery_box ?? false),
             'images' => $this->resolveUrls($s->images),
