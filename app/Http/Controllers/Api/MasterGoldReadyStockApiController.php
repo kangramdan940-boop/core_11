@@ -40,7 +40,35 @@ class MasterGoldReadyStockApiController extends Controller
             ],
         ]);
     }
+    public function show(int $id): JsonResponse
+    {
+        $requestId = (string) Str::uuid();
 
+        $item = MasterGoldReadyStock::with('agen')
+            ->where('is_active', true)
+            ->whereKey($id)
+            ->first();
+
+        if (!$item) {
+            return response()->json([
+                'status' => false,
+                'error' => 'Data tidak ditemukan',
+                'meta' => [
+                    'requestId' => $requestId,
+                    'id' => $id,
+                ],
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => $this->mapStock($item),
+            'meta' => [
+                'requestId' => $requestId,
+                'id' => $id,
+            ],
+        ]);
+    }
     private function parseFilters(Request $request): array
     {
         $statusRaw = (string) ($request->query('status') ?? 'available');

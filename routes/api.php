@@ -11,4 +11,5 @@ Route::prefix('v1')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\V
 Route::prefix('v1')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('auth:sanctum')->group(function () {
     Route::get('/customers/products-and-services', [\App\Http\Controllers\Api\MasterProdukDanLayananApiController::class, 'index'])->name('customer.produk-dan-layanan');
     Route::get('/customers/products-ready-stocks', [\App\Http\Controllers\Api\MasterGoldReadyStockApiController::class, 'index'])->name('customer.ready-stocks');
+    Route::get('/customers/products-ready-stocks/detail/{id}', [\App\Http\Controllers\Api\MasterGoldReadyStockApiController::class, 'show'])->whereNumber('id')->name('customer.ready-stocks.detail');
 });
