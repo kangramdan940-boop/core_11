@@ -84,25 +84,37 @@ class JneProxyApiController extends Controller
             $dom->loadHTML($html);
             libxml_clear_errors();
             $xpath = new \DOMXPath($dom);
-
             $rows = $xpath->query('//table//tr');
+
             $out = [];
-            foreach ($rows as $row) {
-                $cells = $row->getElementsByTagName('td');
-                if ($cells->length < 2) continue;
-                $service = trim($cells->item(0)->textContent ?? '');
-                $textAll = '';
-                for ($i = 0; $i < $cells->length; $i++) {
-                    $textAll .= ' ' . trim($cells->item($i)->textContent ?? '');
-                }
-                if ($service === '' || stripos($textAll, 'Rp') === false) continue;
-                if (preg_match('/Rp\\s*([0-9\\.,]+)/', $textAll, $m)) {
-                    $price = floatval(str_replace(['.', ','], ['', '.'], $m[1]));
+            if ($rows instanceof \DOMNodeList && $rows->length > 0) {
+                foreach ($rows as $row) {
+                    $cells = $row->getElementsByTagName('td');
+                    if ($cells->length < 2) {
+                        continue;
+                    }
+
+                    $service = trim($cells->item(0)->textContent);
+
+                    $textAll = '';
+                    for ($i = 0; $i < $cells->length; $i++) {
+                        $textAll .= ' ' . trim($cells->item($i)->textContent);
+                    }
+
+                    $price = null;
+                    if (preg_match('/Rp\s*([0-9\.,]+)/', $textAll, $m)) {
+                        $price = floatval(str_replace(['.', ','], ['', '.'], $m[1]));
+                    }
+
                     $etd = null;
-                    if (preg_match('/(ETD|Estimasi)[^0-9]*(\\d+\\s*[-–]\\s*\\d+|\\d+)\\s*hari/i', $textAll, $em)) {
+                    if (preg_match('/(ETD|Estimasi)[^0-9]*(\d+\s*[-–]\s*\d+|\d+)\s*hari/i', $textAll, $em)) {
                         $etd = $em[0];
                     }
-                    $label = $service . ' - Rp ' . number_format($price, 0, ',', '.');
+
+                    $label = $service !== ''
+                        ? $service . ($price !== null ? ' - Rp ' . number_format($price, 0, ',', '.') : '')
+                        : trim($textAll);
+
                     $out[] = ['service' => $service, 'label' => $label, 'price' => $price, 'etd' => $etd];
                 }
             }
