@@ -13,5 +13,9 @@ Route::prefix('v1')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\V
     Route::get('/customers/products-ready-stocks', [\App\Http\Controllers\Api\MasterGoldReadyStockApiController::class, 'index'])->name('customer.ready-stocks');
     Route::get('/customers/products-ready-stocks/detail/{id}', [\App\Http\Controllers\Api\MasterGoldReadyStockApiController::class, 'show'])->whereNumber('id')->name('customer.ready-stocks.detail');
     Route::get('/customers/addresses', [\App\Http\Controllers\Api\MasterCustomerAddressApiController::class, 'index'])->name('customer.addresses');
+    Route::post('/customers/addresses', [\App\Http\Controllers\Api\MasterCustomerAddressApiController::class, 'store'])->name('customer.addresses.store');
+    Route::delete('/customers/addresses/{id}', [\App\Http\Controllers\Api\MasterCustomerAddressApiController::class, 'destroy'])->whereNumber('id')->name('customer.addresses.destroy');
+    Route::get('/customers/jne/cities', [\App\Http\Controllers\Api\JneProxyApiController::class, 'cities'])->name('customer.api.jne.cities');
+    Route::get('/customers/jne/shipping-fee', [\App\Http\Controllers\Api\JneProxyApiController::class, 'shippingFee'])->name('customer.api.jne.shipping-fee');
     Route::delete('/customers/addresses/{id}', [\App\Http\Controllers\Api\MasterCustomerAddressApiController::class, 'destroy'])->whereNumber('id')->name('customer.addresses.destroy');
 });
