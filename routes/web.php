@@ -356,6 +356,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 // Biaya Mobilitas
                 Route::post('{po}/mobilitas', [\App\Http\Controllers\Admin\TransPoMobilitasController::class, 'store'])
                     ->name('mobilitas.store');
+
+                Route::post('{po}/gold-image', [\App\Http\Controllers\Admin\TransPoImageController::class, 'store'])
+                    ->name('gold-image.store');
+                Route::put('{po}/gold-image/{image}', [\App\Http\Controllers\Admin\TransPoImageController::class, 'update'])
+                    ->name('gold-image.update');
             });
 
             // Cicilan

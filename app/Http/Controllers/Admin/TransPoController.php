@@ -370,7 +370,7 @@ class TransPoController extends Controller
             ->first();
 
         $pdf = Pdf::loadView('admin.trans_po.kwitansi_pdf', compact('po', 'paidLog'))
-            ->setPaper('a4', 'landscape');
+            ->setPaper('a4', 'portrait');
 
         $filename = 'Kwitansi-' . ($po->kode_po ?? ('PO-' . $po->id)) . '.pdf';
         return $pdf->download($filename);

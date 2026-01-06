@@ -6,7 +6,9 @@
   <style>
     * { box-sizing: border-box; }
     body { font-family: Arial, Helvetica, sans-serif; color:#111827; margin: 24px; }
-    .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+    .header { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:12px; }
+    .header .left{ flex:1; }
+    .header .right{ flex:0 0 140px; text-align:right; }
     .title { font-size:20px; font-weight:700; }
     .muted { color:#6b7280; font-size:12px; }
     .section { margin-bottom:16px; }
@@ -32,6 +34,17 @@
 
     $stampPath = public_path('assets/image.png');
     $stampData = is_file($stampPath) ? 'data:image/png;base64,'.base64_encode(file_get_contents($stampPath)) : null;
+
+    $goldData = null;
+    $goldTitle = null;
+    if ($po && $po->goldImage && $po->goldImage->file_path) {
+      $goldTitle = $po->goldImage->title ?: null;
+      $goldMime = $po->goldImage->mime_type ?: 'image/png';
+      $goldPath = storage_path('app/public/' . $po->goldImage->file_path);
+      if (is_file($goldPath)) {
+        $goldData = 'data:' . $goldMime . ';base64,' . base64_encode(file_get_contents($goldPath));
+      }
+    }
   @endphp
 
   @if($logoData)
@@ -41,14 +54,15 @@
   @endif
 
   <div class="header">
-    <div>
+   
+    <div class="left">
       <div class="title">Kwitansi Pembayaran</div>
       <div class="muted">Kode Pesanan: {{ $po->kode_po ?? ('PO-' . $po->id) }}</div>
       <div class="muted">Tanggal Dokumen: {{ \Carbon\Carbon::parse($po->created_at)->format('d M Y H:i') }}</div>
     </div>
-    <div style="text-align:right;">
+    <div class="right">
       @if($logoData)
-        <img src="{{ $logoData }}" alt="Jajanemas" style="height:30px;" />
+        <img src="{{ $logoData }}" alt="Jajanemas" style="height:24px;" />
       @else
         <div class="muted">Jajanemas.com</div>
       @endif
@@ -102,12 +116,19 @@
     </table>
   </div>
 
+  @if($goldData || ($po->goldImage && $po->goldImage->title))
     <div class="section box">
-      <div style="font-weight:600; margin-bottom:6px;">Tujuan Pengiriman</div>
-      <div>{{ $po->shipping_name ?? '-' }} · {{ $po->shipping_phone ?? '-' }}</div>
-      <div>{{ $po->shipping_address ?? '-' }}</div>
-      <div>{{ $po->shipping_city ?? '-' }}, {{ $po->shipping_province ?? '-' }} {{ $po->shipping_postal_code ?? '' }}</div>
+      <div style="font-weight:600; margin-bottom:6px;">Gambar Emas</div>
+      @if($po->goldImage && $po->goldImage->title)
+        <div class="muted" style="margin-bottom:6px;">{{ $po->goldImage->title }}</div>
+      @endif
+      @if($goldData)
+        <div style="text-align:center;">
+          <img src="{{ $goldData }}" alt="{{ $po->goldImage->title ?? 'Gambar Emas' }}" style="height:180px; object-fit:contain;" />
+        </div>
+      @endif
     </div>
+  @endif
 
   <div class="section" style="margin-top:24px;">
     <div class="box">

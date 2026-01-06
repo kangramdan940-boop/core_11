@@ -7,6 +7,7 @@
 @section('subLink', route('admin.trans.po.index'))
 
 @section('content')
+
     <div class="mb-3 d-flex justify-content-between align-items-center">
         <div class="d-flex gap-2">
             <a href="{{ route('admin.trans.po.index') }}" class="btn btn-secondary"> Kembali</a>
@@ -35,7 +36,33 @@
             </form>
         </div>
     </div>
-
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            @if($po->goldImage)
+                <div class="text-center mb-3">
+                    <div class="fw-semibold mb-2">{{ $po->goldImage->title ?? 'Gambar Emas' }}</div>
+                    <img src="{{ asset('storage/' . $po->goldImage->file_path) }}" alt="{{ $po->goldImage->title ?? 'Gambar Emas PO' }}" style="max-height:240px;object-fit:contain;">
+                </div>
+                <form action="{{ route('admin.trans.po.gold-image.update', [$po, $po->goldImage]) }}" method="POST" enctype="multipart/form-data" class="d-flex gap-2">
+                    @csrf
+                    @method('PUT')
+                    <input type="text" name="title" class="form-control" placeholder="Judul gambar" maxlength="100" value="{{ $po->goldImage->title }}">
+                    <input type="file" name="gold_image" class="form-control" accept="image/*">
+                    <button type="submit" class="btn btn-warning">Simpan Perubahan</button>
+                </form>
+            @else
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>Belum ada gambar emas untuk PO ini.</div>
+                    <form action="{{ route('admin.trans.po.gold-image.store', $po) }}" method="POST" enctype="multipart/form-data" class="d-flex gap-2">
+                        @csrf
+                        <input type="text" name="title" class="form-control" placeholder="Judul gambar (opsional)" maxlength="100">
+                        <input type="file" name="gold_image" class="form-control" accept="image/*" required>
+                        <button type="submit" class="btn btn-primary">Upload Emas</button>
+                    </form>
+                </div>
+            @endif
+        </div>
+    </div>
     <div class="card shadow-sm mb-3">
         <div class="card-body">
             <h6 class="mb-3 fs-5"># Ringkasan PO</h6>

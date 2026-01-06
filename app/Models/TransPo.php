@@ -80,6 +80,11 @@ class TransPo extends Model
         return $this->belongsTo(MasterProdukDanLayanan::class, 'id_master_produk_dan_layanan');
     }
 
+    public function goldImage()
+    {
+        return $this->hasOne(TransPoImage::class, 'trans_po_id');
+    }
+
     public static function calculateAmount(float $hargaPerGram, float $jasa): float
     {
         $amount = $hargaPerGram + $jasa + mt_rand(100, 999);
