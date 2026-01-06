@@ -170,7 +170,6 @@ class CustomerCheckoutApiController extends Controller
             ],
         ]);
     }
-}
 
     public function cart(Request $request, int $id)
     {
