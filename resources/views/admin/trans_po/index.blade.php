@@ -155,7 +155,7 @@
                             {{ optional($p->customer)->full_name ?? '-' }}
                             <div class="text-muted small">{{ optional($p->customer)->phone_wa ?? '-' }}</div>
                         </td>
-                        <td>{{ number_format((float)($p->total_gram ?? 0), 0, ',', '.') }} Gram x ({{ (int)($p->qty ?? 0) }} Keping)</td>
+                        <td>{{ number_format((float)(optional(optional($p->produk)->gramasi)->gramasi ?? 0), 3, ',', '.') }} Gram x ({{ (int)($p->qty ?? 0) }} Keping)</td>
                         <td>
                             @if (!empty($p->id_keranjang))
                                 <a href="{{ route('admin.trans.po.index', ['keranjang_id' => $p->id_keranjang]) }}" class="text-primary text-decoration-underline">
