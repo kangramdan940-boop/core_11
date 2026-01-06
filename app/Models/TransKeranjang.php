@@ -17,6 +17,7 @@ class TransKeranjang extends Model
         'id_alamat_pengiriman',
         'expires_at',
         'status_kadaluarsa',
+        'created_by',
     ];
 
     protected $casts = [
