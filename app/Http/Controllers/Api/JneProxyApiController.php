@@ -35,9 +35,15 @@ class JneProxyApiController extends Controller
             $json = json_decode($raw, true);
             $items = [];
             if (is_array($json)) {
-                foreach ($json as $it) {
-                    $code = is_array($it) && isset($it['code']) ? (string) $it['code'] : null;
-                    $label = is_array($it) && isset($it['label']) ? (string) $it['label'] : null;
+                $payload = [];
+                if (isset($json['data']) && is_array($json['data'])) {
+                    $payload = $json['data'];
+                } elseif (isset($json[0]) && is_array($json[0])) {
+                    $payload = $json;
+                }
+                foreach ($payload as $it) {
+                    $code = isset($it['code']) ? (string) $it['code'] : null;
+                    $label = isset($it['label']) ? (string) $it['label'] : null;
                     if ($code && $label) $items[] = ['code' => $code, 'label' => $label];
                 }
             }
