@@ -26,6 +26,7 @@ class CustomerCheckoutApiController extends Controller
             'items.*.serviceFee' => ['required', 'numeric', 'min:0'],
             'shippingCost' => ['nullable', 'numeric', 'min:0'],
             'grandTotal' => ['nullable', 'numeric', 'min:0'],
+            'note' => ['nullable', 'string'],
         ]);
 
         $userId = Auth::id();
@@ -46,6 +47,8 @@ class CustomerCheckoutApiController extends Controller
                 'created_by' => (int) $userId,
                 'expires_at' => now()->addMinutes(30),
                 'status_kadaluarsa' => 'active',
+                'catatan' => (string) ($request->input('note') ?? ''),
+                'status_order' => 'perlu_dibayar',
             ]);
 
             $shippingTotal = (float) ($keranjang->ongkos_kirim ?? 0);
@@ -109,6 +112,7 @@ class CustomerCheckoutApiController extends Controller
                         'ongkos_kirim' => (float) $keranjang->ongkos_kirim,
                         'expires_at' => optional($keranjang->expires_at)->toIso8601String(),
                         'status_kadaluarsa' => $keranjang->status_kadaluarsa,
+                        'status_order' => (string) ($keranjang->status_order ?? ''),
                     ],
                     'pos' => $pos,
                     'grandTotal' => $grandTotal,
@@ -164,6 +168,7 @@ class CustomerCheckoutApiController extends Controller
                     'ongkos_kirim' => (float) ($keranjang->ongkos_kirim ?? 0.0),
                     'expires_at' => optional($keranjang->expires_at)->toIso8601String(),
                     'status_kadaluarsa' => (string) ($keranjang->status_kadaluarsa ?? ''),
+                    'status_order' => (string) ($keranjang->status_order ?? ''),
                 ],
                 'pos' => $items,
                 'grandTotal' => $grandTotal,
