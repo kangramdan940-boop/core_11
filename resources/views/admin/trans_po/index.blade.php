@@ -9,10 +9,87 @@
 @section('content')
     @section('content')
     <div class="d-flex justify-content-end mb-2">
+        <button type="button" class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#fifoCalculatorModal">Kalkulator FIFO</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#kepingCalculatorModal">Kalkulator Keping</button>
         <form id="cancelPendingForm" action="{{ route('admin.trans.po.cancel-pending-all') }}" method="POST">
             @csrf
             <button type="button" id="cancelPendingBtn" class="btn btn-outline-danger btn-sm">Batalkan Semua Pending</button>
         </form>
+    </div>
+    <div class="modal fade" id="fifoCalculatorModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Kalkulator Stok & Prioritas FIFO</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12 col-md-4">
+                            <label class="form-label mb-1">Stok tersedia (gram)</label>
+                            <input type="number" min="0" step="1" id="fifoStockInput" class="form-control" placeholder="Masukkan stok gram">
+                        </div>
+                        <div class="col-12 col-md-5">
+                            <label class="form-label mb-1">Status yang diprioritaskan</label>
+                            <select id="fifoStatusSelect" class="form-select" multiple>
+                                <option value="paid" selected>PAID</option>
+                                <option value="processing" selected>PROCESSING</option>
+                                <option value="ready_at_agen" selected>READY @AGEN</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-3 d-flex align-items-end">
+                            <button type="button" id="fifoCalculateBtn" class="btn btn-primary w-100">Hitung</button>
+                        </div>
+                    </div>
+                    <div class="mt-3" id="fifoResultContainer"></div>
+                </div>
+                <div class="modal-footer">
+                    <small class="text-muted">Metode: FIFO berdasarkan tanggal dibuat paling awal.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="kepingCalculatorModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Kalkulator Kebutuhan Keping</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+
+                        <div class="col-12 col-md-5">
+                            <label class="form-label mb-1">Status yang dipakai</label>
+                            <select id="kepingStatusSelect" class="form-select" multiple>
+                                <option value="paid" selected>PAID</option>
+                                <option value="processing" selected>PROCESSING</option>
+                                <option value="ready_at_agen" selected>READY @AGEN</option>
+                            </select>
+                        </div>
+                      
+                    </div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-12 col-md-4">
+                            <label class="form-label mb-1">Tanggal Mulai (opsional)</label>
+                            <input type="date" id="kepingDateStart" class="form-control">
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label mb-1">Tanggal Akhir (opsional)</label>
+                            <input type="date" id="kepingDateEnd" class="form-control">
+                        </div>
+                          <div class="col-12 col-md-3 d-flex align-items-end">
+                            <button type="button" id="kepingCalculateBtn" class="btn btn-primary w-100">Hitung</button>
+                        </div>
+                    </div>
+
+                    <div class="mt-3" id="kepingResultContainer"></div>
+                </div>
+                <div class="modal-footer">
+                    <small class="text-muted">Hitung keping berdasarkan gramasi unik dari data.</small>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="card shadow-sm mb-3">
         <div class="card-body">
@@ -58,7 +135,7 @@
                 <tr>
                     <th width="10px;">No</th>
                     <th>Kode PO</th>
-                    <th>Customer</th>
+                    <th>Nama / Telepon</th>
                     <th>Gramasi (Qty)</th>
                     <th>Total Gram</th>
                     <th>Biaya Pengiriman</th>
@@ -73,7 +150,10 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $p->kode_po }}</td>
-                        <td>{{ optional($p->customer)->full_name ?? '-' }}</td>
+                        <td>
+                            {{ optional($p->customer)->full_name ?? '-' }}
+                            <div class="text-muted small">{{ optional($p->customer)->phone_wa ?? '-' }}</div>
+                        </td>
                         <td>{{ number_format((float)($p->total_gram ?? 0), 0, ',', '.') }} Gram x ({{ (int)($p->qty ?? 0) }} Keping)</td>
                         <td>{{ (int)($p->qty * $p->total_gram ) }} Gram</td>
                         <td>{!! ((float)($p->shipping_cost ?? 0)) > 0 ? number_format((float)($p->shipping_cost ?? 0), 2, ',', '.') : '<span class="badge bg-danger">Follow Up Ongkir</span>' !!}</td>
@@ -111,6 +191,14 @@
                                     <form action="{{ route('admin.trans.po.send-email', $p) }}" method="POST" class="d-inline">
                                         @csrf
                                         <button type="submit" class="btn icon-btn-sm btn-light-warning" title="Kirim Email">
+                                            <i class="bi bi-envelope"></i>
+                                        </button>
+                                    </form>
+                                @endif
+                                @if ($p->status === 'shipped' && !empty(optional($p->customer)->email))
+                                    <form action="{{ route('admin.trans.po.send-shipping-email', $p) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="btn icon-btn-sm btn-light-warning" title="Kirim Email Pengiriman">
                                             <i class="bi bi-envelope"></i>
                                         </button>
                                     </form>
@@ -202,6 +290,175 @@
                             if (form) form.submit();
                         }
                     });
+                });
+            }
+
+            function getRowsData() {
+                var dt = $('#poTable').DataTable();
+                var nodes = dt.rows().nodes().toArray();
+                return nodes.map(function (r) {
+                    var tds = r.querySelectorAll('td');
+                    var kode = (tds[1] && tds[1].textContent || '').trim();
+                    var customerCell = tds[2];
+                    var nama = '';
+                    var telepon = '';
+                    if (customerCell) {
+                        nama = (customerCell.childNodes[0]?.textContent || '').trim();
+                        var phoneDiv = customerCell.querySelector('div.small');
+                        telepon = (phoneDiv?.textContent || '').trim();
+                    }
+                    var gram = parseInt(((tds[4] && tds[4].textContent) || '').replace(/\D+/g, ''), 10) || 0;
+                    var statusText = ((tds[7] && tds[7].textContent) || '').trim().toLowerCase();
+                    var createdText = (tds[8] && tds[8].textContent || '').trim();
+                    var status = 'cancelled';
+                    if (statusText.indexOf('pending') >= 0) status = 'pending_payment';
+                    else if (statusText.indexOf('paid') >= 0) status = 'paid';
+                    else if (statusText.indexOf('process') >= 0) status = 'processing';
+                    else if (statusText.indexOf('ready') >= 0) status = 'ready_at_agen';
+                    else if (statusText.indexOf('shipp') >= 0) status = 'shipped';
+                    else if (statusText.indexOf('complet') >= 0) status = 'completed';
+                    var createdAt = new Date(createdText.replace(' ', 'T'));
+                    return { kode: kode, nama: nama, telepon: telepon, gram: gram, status: status, createdAt: createdAt, createdText: createdText };
+                });
+            }
+
+            function normalizeWaPhone(raw) {
+                var digits = String(raw || '').replace(/\D+/g, '');
+                if (digits.indexOf('0') === 0) digits = '62' + digits.slice(1);
+                return digits;
+            }
+            function buildWaMessage(item) {
+                var nama = (item && item.nama ? String(item.nama).trim() : '');
+                var sapaan = nama !== '' ? ('Kak ' + nama) : 'Kak';
+                var kode = (item && item.kode ? item.kode : '-');
+                var gram = (item && item.gram ? item.gram : 0);
+                return 'Assalamu’alaikum ' + sapaan + ' 🙏\n\n' +
+                    'Informasi: Pesanan emas Anda (Kode PO: ' + kode + ', ' + gram + ' gram) akan segera kami kirim sesuai prioritas FIFO.\n' +
+                    'Mohon bantuannya untuk share location via WhatsApp dan melengkapi alamat pengiriman dengan format berikut:\n\n' +
+                    'Nama Penerima:\n' +
+                    'No. HP:\n' +
+                    'Alamat Lengkap:\n' +
+                    'Kota:\n' +
+                    'Provinsi:\n' +
+                    'Kode Pos:\n\n' +
+                    'Terima kasih 🙏\nTim jajanemas.com';
+            }
+
+            function renderFifoResult(items, stokAwal) {
+                var sisa = stokAwal;
+                var selected = [];
+                for (var i = 0; i < items.length; i++) {
+                    var it = items[i];
+                    if (it.gram <= sisa) {
+                        selected.push(it);
+                        sisa -= it.gram;
+                    } else {
+                        break;
+                    }
+                }
+                var used = stokAwal - sisa;
+                var html = '';
+                html += '<div class="mb-2">Stok awal: <strong>' + stokAwal + ' gram</strong> · Terpakai: <strong>' + used + ' gram</strong> · Sisa: <strong>' + sisa + ' gram</strong></div>';
+                html += '<table class="table table-sm table-bordered"><thead><tr><th>Kode PO</th><th>Nama / Telepon</th><th>Status</th><th>Dibuat</th><th>Total Gram</th><th>Akumulasi</th></tr></thead><tbody>';
+                var acc = 0;
+                for (var j = 0; j < selected.length; j++) {
+                    acc += selected[j].gram;
+                    var waDigits = normalizeWaPhone(selected[j].telepon || '');
+                    var waLink = waDigits ? ('<a href="https://wa.me/' + waDigits + '?text=' + encodeURIComponent(buildWaMessage(selected[j])) + '" target="_blank" rel="noopener" class="text-decoration-none">' + (selected[j].telepon || '-') + '</a>') : (selected[j].telepon || '-');
+                    html += '<tr><td>' + selected[j].kode + '</td><td>' + (selected[j].nama || '-') + '<div class="text-muted small">' + waLink + '</div></td><td>' + selected[j].status + '</td><td>' + selected[j].createdText + '</td><td>' + selected[j].gram + '</td><td>' + acc + '</td></tr>';
+                }
+                html += '</tbody></table>';
+                if (selected.length === 0) {
+                    html = '<div class="alert alert-warning">Tidak ada PO yang masuk dalam batas stok.</div>';
+                }
+                var container = document.getElementById('fifoResultContainer');
+                if (container) container.innerHTML = html;
+            }
+
+            const fifoCalculateBtn = document.getElementById('fifoCalculateBtn');
+            if (fifoCalculateBtn) {
+                fifoCalculateBtn.addEventListener('click', function () {
+                    var stok = parseInt((document.getElementById('fifoStockInput')?.value || '0'), 10) || 0;
+                    var select = document.getElementById('fifoStatusSelect');
+                    var selectedStatuses = select ? Array.from(select.selectedOptions).map(function (o) { return o.value; }) : ['paid', 'processing', 'ready_at_agen'];
+                    var items = getRowsData().filter(function (it) { return selectedStatuses.indexOf(it.status) >= 0; });
+                    items.sort(function (a, b) {
+                        var ta = a.createdAt.getTime();
+                        var tb = b.createdAt.getTime();
+                        if (isNaN(ta) && isNaN(tb)) return 0;
+                        if (isNaN(ta)) return 1;
+                        if (isNaN(tb)) return -1;
+                        return ta - tb;
+                    });
+                    renderFifoResult(items, stok);
+                });
+            }
+
+            function aggregateByGramasi(statuses, startDate, endDate) {
+                var dt = $('#poTable').DataTable();
+                var nodes = dt.rows().nodes().toArray();
+                var map = new Map();
+                var totalKepingAll = 0;
+                var totalGramAll = 0;
+                nodes.forEach(function (r) {
+                    var tds = r.querySelectorAll('td');
+                    var statusText = ((tds[7] && tds[7].textContent) || '').trim().toLowerCase();
+                    var status = 'cancelled';
+                    if (statusText.indexOf('pending') >= 0) status = 'pending_payment';
+                    else if (statusText.indexOf('paid') >= 0) status = 'paid';
+                    else if (statusText.indexOf('process') >= 0) status = 'processing';
+                    else if (statusText.indexOf('ready') >= 0) status = 'ready_at_agen';
+                    else if (statusText.indexOf('shipp') >= 0) status = 'shipped';
+                    else if (statusText.indexOf('complet') >= 0) status = 'completed';
+                    if (statuses.indexOf(status) < 0) return;
+                    var createdText = ((tds[8] && tds[8].textContent) || '').trim();
+                    var d = String(createdText).slice(0, 10);
+                    if (startDate || endDate) {
+                        if (startDate && endDate && !(d >= startDate && d <= endDate)) return;
+                        if (startDate && !(d >= startDate)) return;
+                        if (endDate && !(d <= endDate)) return;
+                    }
+                    var cellText = (tds[3] && tds[3].textContent) || '';
+                    var mGramasi = cellText.match(/([\d\.\,]+)\s*Gram/i);
+                    var mKeping = cellText.match(/\(\s*(\d+)\s*Keping\s*\)/i);
+                    var g = 0;
+                    var k = 0;
+                    if (mGramasi) g = parseInt(String(mGramasi[1]).replace(/\D+/g, ''), 10) || 0;
+                    if (mKeping) k = parseInt(String(mKeping[1]).replace(/\D+/g, ''), 10) || 0;
+                    if (g <= 0 || k <= 0) return;
+                    var totalGRow = g * k;
+                    totalKepingAll += k;
+                    totalGramAll += totalGRow;
+                    var prev = map.get(g) || { gramasi: g, totalKeping: 0, totalGram: 0 };
+                    prev.totalKeping += k;
+                    prev.totalGram += totalGRow;
+                    map.set(g, prev);
+                });
+                var list = Array.from(map.values()).sort(function (a, b) { return a.gramasi - b.gramasi; });
+                return { list: list, totalKepingAll: totalKepingAll, totalGramAll: totalGramAll };
+            }
+
+            function renderKepingAggregates(agg) {
+                var html = '';
+                html += '<table class="table table-sm table-bordered"><thead><tr><th>Gramasi</th><th>Total Keping</th><th>Total Gram</th></tr></thead><tbody>';
+                agg.list.forEach(function (row) {
+                    html += '<tr><td>' + row.gramasi + ' g</td><td>' + row.totalKeping + '</td><td>' + row.totalGram + ' g</td></tr>';
+                });
+                html += '</tbody></table>';
+                html += '<div class="mt-2"><strong>Total keping:</strong> ' + agg.totalKepingAll + ' · <strong>Total gram:</strong> ' + agg.totalGramAll + ' g</div>';
+                var container = document.getElementById('kepingResultContainer');
+                if (container) container.innerHTML = html;
+            }
+
+            const kepingCalculateBtn = document.getElementById('kepingCalculateBtn');
+            if (kepingCalculateBtn) {
+                kepingCalculateBtn.addEventListener('click', function () {
+                    var select = document.getElementById('kepingStatusSelect');
+                    var statuses = select ? Array.from(select.selectedOptions).map(function (o) { return o.value; }) : ['paid','processing','ready_at_agen'];
+                    var startDate = (document.getElementById('kepingDateStart')?.value || '').trim();
+                    var endDate = (document.getElementById('kepingDateEnd')?.value || '').trim();
+                    var agg = aggregateByGramasi(statuses, startDate, endDate);
+                    renderKepingAggregates(agg);
                 });
             }
         });

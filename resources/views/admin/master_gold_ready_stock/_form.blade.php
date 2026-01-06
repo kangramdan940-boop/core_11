@@ -40,10 +40,17 @@
         <label class="form-label">Gramasi (gram)</label>
         <div class="input-group">
             <span class="input-group-text"><i class="ri-weight-line"></i></span>
-            <input type="number" step="0.001" min="0.001" name="gramasi" class="form-control @error('gramasi') is-invalid @enderror"
-                   value="{{ old('gramasi', $stock->gramasi ?? '') }}" required>
+            <select name="id_gramasi" class="form-select @error('id_gramasi') is-invalid @enderror" required>
+                <option value="">- Pilih Gramasi -</option>
+                @foreach(($gramasis ?? []) as $g)
+                    <option value="{{ $g->id }}"
+                        {{ (string)old('id_gramasi', $selectedGramasiId ?? '') === (string)$g->id ? 'selected' : '' }}>
+                        {{ $g->nama }} ({{ number_format((float)$g->gramasi, 3, ',', '.') }} g)
+                    </option>
+                @endforeach
+            </select>
         </div>
-        @error('gramasi') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        @error('id_gramasi') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 
     <div class="col-md-3">

@@ -82,6 +82,7 @@ Route::prefix('customer')->name('customer.')->group(function () {
 
         Route::post('/po', [CustomerPoController::class, 'store'])->name('po.store');
         Route::get('/po/{po}', [CustomerPoController::class, 'show'])->name('po.show');
+        Route::get('/po/{po}/invoice', [CustomerPoController::class, 'invoice'])->name('po.invoice');
         Route::post('/po/{po}/confirm-payment', [CustomerPoController::class, 'confirmPayment'])->name('po.confirm-payment');
         Route::post('/po/{po}/notify-transfer', [CustomerPoController::class, 'notifyTransfer'])->name('po.notify-transfer');
 
@@ -335,6 +336,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 Route::post('/{po}/status', [TransPoController::class, 'updateStatus'])->name('update-status');
                 Route::post('/{po}/shipping', [TransPoController::class, 'updateShipping'])->name('update-shipping');
                 Route::post('/{po}/send-email', [TransPoController::class, 'sendPaidEmail'])->name('send-email');
+                Route::post('/{po}/send-shipping-email', [TransPoController::class, 'sendShippingEmail'])->name('send-shipping-email');
+                Route::get('/{po}/invoice/pdf', [TransPoController::class, 'invoicePdf'])->name('invoice.pdf');
+                Route::get('/{po}/invoice', [TransPoController::class, 'invoice'])->name('invoice');
+                Route::get('/{po}/kwitansi/pdf', [TransPoController::class, 'kwitansiPdf'])->name('kwitansi.pdf');
+
+                Route::get('/{po}/delivery-note/pdf', [TransPoController::class, 'deliveryNotePdf'])->name('delivery-note.pdf');
+                Route::get('/{po}/resi/pdf', [TransPoController::class, 'resiPdf'])->name('resi.pdf');
+                Route::post('/{po}/resi', [TransPoController::class, 'updateResi'])->name('resi.update');
+
                 Route::post('/cancel-pending', [TransPoController::class, 'cancelPendingAll'])->name('cancel-pending-all');
 
                 // Mitra Komisi assign/remove (nama & URL sama seperti awal)

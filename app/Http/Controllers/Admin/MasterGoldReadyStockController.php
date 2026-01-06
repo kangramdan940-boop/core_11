@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\MasterGoldReadyStock;
 use App\Models\MasterAgen;
 use App\Models\MasterAsset;
+use App\Models\MasterGramasiEmas;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -24,7 +25,8 @@ class MasterGoldReadyStockController extends Controller
     {
         $agens = MasterAgen::orderBy('name')->get(['id', 'name', 'kode_agen']);
         $assets = MasterAsset::where('status', 'active')->orderBy('title')->get(['id','title','url','file_extension']);
-        return view('admin.master_gold_ready_stock.create', compact('agens', 'assets'));
+        $gramasis = MasterGramasiEmas::where('is_active', true)->orderBy('gramasi')->get(['id','nama','gramasi']);
+        return view('admin.master_gold_ready_stock.create', compact('agens', 'assets', 'gramasis'));
     }
 
     public function store(Request $request)
@@ -33,7 +35,7 @@ class MasterGoldReadyStockController extends Controller
             'master_agen_id'       => ['nullable', 'integer', 'exists:master_agen,id'],
             'kode_item'            => ['required', 'string', 'max:100', 'unique:master_gold_ready_stock,kode_item'],
             'brand'                => ['required', 'string', 'max:50'],
-            'gramasi'              => ['required', 'numeric', 'min:0.001'],
+            'id_gramasi'           => ['required', 'integer', 'exists:master_gramasi_emas,id'],
             'nomor_seri'           => ['nullable', 'string', 'max:100'],
             'tahun_cetak'          => ['nullable', 'integer', 'min:1900', 'max:2100'],
             'kondisi_barang'       => ['required', Rule::in(['mint','second'])],
@@ -56,6 +58,18 @@ class MasterGoldReadyStockController extends Controller
             'tags'                 => ['nullable', 'string'],
         ]);
 
+        if (isset($data['id_gramasi'])) {
+            $g = MasterGramasiEmas::find((int) $data['id_gramasi']);
+            $data['gramasi'] = $g ? (float) $g->gramasi : null;
+            unset($data['id_gramasi']);
+        }
+
+        if (isset($data['id_gramasi'])) {
+            $g = MasterGramasiEmas::find((int) $data['id_gramasi']);
+            $data['gramasi'] = $g ? (float) $g->gramasi : null;
+            unset($data['id_gramasi']);
+        }
+
         $data['is_active'] = $request->has('is_active');
         $data['is_custom'] = $request->has('is_custom');
         $data['is_mystery_box'] = $request->has('is_mystery_box');
@@ -77,7 +91,9 @@ class MasterGoldReadyStockController extends Controller
     {
         $agens = MasterAgen::orderBy('name')->get(['id', 'name', 'kode_agen']);
         $assets = MasterAsset::where('status', 'active')->orderBy('title')->get(['id','title','url','file_extension']);
-        return view('admin.master_gold_ready_stock.edit', compact('stock', 'agens', 'assets'));
+        $gramasis = MasterGramasiEmas::where('is_active', true)->orderBy('gramasi')->get(['id','nama','gramasi']);
+        $selectedGramasiId = MasterGramasiEmas::where('gramasi', $stock->gramasi)->value('id');
+        return view('admin.master_gold_ready_stock.edit', compact('stock', 'agens', 'assets', 'gramasis', 'selectedGramasiId'));
     }
 
     public function update(Request $request, MasterGoldReadyStock $stock)
@@ -86,7 +102,7 @@ class MasterGoldReadyStockController extends Controller
             'master_agen_id'       => ['nullable', 'integer', 'exists:master_agen,id'],
             'kode_item'            => ['required', 'string', 'max:100', Rule::unique('master_gold_ready_stock', 'kode_item')->ignore($stock->id)],
             'brand'                => ['required', 'string', 'max:50'],
-            'gramasi'              => ['required', 'numeric', 'min:0.001'],
+            'id_gramasi'           => ['required', 'integer', 'exists:master_gramasi_emas,id'],
             'nomor_seri'           => ['nullable', 'string', 'max:100'],
             'tahun_cetak'          => ['nullable', 'integer', 'min:1900', 'max:2100'],
             'kondisi_barang'       => ['required', Rule::in(['mint','second'])],

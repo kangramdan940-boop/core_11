@@ -9,8 +9,12 @@
 @section('content')
     <div class="mb-3 d-flex justify-content-between align-items-center">
         <div class="d-flex gap-2">
-            <a href="{{ route('admin.trans.po.index') }}" class="btn btn-secondary">← Kembali</a>
+            <a href="{{ route('admin.trans.po.index') }}" class="btn btn-secondary"> Kembali</a>
             <a href="{{ route('admin.trans.payment-logs.index') }}" class="btn btn-outline-secondary">Payment Logs</a>
+            <a href="{{ route('admin.trans.po.invoice', $po) }}" class="btn btn-outline-secondary">Invoice Transaksi</a>
+            <a href="{{ route('admin.trans.po.kwitansi.pdf', $po) }}" class="btn btn-outline-primary">Kwitansi (PDF)</a>
+            <a href="{{ route('admin.trans.po.delivery-note.pdf', $po) }}" class="btn btn-outline-primary">Delivery Note (PDF)</a>
+            <a href="{{ route('admin.trans.po.resi.pdf', $po) }}" class="btn btn-outline-primary">Resi (PDF)</a>
         </div>
         <div class="d-flex gap-2">
             <form action="{{ route('admin.trans.po.update-status', $po) }}" method="POST" class="d-flex align-items-center gap-2">
@@ -370,6 +374,29 @@
         </div>
     </div>
 
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0 fs-5"># Data Resi</h6>
+                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditResi">Edit</button>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <strong>Nomor Resi</strong>
+                    <div class="mt-1">{{ $po->resi_number ?? '-' }}</div>
+                </div>
+                <div class="col-md-4">
+                    <strong>Kurir</strong>
+                    <div class="mt-1">{{ $po->resi_courier ?? '-' }}</div>
+                </div>
+                <div class="col-md-4">
+                    <strong>Layanan</strong>
+                    <div class="mt-1">{{ $po->resi_service ?? '-' }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="modalEditShipping" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
@@ -404,6 +431,40 @@
                             <div class="col-md-4">
                                 <label class="form-label">Kode Pos</label>
                                 <input type="text" name="shipping_postal_code" class="form-control" value="{{ $po->shipping_postal_code }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalEditResi" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Data Resi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('admin.trans.po.resi.update', $po) }}" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Nomor Resi</label>
+                                <input type="text" name="resi_number" class="form-control" value="{{ $po->resi_number }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Kurir</label>
+                                <input type="text" name="resi_courier" class="form-control" value="{{ $po->resi_courier }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Layanan</label>
+                                <input type="text" name="resi_service" class="form-control" value="{{ $po->resi_service }}">
                             </div>
                         </div>
                     </div>

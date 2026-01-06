@@ -10,6 +10,7 @@ use App\Models\TransPoMobilitas;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Mail;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class TransPoController extends Controller
 {
@@ -278,5 +279,142 @@ class TransPoController extends Controller
 
             return back()->withErrors(['email' => 'Gagal mengirim email: ' . $e->getMessage()]);
         }
+    }
+
+    public function sendShippingEmail(Request $request, TransPo $po)
+    {
+        if ($po->status !== 'shipped') {
+            return back()->withErrors(['email' => 'Email hanya dapat dikirim untuk transaksi berstatus SHIPPED.']);
+        }
+
+        $email = trim((string) optional($po->customer)->email);
+        if ($email === '') {
+            return back()->withErrors(['email' => 'Email pelanggan tidak tersedia.']);
+        }
+
+        $subject = 'Pemberitahuan Pengiriman PO ' . ($po->kode_po ?? ('PO-' . $po->id));
+        $html = view('emails.po_shipped', compact('po'))->render();
+
+        try {
+            Mail::html($html, function ($message) use ($email, $subject, $po) {
+                $message->to($email, (string) (optional($po->customer)->full_name ?? 'Pelanggan'))
+                        ->subject($subject);
+            });
+
+            \App\Models\EmailLog::create([
+                'recipient_email' => $email,
+                'recipient_name'  => optional($po->customer)->full_name,
+                'subject'         => $subject,
+                'status'          => 'success',
+                'mail_type'       => 'po_shipped',
+                'related_type'    => get_class($po),
+                'related_id'      => $po->id,
+                'user_id'         => auth()->id(),
+            ]);
+
+            TransPoLog::create([
+                'trans_po_id' => $po->id,
+                'status'      => $po->status,
+                'description' => 'Email notifikasi pengiriman dikirim ke ' . $email . ' pada ' . now(),
+            ]);
+
+            return back()->with('success', 'Email notifikasi pengiriman telah dikirim.');
+
+        } catch (\Exception $e) {
+            \App\Models\EmailLog::create([
+                'recipient_email' => $email,
+                'recipient_name'  => optional($po->customer)->full_name,
+                'subject'         => $subject,
+                'status'          => 'failed',
+                'error_message'   => $e->getMessage(),
+                'mail_type'       => 'po_shipped',
+                'related_type'    => get_class($po),
+                'related_id'      => $po->id,
+                'user_id'         => auth()->id(),
+            ]);
+
+            return back()->withErrors(['email' => 'Gagal mengirim email: ' . $e->getMessage()]);
+        }
+    }
+
+    public function invoicePdf(TransPo $po)
+    {
+        $paymentLogs = TransPaymentLog::where('ref_type', 'po')
+            ->where('ref_id', $po->id)
+            ->orderByDesc('id')
+            ->get();
+
+        $pdf = Pdf::loadView('admin.trans_po.invoice_pdf', compact('po', 'paymentLogs'))
+            ->setPaper('a4', 'landscape');
+
+        $filename = 'Invoice-' . ($po->kode_po ?? ('PO-' . $po->id)) . '.pdf';
+        return $pdf->download($filename);
+    }
+
+    public function invoice(TransPo $po)
+    {
+        $paymentLogs = TransPaymentLog::where('ref_type', 'po')
+            ->where('ref_id', $po->id)
+            ->orderByDesc('id')
+            ->get();
+
+        return view('admin.trans_po.invoice', compact('po', 'paymentLogs'));
+    }
+
+    public function kwitansiPdf(TransPo $po)
+    {
+        $paidLog = TransPaymentLog::where('ref_type', 'po')
+            ->where('ref_id', $po->id)
+            ->where('status', 'paid')
+            ->orderByDesc('paid_at')
+            ->first();
+
+        $pdf = Pdf::loadView('admin.trans_po.kwitansi_pdf', compact('po', 'paidLog'))
+            ->setPaper('a4', 'landscape');
+
+        $filename = 'Kwitansi-' . ($po->kode_po ?? ('PO-' . $po->id)) . '.pdf';
+        return $pdf->download($filename);
+    }
+
+    public function updateResi(Request $request, TransPo $po)
+    {
+        $data = $request->validate([
+            'resi_number' => ['required', 'string', 'max:100'],
+            'resi_courier' => ['required', 'string', 'max:100'],
+            'resi_service' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $po->fill([
+            'resi_number' => $data['resi_number'],
+            'resi_courier' => $data['resi_courier'],
+            'resi_service' => $data['resi_service'] ?? null,
+        ]);
+        $po->save();
+
+        TransPoLog::create([
+            'trans_po_id' => $po->id,
+            'status' => $po->status,
+            'description' => 'Update data resi oleh ' . ($request->user()?->name ?? 'SYSTEM') . ' pada ' . now(),
+        ]);
+
+        return redirect()->route('admin.trans.po.show', $po)->with('success', 'Data resi diperbarui.');
+    }
+
+    public function deliveryNotePdf(TransPo $po)
+    {
+        $pdf = Pdf::loadView('admin.trans_po.delivery_note_pdf', compact('po'))
+            ->setPaper('a4', 'landscape');
+
+        $filename = 'Delivery-Note-' . ($po->kode_po ?? ('PO-' . $po->id)) . '.pdf';
+        return $pdf->download($filename);
+    }
+
+    public function resiPdf(TransPo $po)
+    {
+        $pdf = Pdf::loadView('admin.trans_po.resi_pdf', compact('po'))
+            ->setPaper('a4', 'landscape');
+
+        $filename = 'Resi-' . ($po->kode_po ?? ('PO-' . $po->id)) . '.pdf';
+        return $pdf->download($filename);
     }
 }

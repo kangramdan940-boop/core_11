@@ -13,7 +13,7 @@
                 @csrf
                 @method('PUT')
 
-                @include('admin.master_gold_ready_stock._form', ['stock' => $stock, 'agens' => $agens, 'assets' => $assets])
+                @include('admin.master_gold_ready_stock._form', ['stock' => $stock, 'agens' => $agens, 'assets' => $assets, 'gramasis' => $gramasis, 'selectedGramasiId' => $selectedGramasiId])
 
                 <div class="d-flex justify-content-end mt-5 gap-2">
                     <a href="{{ route('admin.master.ready-stocks.index') }}" class="btn btn-outline-secondary">Batal</a>
