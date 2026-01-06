@@ -17,6 +17,7 @@
 
             [ 'type' => 'title', 'text' => 'Master' ],
             [ 'type' => 'link', 'icon' => 'ri-user-3-line', 'text' => 'Customer', 'url' => route('admin.master.customers.index'), 'routeIs' => 'admin.master.customers.*' ],
+            [ 'type' => 'link', 'icon' => 'ri-map-pin-line', 'text' => 'Alamat Customer', 'url' => route('admin.master.customer-addresses.index'), 'routeIs' => 'admin.master.customer-addresses.*' ],
             [ 'type' => 'link', 'icon' => 'ri-price-tag-3-line', 'text' => 'Brand Emas', 'url' => route('admin.master.brand-emas.index'), 'routeIs' => 'admin.master.brand-emas.*' ],
             [ 'type' => 'link', 'icon' => 'ri-scales-3-line', 'text' => 'Gramasi Emas', 'url' => route('admin.master.gramasi-emas.index'), 'routeIs' => 'admin.master.gramasi-emas.*' ],
             [ 'type' => 'link', 'icon' => 'ri-image-line', 'text' => 'Home Slider', 'url' => route('admin.master.home-slider.index'), 'routeIs' => 'admin.master.home-slider.*' ],
@@ -30,7 +31,6 @@
             [ 'type' => 'link', 'icon' => 'ri-bar-chart-2-line', 'text' => 'Harga Emas', 'url' => route('admin.master.gold-prices.index'), 'routeIs' => 'admin.master.gold-prices.*' ],
             [ 'type' => 'link', 'icon' => 'ri-hand-coin-line', 'text' => 'Komisi Mitra', 'url' => route('admin.master.mitra-komisi.index'), 'routeIs' => 'admin.master.mitra-komisi.*' ],
 
-           
 
             [ 'type' => 'title', 'text' => 'System' ],
             [ 'type' => 'link', 'icon' => 'ri-team-line', 'text' => 'Management Login List', 'url' => route('admin.login-management.index'), 'routeIs' => 'admin.login-management.*' ],

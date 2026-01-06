@@ -308,6 +308,28 @@ Route::prefix('admin')->name('admin.')->group(function () {
                     'assets' => 'asset',
                 ])
                 ->middleware('admin');
+
+            Route::get('customer-addresses', [\App\Http\Controllers\Admin\MasterCustomerAddressController::class, 'index'])
+                ->name('customer-addresses.index')
+                ->middleware('admin');
+            Route::get('customer-addresses/create', [\App\Http\Controllers\Admin\MasterCustomerAddressController::class, 'create'])
+                ->name('customer-addresses.create')
+                ->middleware('admin');
+            Route::post('customer-addresses', [\App\Http\Controllers\Admin\MasterCustomerAddressController::class, 'store'])
+                ->name('customer-addresses.store')
+                ->middleware('admin');
+            Route::get('customer-addresses/search-users', [\App\Http\Controllers\Admin\MasterCustomerAddressController::class, 'searchUsers'])
+                ->name('customer-addresses.search-users')
+                ->middleware('admin');
+            Route::get('customer-addresses/{address}/edit', [\App\Http\Controllers\Admin\MasterCustomerAddressController::class, 'edit'])
+                ->name('customer-addresses.edit')
+                ->middleware('admin');
+            Route::put('customer-addresses/{address}', [\App\Http\Controllers\Admin\MasterCustomerAddressController::class, 'update'])
+                ->name('customer-addresses.update')
+                ->middleware('admin');
+            Route::delete('customer-addresses/{address}', [\App\Http\Controllers\Admin\MasterCustomerAddressController::class, 'destroy'])
+                ->name('customer-addresses.destroy')
+                ->middleware('admin');
         });
 
         /*
