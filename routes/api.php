@@ -13,4 +13,5 @@ Route::prefix('v1')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\V
     Route::get('/customers/products-ready-stocks', [\App\Http\Controllers\Api\MasterGoldReadyStockApiController::class, 'index'])->name('customer.ready-stocks');
     Route::get('/customers/products-ready-stocks/detail/{id}', [\App\Http\Controllers\Api\MasterGoldReadyStockApiController::class, 'show'])->whereNumber('id')->name('customer.ready-stocks.detail');
     Route::get('/customers/addresses', [\App\Http\Controllers\Api\MasterCustomerAddressApiController::class, 'index'])->name('customer.addresses');
+    Route::delete('/customers/addresses/{id}', [\App\Http\Controllers\Api\MasterCustomerAddressApiController::class, 'destroy'])->whereNumber('id')->name('customer.addresses.destroy');
 });

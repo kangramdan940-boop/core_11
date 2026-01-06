@@ -50,4 +50,40 @@ class MasterCustomerAddressApiController extends Controller
             ],
         ]);
     }
+
+    public function destroy(Request $request, int $id): JsonResponse
+    {
+        $user = $request->user();
+        if (!$user || !$user->is_active || $user->role !== 'customer') {
+            return response()->json([
+                'status' => false,
+                'error' => 'Unauthorized',
+                'meta' => ['requestId' => (string) Str::uuid()],
+            ], 401);
+        }
+
+        $addr = MasterCustomerAddress::whereKey($id)->where('sys_user_id', $user->id)->first();
+
+        if (!$addr) {
+            return response()->json([
+                'status' => false,
+                'error' => 'Data tidak ditemukan',
+                'meta' => [
+                    'requestId' => (string) Str::uuid(),
+                    'id' => (int) $id,
+                ],
+            ], 404);
+        }
+
+        $addr->delete();
+
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'deleted' => true,
+                'id' => (int) $id,
+            ],
+            'meta' => ['requestId' => (string) Str::uuid()],
+        ]);
+    }
 }
