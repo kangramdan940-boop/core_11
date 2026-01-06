@@ -169,7 +169,7 @@
                                 -
                             @endif
                         </td>
-                        <td>{{ (int)($p->qty * $p->total_gram ) }} Gram</td>
+                        <td>{{ (int)($p->total_gram ) }} Gram</td>
                         <td>{!! ((float)($p->shipping_cost ?? 0)) > 0 ? number_format((float)($p->shipping_cost ?? 0), 2, ',', '.') : '<span class="badge bg-danger">Follow Up Ongkir</span>' !!}</td>
                         <td>{{ number_format((float)$p->total_amount, 2, ',', '.') }}</td>
                         <td>
