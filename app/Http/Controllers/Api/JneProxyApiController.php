@@ -102,12 +102,11 @@ class JneProxyApiController extends Controller
                     }
 
                     $price = null;
-                    if (preg_match('/Rp\s*([0-9\.,]+)/', $textAll, $m)) {
+                    if (preg_match('/(?:Rp\.?|IDR)\s*([0-9\.,]+)/i', $textAll, $m)) {
                         $price = floatval(str_replace(['.', ','], ['', '.'], $m[1]));
                     }
-
                     $etd = null;
-                    if (preg_match('/(ETD|Estimasi)[^0-9]*(\d+\s*[-–]\s*\d+|\d+)\s*hari/i', $textAll, $em)) {
+                    if (preg_match('/\b(\d+\s*[-–]\s*\d+|\d+)\s*(hari|day|days|d)\b/i', $textAll, $em)) {
                         $etd = $em[0];
                     }
 
