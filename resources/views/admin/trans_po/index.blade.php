@@ -161,6 +161,10 @@
                                 <a href="{{ route('admin.trans.po.index', ['keranjang_id' => $p->id_keranjang]) }}" class="text-primary text-decoration-underline">
                                     {{ optional($p->keranjang)->kode_keranjang ?? $p->id_keranjang }}
                                 </a>
+                                <span class="badge {{ (optional($p->keranjang)->status_kadaluarsa === 'expired') ? 'bg-secondary' : 'bg-success' }} ms-1">
+                                    {{ strtoupper(optional($p->keranjang)->status_kadaluarsa ?? '-') }}
+                                </span>
+                                <div class="text-muted small">Kadaluarsa: {{ optional(optional($p->keranjang)->expires_at)->format('Y-m-d H:i') ?? '-' }}</div>
                             @else
                                 -
                             @endif
