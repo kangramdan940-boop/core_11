@@ -137,6 +137,7 @@
                     <th>Kode PO</th>
                     <th>Nama / Telepon</th>
                     <th>Gramasi (Qty)</th>
+                    <th>Keranjang</th>
                     <th>Total Gram</th>
                     <th>Biaya Pengiriman</th>
                     <th>Total (IDR)</th>
@@ -155,6 +156,7 @@
                             <div class="text-muted small">{{ optional($p->customer)->phone_wa ?? '-' }}</div>
                         </td>
                         <td>{{ number_format((float)($p->total_gram ?? 0), 0, ',', '.') }} Gram x ({{ (int)($p->qty ?? 0) }} Keping)</td>
+                        <td>{{ !empty($p->id_keranjang) ? (optional($p->keranjang)->kode_keranjang ?? $p->id_keranjang) : '-' }}</td>
                         <td>{{ (int)($p->qty * $p->total_gram ) }} Gram</td>
                         <td>{!! ((float)($p->shipping_cost ?? 0)) > 0 ? number_format((float)($p->shipping_cost ?? 0), 2, ',', '.') : '<span class="badge bg-danger">Follow Up Ongkir</span>' !!}</td>
                         <td>{{ number_format((float)$p->total_amount, 2, ',', '.') }}</td>

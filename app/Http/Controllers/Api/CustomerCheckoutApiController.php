@@ -43,6 +43,8 @@ class CustomerCheckoutApiController extends Controller
                 'kode_keranjang' => $kodeKeranjang,
                 'ongkos_kirim' => (float) ($address->shipping_cost ?? 0),
                 'id_alamat_pengiriman' => (int) $address->id,
+                'expires_at' => now()->addMinutes(30),
+                'status_kadaluarsa' => 'active',
             ]);
 
             $shippingTotal = (float) ($keranjang->ongkos_kirim ?? 0);
@@ -104,6 +106,8 @@ class CustomerCheckoutApiController extends Controller
                         'kode_keranjang' => $keranjang->kode_keranjang,
                         'id_alamat_pengiriman' => $keranjang->id_alamat_pengiriman,
                         'ongkos_kirim' => (float) $keranjang->ongkos_kirim,
+                        'expires_at' => optional($keranjang->expires_at)->toIso8601String(),
+                        'status_kadaluarsa' => $keranjang->status_kadaluarsa,
                     ],
                     'pos' => $pos,
                     'grandTotal' => $grandTotal,

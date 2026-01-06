@@ -15,10 +15,13 @@ class TransKeranjang extends Model
         'kode_keranjang',
         'ongkos_kirim',
         'id_alamat_pengiriman',
+        'expires_at',
+        'status_kadaluarsa',
     ];
 
     protected $casts = [
         'ongkos_kirim' => 'decimal:2',
+        'expires_at' => 'datetime',
     ];
 
     public function pos()
