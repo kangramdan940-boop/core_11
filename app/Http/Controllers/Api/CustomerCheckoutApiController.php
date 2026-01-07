@@ -133,6 +133,7 @@ class CustomerCheckoutApiController extends Controller
 
         $pos = TransPo::where('id_keranjang', (int) $keranjang->id)
             ->where('master_customer_id', (int) $customer->id)
+            ->with('produk.gramasi')
             ->orderBy('id')
             ->get();
 
@@ -148,6 +149,7 @@ class CustomerCheckoutApiController extends Controller
                 'id' => (int) $po->id,
                 'kode_po' => (string) $po->kode_po,
                 'productId' => $produkId,
+                'gramasi' => (float) optional(optional($po->produk)->gramasi)->gramasi,
                 'qty' => $qty,
                 'totalGram' => $totalGram,
                 'totalAmount' => (float) $po->total_amount,
@@ -192,6 +194,7 @@ class CustomerCheckoutApiController extends Controller
         $data = $keranjangs->map(function (\App\Models\TransKeranjang $k) use ($customer) {
             $pos = \App\Models\TransPo::where('id_keranjang', (int) $k->id)
                 ->where('master_customer_id', (int) $customer->id)
+                ->with('produk.gramasi')
                 ->orderBy('id')
                 ->get();
 
@@ -203,6 +206,7 @@ class CustomerCheckoutApiController extends Controller
                     'id' => (int) $po->id,
                     'kode_po' => (string) $po->kode_po,
                     'productId' => $produkId,
+                    'gramasi' => (float) optional(optional($po->produk)->gramasi)->gramasi,
                     'qty' => $qty,
                     'totalGram' => $totalGram,
                     'totalAmount' => (float) $po->total_amount,
@@ -232,3 +236,4 @@ class CustomerCheckoutApiController extends Controller
     }
 
 }
+
