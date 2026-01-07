@@ -36,6 +36,7 @@
             [ 'type' => 'link', 'icon' => 'ri-team-line', 'text' => 'Management Login List', 'url' => route('admin.login-management.index'), 'routeIs' => 'admin.login-management.*' ],
             [ 'type' => 'link', 'icon' => 'ri-settings-3-line', 'text' => 'Setting', 'url' => route('admin.master.settings.index'), 'routeIs' => 'admin.master.settings.*' ],
             [ 'type' => 'link', 'icon' => 'ri-smartphone-line', 'text' => 'Management Mobile Apps', 'url' => route('admin.master.mobile-app-configs.index'), 'routeIs' => 'admin.master.mobile-app-configs.*' ],
+            [ 'type' => 'link', 'icon' => 'ri-bank-card-line', 'text' => 'Management Payment', 'url' => route('admin.master.payment-settings.index'), 'routeIs' => 'admin.master.payment-settings.*' ],
             [ 'type' => 'link', 'icon' => 'ri-user-settings-line', 'text' => 'Role', 'url' => '#!' ],
             [ 'type' => 'link', 'icon' => 'ri-notification-3-line', 'text' => 'Notifikasi', 'url' => '#!' ],
         ];

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->group(function () {
     Route::get('/public/app-configurations', [\App\Http\Controllers\Api\MobileInformationController::class, 'show'])->name('public.mobile-informations');
+Route::get('/public/payment-settings', [\App\Http\Controllers\Api\PaymentSettingApiController::class, 'show'])->name('public.payment-settings');
     Route::post('/auth/register', [\App\Http\Controllers\Api\CustomerAuthApiController::class, 'register'])->name('public.customer.register');
     Route::post('/auth/login', [\App\Http\Controllers\Api\CustomerAuthApiController::class, 'login'])->name('public.customer.login');
 });

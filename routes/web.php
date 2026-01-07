@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\LoginManagementController;
 use App\Http\Controllers\Admin\MasterAssetController;
+use App\Http\Controllers\Admin\MasterPaymentSettingController;
 
 use App\Http\Controllers\Front\CustomerAuthController;
 use App\Http\Controllers\Front\MitraAuthController;
@@ -306,6 +307,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->names('assets')
                 ->parameters([
                     'assets' => 'asset',
+                ])
+                ->middleware('admin');
+
+            Route::resource('payment-settings', MasterPaymentSettingController::class)
+                ->except(['show'])
+                ->names('payment-settings')
+                ->parameters([
+                    'payment-settings' => 'payment',
                 ])
                 ->middleware('admin');
 
