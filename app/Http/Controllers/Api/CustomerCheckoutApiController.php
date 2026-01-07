@@ -176,4 +176,59 @@ class CustomerCheckoutApiController extends Controller
         ]);
     }
 
+    public function carts(\Illuminate\Http\Request $request)
+    {
+        $userId = \Illuminate\Support\Facades\Auth::id();
+        $customer = \App\Models\MasterCustomer::where('sys_user_id', $userId)->firstOrFail();
+
+        $status = (string) $request->query('status', '');
+        $allowed = ['perlu_dibayar','dikemas','dikirim','dibatalkan','selesai'];
+        $query = \App\Models\TransKeranjang::where('created_by', (int) $userId)->orderByDesc('id');
+        if ($status !== '' && in_array($status, $allowed, true)) {
+            $query->where('status_order', $status);
+        }
+        $keranjangs = $query->get();
+
+        $data = $keranjangs->map(function (\App\Models\TransKeranjang $k) use ($customer) {
+            $pos = \App\Models\TransPo::where('id_keranjang', (int) $k->id)
+                ->where('master_customer_id', (int) $customer->id)
+                ->orderBy('id')
+                ->get();
+
+            $items = $pos->map(function (\App\Models\TransPo $po) {
+                $produkId = (int) ($po->id_master_produk_dan_layanan ?? 0);
+                $qty = (int) ($po->qty ?? 0);
+                $totalGram = (float) ($po->total_gram ?? 0.0);
+                return [
+                    'id' => (int) $po->id,
+                    'kode_po' => (string) $po->kode_po,
+                    'productId' => $produkId,
+                    'qty' => $qty,
+                    'totalGram' => $totalGram,
+                    'totalAmount' => (float) $po->total_amount,
+                    'shippingCost' => (float) $po->shipping_cost,
+                    'status' => (string) ($po->status ?? ''),
+                ];
+            })->all();
+
+            $grandTotal = array_sum(array_map(fn ($p) => (float) $p['totalAmount'], $items));
+
+            return [
+                'keranjang' => [
+                    'id' => (int) $k->id,
+                    'kode_keranjang' => (string) $k->kode_keranjang,
+                    'id_alamat_pengiriman' => (int) ($k->id_alamat_pengiriman ?? 0),
+                    'ongkos_kirim' => (float) ($k->ongkos_kirim ?? 0.0),
+                    'expires_at' => optional($k->expires_at)->toIso8601String(),
+                    'status_kadaluarsa' => (string) ($k->status_kadaluarsa ?? ''),
+                    'status_order' => (string) ($k->status_order ?? ''),
+                ],
+                'pos' => $items,
+                'grandTotal' => $grandTotal,
+            ];
+        })->values()->all();
+
+        return response()->json(['status' => true, 'data' => $data]);
+    }
+
 }
