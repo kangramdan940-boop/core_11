@@ -172,6 +172,9 @@ class CustomerCheckoutApiController extends Controller
                     'status_kadaluarsa' => (string) ($keranjang->status_kadaluarsa ?? ''),
                     'status_order' => (string) ($keranjang->status_order ?? ''),
                     'catatan' => 'Mohon lakukan pembayaran sebelum '.optional($keranjang->expires_at)->toIso8601String(),
+                    'bukti_transfer_url' => $keranjang->bukti_transfer_url ?: null,
+                    'nama_pengirim' => $keranjang->nama_pengirim ?: null,
+                    'nominal_transfer' => $keranjang->nominal_transfer !== null ? (float) $keranjang->nominal_transfer : 0.0,
                 ],
                 'pos' => $items,
                 'grandTotal' => $grandTotal,
@@ -228,6 +231,9 @@ class CustomerCheckoutApiController extends Controller
                     'expires_at' => optional($k->expires_at)->toIso8601String(),
                     'status_kadaluarsa' => (string) ($k->status_kadaluarsa ?? ''),
                     'status_order' => (string) ($k->status_order ?? ''),
+                    'bukti_transfer_url' => $k->bukti_transfer_url ?: null,
+                    'nama_pengirim' => $k->nama_pengirim ?: null,
+                    'nominal_transfer' => $k->nominal_transfer !== null ? (float) $k->nominal_transfer : 0.0,
                 ],
                 'pos' => $items,
                 'grandTotal' => $grandTotal,
@@ -235,6 +241,50 @@ class CustomerCheckoutApiController extends Controller
         })->values()->all();
 
         return response()->json(['status' => true, 'data' => $data]);
+    }
+
+    public function confirmPayment(Request $request, int $id)
+    {
+        $userId = Auth::id();
+        $keranjang = TransKeranjang::whereKey($id)->where('created_by', (int) $userId)->first();
+        if (!$keranjang) {
+            return response()->json(['status' => false, 'error' => 'Keranjang tidak ditemukan'], 404);
+        }
+
+        $data = $request->validate([
+            'amount' => ['required', 'numeric', 'min:0.01'],
+            'sender_name' => ['required', 'string', 'max:150'],
+            'proof' => ['required', 'image', 'max:4096'],
+        ]);
+
+        $url = $keranjang->bukti_transfer_url;
+        if ($request->file('proof')) {
+            $dir = public_path('uploads/payment_proofs');
+            \Illuminate\Support\Facades\File::ensureDirectoryExists($dir);
+            $file = $request->file('proof');
+            $filename = uniqid('proof_', true) . '.' . $file->getClientOriginalExtension();
+            $file->move($dir, $filename);
+            $url = 'uploads/payment_proofs/' . $filename;
+        }
+
+        $keranjang->update([
+            'nama_pengirim' => (string) $data['sender_name'],
+            'nominal_transfer' => (float) $data['amount'],
+            'bukti_transfer_url' => $url,
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'keranjang' => [
+                    'id' => (int) $keranjang->id,
+                    'kode_keranjang' => (string) $keranjang->kode_keranjang,
+                    'bukti_transfer_url' => $keranjang->bukti_transfer_url ?: null,
+                    'nama_pengirim' => $keranjang->nama_pengirim ?: null,
+                    'nominal_transfer' => $keranjang->nominal_transfer !== null ? (float) $keranjang->nominal_transfer : 0.0,
+                ],
+            ],
+        ]);
     }
 
 }

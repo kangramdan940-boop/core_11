@@ -20,11 +20,15 @@ class TransKeranjang extends Model
         'created_by',
         'catatan',
         'status_order',
+        'bukti_transfer_url',
+        'nama_pengirim',
+        'nominal_transfer',
     ];
 
     protected $casts = [
         'ongkos_kirim' => 'decimal:2',
         'expires_at' => 'datetime',
+        'nominal_transfer' => 'decimal:2',
     ];
 
     public function pos()

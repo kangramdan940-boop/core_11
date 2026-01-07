@@ -21,4 +21,5 @@ Route::prefix('v1')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\V
     Route::post('/customers/po/checkout', [\App\Http\Controllers\Api\CustomerCheckoutApiController::class, 'checkout'])->name('customer.po.checkout');
     Route::get('/customers/keranjang', [\App\Http\Controllers\Api\CustomerCheckoutApiController::class, 'carts'])->name('customer.keranjang.index');
     Route::get('/customers/keranjang/{id}', [\App\Http\Controllers\Api\CustomerCheckoutApiController::class, 'cart'])->whereNumber('id')->name('customer.keranjang.show');
+    Route::post('/customers/keranjang/{id}/confirm-payment', [\App\Http\Controllers\Api\CustomerCheckoutApiController::class, 'confirmPayment'])->whereNumber('id')->name('customer.keranjang.confirm-payment');
 });
