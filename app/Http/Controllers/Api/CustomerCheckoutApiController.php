@@ -171,6 +171,7 @@ class CustomerCheckoutApiController extends Controller
                     'expires_at' => optional($keranjang->expires_at)->toIso8601String(),
                     'status_kadaluarsa' => (string) ($keranjang->status_kadaluarsa ?? ''),
                     'status_order' => (string) ($keranjang->status_order ?? ''),
+                    'catatan' => (string) ($keranjang->catatan ?? ''),
                 ],
                 'pos' => $items,
                 'grandTotal' => $grandTotal,
@@ -222,6 +223,7 @@ class CustomerCheckoutApiController extends Controller
                     'id' => (int) $k->id,
                     'kode_keranjang' => (string) $k->kode_keranjang,
                     'id_alamat_pengiriman' => (int) ($k->id_alamat_pengiriman ?? 0),
+                    
                     'ongkos_kirim' => (float) ($k->ongkos_kirim ?? 0.0),
                     'expires_at' => optional($k->expires_at)->toIso8601String(),
                     'status_kadaluarsa' => (string) ($k->status_kadaluarsa ?? ''),
