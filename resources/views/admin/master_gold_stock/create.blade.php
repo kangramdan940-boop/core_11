@@ -15,4 +15,6 @@
             <a href="{{ route('admin.master.gold-stocks.index') }}" class="btn btn-secondary">Batal</a>
         </div>
     </form>
+
+    disni
 @endsection
