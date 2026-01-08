@@ -9,7 +9,9 @@ use App\Models\MasterGoldStock;
 use App\Models\MasterMitraBrankas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Carbon\Carbon;
 
 class MasterGoldStockController extends Controller
 {
@@ -77,7 +79,78 @@ class MasterGoldStockController extends Controller
             $data['struk_bayar_mitra_url'] = 'uploads/gold_stocks/struk_bayar_mitra/' . $filename;
         }
 
-        MasterGoldStock::create($data);
+        $stock = MasterGoldStock::create($data);
+
+        $docJson = (string) $request->input('parsed_document_json', '');
+        if ($docJson !== '') {
+            $doc = json_decode($docJson, true);
+            if (is_array($doc)) {
+                DB::transaction(function () use ($doc, $stock) {
+                    $issuer = $doc['issuer'] ?? [];
+                    $auth = $doc['authorized_receiver'] ?? [];
+                    $invoice = $doc['invoice'] ?? [];
+                    $customer = $doc['customer'] ?? [];
+                    $service = $doc['service'] ?? [];
+                    $totals = $doc['totals'] ?? [];
+                    $payment = $doc['payment'] ?? [];
+                    $ppnRate = $totals['ppn_rate'] ?? null;
+                    $ppnRateInt = is_string($ppnRate) ? (int) preg_replace('/[^0-9]/', '', $ppnRate) : (is_numeric($ppnRate) ? (int) $ppnRate : null);
+                    $dateIso = $invoice['date_iso'] ?? null;
+                    $date = $dateIso ? Carbon::parse($dateIso)->toDateString() : null;
+                    $documentId = DB::table('gold_stock_documents')->insertGetId([
+                        'master_gold_stock_id' => $stock->id,
+                        'issuer_company' => $issuer['company'] ?? null,
+                        'issuer_business_unit' => $issuer['business_unit'] ?? null,
+                        'issuer_address' => $issuer['address'] ?? null,
+                        'issuer_website' => $issuer['website'] ?? null,
+                        'issuer_phone' => $issuer['phone'] ?? null,
+                        'issuer_npwp' => $issuer['npwp'] ?? null,
+                        'issuer_npwp_holder' => $issuer['npwp_holder'] ?? null,
+                        'issuer_npwp_address' => $issuer['npwp_address'] ?? null,
+                        'authorized_receiver_name' => $auth['name'] ?? null,
+                        'authorized_receiver_nik' => $auth['nik'] ?? null,
+                        'invoice_number' => $invoice['number'] ?? null,
+                        'reference' => $invoice['reference'] ?? null,
+                        'date_raw' => $invoice['date_raw'] ?? null,
+                        'date' => $date,
+                        'transaction_type' => $invoice['transaction_type'] ?? null,
+                        'customer_name' => $customer['name'] ?? null,
+                        'membership_number' => ($customer['membership']['number'] ?? null),
+                        'membership_tier' => ($customer['membership']['tier'] ?? null),
+                        'service_name' => $service['name'] ?? null,
+                        'boutique_code_name' => ($service['boutique']['code_name'] ?? null),
+                        'boutique_location' => ($service['boutique']['location'] ?? null),
+                        'grand_total_idr' => (int) ($totals['grand_total_idr'] ?? 0),
+                        'dpp_idr' => (int) ($totals['dpp_idr'] ?? 0),
+                        'ppn_rate' => $ppnRateInt,
+                        'ppn_idr' => (int) ($totals['ppn_idr'] ?? 0),
+                        'currency' => (string) ($totals['currency'] ?? 'IDR'),
+                        'payment_method' => $payment['method'] ?? null,
+                        'virtual_account' => $payment['virtual_account'] ?? null,
+                        'payment_no' => $payment['payment_no'] ?? null,
+                        'created_by' => $payment['created_by'] ?? null,
+                        'print_by' => $payment['print_by'] ?? null,
+                        'raw_text' => $doc['raw_text'] ?? null,
+                        'notes' => isset($doc['notes']) ? json_encode($doc['notes'], JSON_UNESCAPED_UNICODE) : null,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                    foreach (($doc['items'] ?? []) as $it) {
+                        DB::table('gold_stock_document_items')->insert([
+                            'document_id' => $documentId,
+                            'no' => (int) ($it['no'] ?? 0),
+                            'description' => (string) ($it['description'] ?? ''),
+                            'quantity_pcs' => (int) ($it['quantity_pcs'] ?? 0),
+                            'weight_kg' => (float) ($it['weight_kg'] ?? 0),
+                            'unit_price_idr' => (int) ($it['unit_price_idr'] ?? 0),
+                            'total_idr' => (int) ($it['total_idr'] ?? 0),
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    }
+                });
+            }
+        }
 
         return redirect()->route('admin.master.gold-stocks.index')->with('success', 'Stok emas berhasil ditambahkan.');
     }

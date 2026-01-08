@@ -19,20 +19,45 @@
         <label class="form-label">Harga Hari Ini (IDR)</label>
         <div class="input-group">
             <span class="input-group-text"><i class="ri-cash-line"></i></span>
-            <input type="number" step="0.01" min="0" inputmode="numeric" name="harga_hariini" class="form-control @error('harga_hariini') is-invalid @enderror"
+            <input type="text" id="harga_hariini" name="harga_hariini" class="form-control @error('harga_hariini') is-invalid @enderror"
                    value="{{ old('harga_hariini', $item->harga_hariini ?? '') }}" required>
         </div>
         @error('harga_hariini')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (window.Cleave) {
+                    new Cleave('#harga_hariini', {
+                        numeral: true,
+                        numeralDecimalMark: ',',
+                        delimiter: '.',
+                        numeralThousandsGroupStyle: 'thousand',
+                        swapHiddenInput: true
+                    });
+                }
+            });
+        </script>
     </div>
 
     <div class="col-md-4">
         <label class="form-label">Harga Jasa (IDR)</label>
         <div class="input-group">
             <span class="input-group-text"><i class="ri-cash-line"></i></span>
-            <input type="number" step="0.01" min="0" inputmode="numeric" name="harga_jasa" class="form-control @error('harga_jasa') is-invalid @enderror"
+            <input type="text" inputmode="numeric" id="harga_jasa" name="harga_jasa" class="form-control @error('harga_jasa') is-invalid @enderror"
                    value="{{ old('harga_jasa', $item->harga_jasa ?? '') }}">
         </div>
         @error('harga_jasa')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (window.Cleave) {
+                    new Cleave('#harga_jasa', {
+                        numeral: true,
+                        numeralDecimalMark: ',',
+                        delimiter: '.',
+                        swapHiddenInput: true
+                    });
+                }
+            });
+        </script>
     </div>
     <div class="col-md-4">
         <label class="form-label">Urutan Jasa</label>

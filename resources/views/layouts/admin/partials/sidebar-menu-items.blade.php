@@ -28,6 +28,7 @@
             [ 'type' => 'link', 'icon' => 'ri-shield-user-line', 'text' => 'Admin', 'url' => route('admin.master.admins.index'), 'routeIs' => 'admin.master.admins.*' ],
             [ 'type' => 'link', 'icon' => 'ri-folder-line', 'text' => 'Master Asset', 'url' => route('admin.master.assets.index'), 'routeIs' => 'admin.master.assets.*' ],
             [ 'type' => 'link', 'icon' => 'ri-archive-stack-line', 'text' => 'Stok Emas Antam', 'url' => route('admin.master.gold-stocks.index'), 'routeIs' => 'admin.master.gold-stocks.*', 'roles' => ['agen', 'admin', 'super_admin'] ],
+            [ 'type' => 'link', 'icon' => 'ri-file-text-line', 'text' => 'Faktur Emas', 'url' => route('admin.master.faktur.index'), 'routeIs' => 'admin.master.faktur.*' ],
             [ 'type' => 'title', 'text' => 'Emas' ],
             [ 'type' => 'link', 'icon' => 'ri-bar-chart-2-line', 'text' => 'Harga Emas', 'url' => route('admin.master.gold-prices.index'), 'routeIs' => 'admin.master.gold-prices.*' ],
             [ 'type' => 'link', 'icon' => 'ri-hand-coin-line', 'text' => 'Komisi Mitra', 'url' => route('admin.master.mitra-komisi.index'), 'routeIs' => 'admin.master.mitra-komisi.*' ],

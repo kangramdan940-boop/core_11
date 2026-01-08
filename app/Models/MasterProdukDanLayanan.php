@@ -25,10 +25,10 @@ class MasterProdukDanLayanan extends Model
 
     protected $casts = [
         'id_gramasi'     => 'integer',
-        'harga_hariini'  => 'decimal:2',
+        'harga_hariini'  => 'decimal:0',
         'is_allow_ready' => 'boolean',
         'is_allow_po'    => 'boolean',
-        'harga_jasa'     => 'decimal:2',
+        'harga_jasa'     => 'decimal:0',
         'expired_dae'    => 'date',
     ];
 

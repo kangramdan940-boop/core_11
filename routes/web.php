@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\MasterAdminController;
 use App\Http\Controllers\Admin\MasterGoldPriceController;
 use App\Http\Controllers\Admin\MasterGoldReadyStockController;
 use App\Http\Controllers\Admin\MasterGoldStockController;
+use App\Http\Controllers\Admin\MasterFakturController;
 use App\Http\Controllers\Admin\MasterBrandEmasController;
 use App\Http\Controllers\Admin\MasterHomeSliderController;
 use App\Http\Controllers\Admin\MasterMitraKomisiController;
@@ -267,6 +268,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->names('gold-prices')
                 ->parameters([
                     'gold-prices' => 'price',
+                ]);
+
+            Route::resource('faktur', MasterFakturController::class)
+                ->only(['index','show','create','store','edit','update'])
+                ->names('faktur')
+                ->parameters([
+                    'faktur' => 'document',
                 ]);
 
             // Ready Stocks — param {stock}

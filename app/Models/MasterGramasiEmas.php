@@ -19,7 +19,7 @@ class MasterGramasiEmas extends Model
     ];
 
     protected $casts = [
-        'gramasi'   => 'decimal:3',
+        'gramasi'   => 'decimal:0',
         'is_active' => 'boolean',
     ];
 }
