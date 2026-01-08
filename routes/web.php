@@ -283,10 +283,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->parameters([
                     'gold-stocks' => 'stock',
                 ])
-                ->middleware('admin');
+                ->middleware('admin_or_agen');
             Route::post('gold-stocks/bulk-status', [MasterGoldStockController::class, 'bulkUpdatePengambilanStatus'])
                 ->name('gold-stocks.bulk-status')
-                ->middleware('admin');
+                ->middleware('admin_or_agen');
 
             // Mitra Komisi — param {komisi}
             Route::resource('mitra-komisi', MasterMitraKomisiController::class)
