@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\MasterAgenController;
 use App\Http\Controllers\Admin\MasterAdminController;
 use App\Http\Controllers\Admin\MasterGoldPriceController;
 use App\Http\Controllers\Admin\MasterGoldReadyStockController;
+use App\Http\Controllers\Admin\MasterGoldStockController;
 use App\Http\Controllers\Admin\MasterBrandEmasController;
 use App\Http\Controllers\Admin\MasterHomeSliderController;
 use App\Http\Controllers\Admin\MasterMitraKomisiController;
@@ -21,6 +22,7 @@ use App\Http\Controllers\Admin\TransCicilanController;
 use App\Http\Controllers\Admin\TransReadyController;
 use App\Http\Controllers\Admin\TransCicilanPaymentController;
 use App\Http\Controllers\Admin\MitraWithdrawalController;
+use App\Http\Controllers\Admin\TransFifoCalculatorController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\LoginManagementController;
@@ -275,6 +277,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
                     'ready-stocks' => 'stock',
                 ]);
 
+            Route::resource('gold-stocks', MasterGoldStockController::class)
+                ->except(['show'])
+                ->names('gold-stocks')
+                ->parameters([
+                    'gold-stocks' => 'stock',
+                ])
+                ->middleware('admin');
+            Route::post('gold-stocks/bulk-status', [MasterGoldStockController::class, 'bulkUpdatePengambilanStatus'])
+                ->name('gold-stocks.bulk-status')
+                ->middleware('admin');
+
             // Mitra Komisi — param {komisi}
             Route::resource('mitra-komisi', MasterMitraKomisiController::class)
                 ->except(['show'])
@@ -357,6 +370,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->name('payment-logs.approve');
             Route::post('/payment-logs/{log}/reject', [TransPaymentLogController::class, 'reject'])
                 ->name('payment-logs.reject');
+
+            Route::get('/fifo-calculator', [TransFifoCalculatorController::class, 'index'])
+                ->name('fifo-calculator');
 
             // PO
             Route::prefix('po')->name('po.')->group(function () {
