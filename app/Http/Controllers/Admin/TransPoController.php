@@ -19,9 +19,14 @@ class TransPoController extends Controller
         $status = (string) $request->query('status', '');
         $dateFilter = (string) $request->query('date', '');
         $createdDate = (string) $request->query('created_date', '');
+        $keranjangId = $request->query('keranjang_id');
 
-        $query = TransPo::with(['customer', 'agen'])
+        $query = TransPo::with(['customer', 'agen', 'keranjang'])
             ->orderByDesc('id');
+
+        if (!empty($keranjangId) && is_numeric($keranjangId)) {
+            $query->where('id_keranjang', (int) $keranjangId);
+        }
 
         if ($status !== '') {
             $allowed = ['pending_payment','paid','processing','ready_at_agen','shipped','completed','cancelled'];

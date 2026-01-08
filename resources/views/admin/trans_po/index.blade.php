@@ -137,6 +137,7 @@
                     <th>Kode PO</th>
                     <th>Nama / Telepon</th>
                     <th>Gramasi (Qty)</th>
+                    <th>Keranjang</th>
                     <th>Total Gram</th>
                     <th>Biaya Pengiriman</th>
                     <th>Total (IDR)</th>
@@ -154,8 +155,21 @@
                             {{ optional($p->customer)->full_name ?? '-' }}
                             <div class="text-muted small">{{ optional($p->customer)->phone_wa ?? '-' }}</div>
                         </td>
-                        <td>{{ number_format((float)($p->total_gram ?? 0), 0, ',', '.') }} Gram x ({{ (int)($p->qty ?? 0) }} Keping)</td>
-                        <td>{{ (int)($p->qty * $p->total_gram ) }} Gram</td>
+                        <td>{{ number_format((float)(optional(optional($p->produk)->gramasi)->gramasi ?? 0), 3, ',', '.') }} Gram x ({{ (int)($p->qty ?? 0) }} Keping)</td>
+                        <td>
+                            @if (!empty($p->id_keranjang))
+                                <a href="{{ route('admin.trans.po.index', ['keranjang_id' => $p->id_keranjang]) }}" class="text-primary text-decoration-underline">
+                                    {{ optional($p->keranjang)->kode_keranjang ?? $p->id_keranjang }}
+                                </a>
+                                <span class="badge {{ (optional($p->keranjang)->status_kadaluarsa === 'expired') ? 'bg-secondary' : 'bg-success' }} ms-1">
+                                    {{ strtoupper(optional($p->keranjang)->status_kadaluarsa ?? '-') }}
+                                </span>
+                                <div class="text-muted small">Kadaluarsa: {{ optional(optional($p->keranjang)->expires_at)->format('Y-m-d H:i') ?? '-' }}</div>
+                            @else
+                                -
+                            @endif
+                        </td>
+                        <td>{{ (int)($p->total_gram ) }} Gram</td>
                         <td>{!! ((float)($p->shipping_cost ?? 0)) > 0 ? number_format((float)($p->shipping_cost ?? 0), 2, ',', '.') : '<span class="badge bg-danger">Follow Up Ongkir</span>' !!}</td>
                         <td>{{ number_format((float)$p->total_amount, 2, ',', '.') }}</td>
                         <td>

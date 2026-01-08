@@ -15,6 +15,7 @@ class TransPo extends Model
         'kode_po',
         'master_customer_id',
         'master_agen_id',
+        'id_keranjang',
         'id_master_produk_dan_layanan',
         'harga_per_gram',
         'harga_per_keping',
@@ -83,6 +84,10 @@ class TransPo extends Model
     public function goldImage()
     {
         return $this->hasOne(TransPoImage::class, 'trans_po_id');
+    }
+    public function keranjang()
+    {
+        return $this->belongsTo(TransKeranjang::class, 'id_keranjang');
     }
 
     public static function calculateAmount(float $hargaPerGram, float $jasa): float
