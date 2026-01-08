@@ -321,9 +321,10 @@
                         var phoneDiv = customerCell.querySelector('div.small');
                         telepon = (phoneDiv?.textContent || '').trim();
                     }
-                    var gram = parseInt(((tds[4] && tds[4].textContent) || '').replace(/\D+/g, ''), 10) || 0;
-                    var statusText = ((tds[7] && tds[7].textContent) || '').trim().toLowerCase();
-                    var createdText = (tds[8] && tds[8].textContent || '').trim();
+                    var gramText = (tds[5] && tds[5].textContent) || '';
+                    var gram = parseInt(String(gramText).replace(/\D+/g, ''), 10) || 0;
+                    var statusText = ((tds[8] && tds[8].textContent) || '').trim().toLowerCase();
+                    var createdText = (tds[9] && tds[9].textContent || '').trim();
                     var status = 'cancelled';
                     if (statusText.indexOf('pending') >= 0) status = 'pending_payment';
                     else if (statusText.indexOf('paid') >= 0) status = 'paid';
@@ -416,7 +417,7 @@
                 var totalGramAll = 0;
                 nodes.forEach(function (r) {
                     var tds = r.querySelectorAll('td');
-                    var statusText = ((tds[7] && tds[7].textContent) || '').trim().toLowerCase();
+                    var statusText = ((tds[8] && tds[8].textContent) || '').trim().toLowerCase();
                     var status = 'cancelled';
                     if (statusText.indexOf('pending') >= 0) status = 'pending_payment';
                     else if (statusText.indexOf('paid') >= 0) status = 'paid';
@@ -425,7 +426,7 @@
                     else if (statusText.indexOf('shipp') >= 0) status = 'shipped';
                     else if (statusText.indexOf('complet') >= 0) status = 'completed';
                     if (statuses.indexOf(status) < 0) return;
-                    var createdText = ((tds[8] && tds[8].textContent) || '').trim();
+                    var createdText = ((tds[9] && tds[9].textContent) || '').trim();
                     var d = String(createdText).slice(0, 10);
                     if (startDate || endDate) {
                         if (startDate && endDate && !(d >= startDate && d <= endDate)) return;
@@ -437,16 +438,21 @@
                     var mKeping = cellText.match(/\(\s*(\d+)\s*Keping\s*\)/i);
                     var g = 0;
                     var k = 0;
-                    if (mGramasi) g = parseInt(String(mGramasi[1]).replace(/\D+/g, ''), 10) || 0;
+                    if (mGramasi) {
+                        var raw = String(mGramasi[1]).trim();
+                        var normalized = raw.replace(/\./g, '').replace(',', '.');
+                        g = parseFloat(normalized) || 0;
+                    }
                     if (mKeping) k = parseInt(String(mKeping[1]).replace(/\D+/g, ''), 10) || 0;
                     if (g <= 0 || k <= 0) return;
                     var totalGRow = g * k;
                     totalKepingAll += k;
                     totalGramAll += totalGRow;
-                    var prev = map.get(g) || { gramasi: g, totalKeping: 0, totalGram: 0 };
+                    var key = Number(g.toFixed(3));
+                    var prev = map.get(key) || { gramasi: key, totalKeping: 0, totalGram: 0 };
                     prev.totalKeping += k;
                     prev.totalGram += totalGRow;
-                    map.set(g, prev);
+                    map.set(key, prev);
                 });
                 var list = Array.from(map.values()).sort(function (a, b) { return a.gramasi - b.gramasi; });
                 return { list: list, totalKepingAll: totalKepingAll, totalGramAll: totalGramAll };
