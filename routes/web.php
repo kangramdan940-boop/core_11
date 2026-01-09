@@ -285,6 +285,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
                     'faktur' => 'document',
                 ]);
 
+            Route::post('faktur/{document}/komisi', [\App\Http\Controllers\Admin\MasterFakturKomisiController::class, 'store'])
+                ->name('faktur.komisi.store')
+                ->middleware('admin');
+
             // Ready Stocks — param {stock}
             Route::resource('ready-stocks', MasterGoldReadyStockController::class)
                 ->except(['show'])

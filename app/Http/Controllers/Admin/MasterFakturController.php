@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\MasterFaktur;
 use App\Models\MasterFakturItem;
+use App\Models\MasterMitraBrankas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -27,7 +28,15 @@ class MasterFakturController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        return view('admin.master_faktur.index', compact('documents', 'q'));
+        $mitras = MasterMitraBrankas::orderBy('nama_lengkap')->get(['id','nama_lengkap','kode_mitra']);
+        $mitras = MasterMitraBrankas::orderBy('nama_lengkap')->get(['id','nama_lengkap','kode_mitra']);
+        $docIds = collect($documents->items())->pluck('id')->all();
+        $komisiRows = DB::table('trans_pembayaran_komisi')
+            ->whereIn('id_faktur', $docIds)
+            ->get(['id','id_faktur','id_mitra','harga_yang_dibayar','total_komisi','tanggal','file_struk_pembayaran','file_struk_komisi']);
+        $komisiMap = [];
+        foreach ($komisiRows as $row) { $komisiMap[(int) $row->id_faktur] = $row; }
+        return view('admin.master_faktur.index', compact('documents', 'q', 'mitras', 'komisiMap'));
     }
 
     public function show(MasterFaktur $document)
