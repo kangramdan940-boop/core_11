@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\TransReadyController;
 use App\Http\Controllers\Admin\TransCicilanPaymentController;
 use App\Http\Controllers\Admin\MitraWithdrawalController;
 use App\Http\Controllers\Admin\TransFifoCalculatorController;
+use App\Http\Controllers\Admin\TransKeranjangController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\LoginManagementController;
@@ -433,6 +434,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
                     ->name('gold-image.store');
                 Route::put('{po}/gold-image/{image}', [\App\Http\Controllers\Admin\TransPoImageController::class, 'update'])
                     ->name('gold-image.update');
+            });
+
+            // Keranjang
+            Route::prefix('keranjang')->name('keranjang.')->group(function () {
+                Route::get('/', [TransKeranjangController::class, 'index'])->name('index');
+                Route::get('/{keranjang}', [TransKeranjangController::class, 'show'])->name('show');
+                Route::post('/{keranjang}/approve-payment', [TransKeranjangController::class, 'approvePayment'])->name('approve-payment');
             });
 
             // Cicilan
