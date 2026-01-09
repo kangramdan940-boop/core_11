@@ -85,8 +85,8 @@
                             <td>{{ $it->no }}</td>
                             <td>{{ $it->description }}</td>
                             <td>{{ $it->quantity_pcs }}</td>
-                            <td>{{ number_format((float)$it->weight_kg, 6, '.', '') }}</td>
-                            <td>{{ number_format((float)$it->weight_kg * 1000, 3, '.', '') }}</td>
+                            <td>{{ number_format((float)$it->weight_kg, 0, '.', '') }}</td>
+                            <td>{{ number_format((float)($it->gramasi ?? ($it->weight_kg * 1000)), 0, '.', '') }}</td>
                             <td>Rp {{ number_format((int)$it->unit_price_idr, 0, ',', '.') }}</td>
                             <td>Rp {{ number_format((int)$it->total_idr, 0, ',', '.') }}</td>
                         </tr>

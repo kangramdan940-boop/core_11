@@ -390,6 +390,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/fifo-calculator', [TransFifoCalculatorController::class, 'index'])
                 ->name('fifo-calculator');
 
+            Route::post('/faktur/distribute-bulk', [TransFifoCalculatorController::class, 'bulkDistribute'])
+                ->name('faktur.distribute-bulk');
+
             // PO
             Route::prefix('po')->name('po.')->group(function () {
                 Route::get('/', [TransPoController::class, 'index'])->name('index');

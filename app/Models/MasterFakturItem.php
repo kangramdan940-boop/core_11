@@ -18,6 +18,7 @@ class MasterFakturItem extends Model
         'description',
         'quantity_pcs',
         'weight_kg',
+        'gramasi',
         'unit_price_idr',
         'total_idr',
     ];
@@ -25,7 +26,8 @@ class MasterFakturItem extends Model
     protected $casts = [
         'no' => 'integer',
         'quantity_pcs' => 'integer',
-        'weight_kg' => 'decimal:6',
+        'weight_kg' => 'integer',
+        'gramasi' => 'integer',
         'unit_price_idr' => 'integer',
         'total_idr' => 'integer',
     ];

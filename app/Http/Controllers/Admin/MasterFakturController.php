@@ -73,6 +73,7 @@ class MasterFakturController extends Controller
                     'description' => (string) ($it['description'] ?? ''),
                     'quantity_pcs' => (int) ($it['quantity_pcs'] ?? 0),
                     'weight_kg' => (float) ($it['weight_kg'] ?? 0),
+                    'gramasi' => (float) ($it['gramasi'] ?? 0),
                     'unit_price_idr' => (int) ($it['unit_price_idr'] ?? 0),
                     'total_idr' => (int) ($it['total_idr'] ?? 0),
                 ]);
@@ -107,6 +108,7 @@ class MasterFakturController extends Controller
                     'description' => (string) ($it['description'] ?? ''),
                     'quantity_pcs' => (int) ($it['quantity_pcs'] ?? 0),
                     'weight_kg' => (float) ($it['weight_kg'] ?? 0),
+                    'gramasi' => (float) ($it['gramasi'] ?? 0),
                     'unit_price_idr' => (int) ($it['unit_price_idr'] ?? 0),
                     'total_idr' => (int) ($it['total_idr'] ?? 0),
                 ]);
@@ -159,6 +161,7 @@ class MasterFakturController extends Controller
             'items.*.description' => ['required','string','max:255'],
             'items.*.quantity_pcs' => ['required','integer','min:0'],
             'items.*.weight_kg' => ['required','numeric','min:0'],
+            'items.*.gramasi' => ['nullable','numeric','min:0'],
             'items.*.unit_price_idr' => ['required','integer','min:0'],
             'items.*.total_idr' => ['required','integer','min:0'],
         ]);

@@ -15,7 +15,7 @@
                     @php
                         $currentFakturs = (array) ($fakturs ?? [])
                     @endphp
-                    <select name="fakturs[]" class="form-select" multiple style="height:600px;">
+                    <select name="fakturs[]" class="form-select" multiple style="height:150px;">
                         @foreach(($fakturOptions ?? []) as $fk)
                             <option value="{{ $fk }}" @if(in_array($fk, $currentFakturs, true)) selected @endif>{{ $fk }}</option>
                         @endforeach
@@ -461,7 +461,7 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    var BULK_FAKTUR_STATUS_URL = "{{ route('admin.master.gold-stocks.bulk-status') }}";
+    var BULK_FAKTUR_STATUS_URL = "{{ route('admin.trans.faktur.distribute-bulk') }}";
     var PO_STATUS_URL_BASE = "{{ url('/admin/trans/po') }}";
     var distribAlertShown = false;
     var mismatchAlertShown = false;

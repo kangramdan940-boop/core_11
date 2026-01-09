@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Models\TransPo;
 use App\Models\MasterGoldPrice;
 use App\Models\MasterGoldStock;
+use App\Models\MasterFaktur;
+use App\Models\MasterFakturItem;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -56,21 +58,54 @@ class TransFifoCalculatorController extends Controller
 
         $viewMode = (string) $request->query('viewMode', '');
         $fakturs = array_values(array_filter(array_map('strval', (array) $request->query('fakturs', []))));
-        $fakturOptions = MasterGoldStock::query()
-            ->whereNotNull('no_faktur')
-            ->where('status_pengambilan', 'belum_diambil')
+        $fakturOptions = MasterFaktur::query()
             ->orderByDesc('id')
             ->limit(200)
-            ->pluck('no_faktur')
+            ->pluck('invoice_number')
+            ->filter(function ($v) { return (string) $v !== ''; })
             ->unique()
             ->values()
             ->all();
 
         $pricesByFaktur = [];
         if (!empty($fakturs)) {
-            $stocks = MasterGoldStock::query()
-                ->whereIn('no_faktur', $fakturs)
-                ->get(['id','no_faktur','created_at','gramasi','qty','berat']);
+            $docs = MasterFaktur::query()
+                ->whereIn('invoice_number', $fakturs)
+                ->get(['id','invoice_number','date','created_at']);
+
+            $itemsAll = MasterFakturItem::query()
+                ->whereIn('document_id', $docs->pluck('id')->all())
+                ->get(['document_id','quantity_pcs','gramasi','weight_kg']);
+
+            $docMap = [];
+            foreach ($docs as $d) {
+                $docMap[(int) $d->id] = [
+                    'no_faktur' => (string) ($d->invoice_number ?? ''),
+                    'date' => $d->date ?? $d->created_at,
+                ];
+            }
+
+            $stocks = [];
+            foreach ($itemsAll as $it) {
+                $docId = (int) ($it->document_id ?? 0);
+                if (!isset($docMap[$docId])) { continue; }
+                $inv = (string) ($docMap[$docId]['no_faktur'] ?? '');
+                if ($inv === '') { continue; }
+                $g = (float) ($it->gramasi ?? 0.0);
+                $q = (int) ($it->quantity_pcs ?? 0);
+                $wkg = (float) ($it->weight_kg ?? 0.0);
+                if (($g <= 0.0 || $q <= 0) && ($wkg > 0.0 && $q > 0)) {
+                    $g = ($wkg * 1000.0) / max(1, $q);
+                }
+                $stocks[] = (object) [
+                    'id' => $docId,
+                    'no_faktur' => $inv,
+                    'created_at' => $docMap[$docId]['date'] ?? null,
+                    'gramasi' => (float) number_format($g, 3, '.', ''),
+                    'qty' => $q,
+                    'berat' => (float) number_format($g * $q, 3, '.', ''),
+                ];
+            }
 
             $stocksByFaktur = [];
             $group = [];
@@ -169,14 +204,15 @@ class TransFifoCalculatorController extends Controller
             ];
 
             $pricesExpanded = [];
-            foreach ($pricesByFaktur as $fk => $p) {
-                $g = $p['gramasi'] ?? null;
-                $qty = (int) ($p['qty'] ?? 0);
-                if ($g === null || $g <= 0 || $qty <= 0) { continue; }
+            foreach ($stocks as $s) {
+                $g = (float) ($s->gramasi ?? 0.0);
+                $qty = (int) ($s->qty ?? 0);
+                $fk = (string) ($s->no_faktur ?? '');
+                if ($g <= 0 || $qty <= 0 || $fk === '') { continue; }
                 for ($i = 0; $i < $qty; $i++) {
                     $pricesExpanded[] = [
-                        'no_faktur' => (string) $fk,
-                        'gramasi' => (float) $g,
+                        'no_faktur' => $fk,
+                        'gramasi' => (float) number_format($g, 3, '.', ''),
                     ];
                 }
             }
@@ -368,5 +404,19 @@ class TransFifoCalculatorController extends Controller
             $sum += (float) ($it['total_gram'] ?? 0.0);
         }
         return (float) number_format($sum, 3, '.', '');
+    }
+
+    public function bulkDistribute(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $payload = $request->json()->all() ?: $request->all();
+        $numbers = array_values(array_filter(array_map('strval', (array)($payload['invoice_numbers'] ?? $payload['no_fakturs'] ?? [])), function ($v) { return trim((string)$v) !== ''; }));
+        if (empty($numbers)) {
+            return response()->json(['updated' => 0, 'invoice_numbers' => []]);
+        }
+        $updated = MasterFaktur::query()
+            ->whereIn('invoice_number', $numbers)
+            ->update(['is_distributed' => true]);
+
+        return response()->json(['updated' => (int)$updated, 'invoice_numbers' => $numbers]);
     }
 }
