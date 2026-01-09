@@ -39,7 +39,11 @@ final class LoginManagementController extends Controller
             ];
         });
 
-        return view('admin.login_management.index', ['items' => $items]);
+        $listUsers = User::query()
+            ->orderByDesc('id')
+            ->get(['id','name','email','role','is_active','last_login_at']);
+
+        return view('admin.login_management.index', ['items' => $items, 'users' => $listUsers]);
     }
 
     public function kick(Request $request): RedirectResponse

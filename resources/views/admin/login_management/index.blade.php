@@ -1,41 +1,69 @@
 @extends('layouts.admin.master')
 
-@section('title', 'Login Management - Admin')
-@section('sub-title', 'Login')
-@section('breadcrumbExtra', 'Login Management')
+@section('title', 'Management Login - CRUD')
 @section('pagetitle', 'Dashboard')
-@section('subLink', route('admin.login-management.index'))
+@section('sub-title', 'System')
+@section('breadcrumbExtra', 'Management Login')
+
+@section('css')
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.6.0/css/select.dataTables.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/jquery-datatables-checkboxes@1.3.0/css/dataTables.checkboxes.min.css" rel="stylesheet">
+@endsection
 
 @section('content')
     <div class="card shadow-sm">
-        <table id="loginTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
+        <table id="usersTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
             <thead class="bg-light bg-opacity-30">
                 <tr>
-                    <th width="10px;">User ID</th>
+                    <th width="10px;">ID</th>
                     <th>Nama</th>
                     <th>Email</th>
-                    <th>Jumlah Sesi</th>
-                    <th>Aktivitas Terakhir</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Terakhir Login</th>
                     <th style="width: 75px;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse ($items as $it)
+                @forelse ($users as $u)
                     <tr>
-                        <td>{{ $it['user_id'] }}</td>
-                        <td>{{ $it['name'] }}</td>
-                        <td>{{ $it['email'] }}</td>
-                        <td>{{ $it['session_count'] }}</td>
-                        <td>{{ $it['last_activity'] ? \Illuminate\Support\Carbon::createFromTimestamp($it['last_activity'])->format('d/m/Y H:i') : '-' }}</td>
+                        <td class="text-center">{{ $u->id }}</td>
+                        <td>{{ $u->name }}</td>
+                        <td>{{ $u->email }}</td>
+                        <td>{{ $u->role }}</td>
+                        <td class="text-center">
+                            @if($u->is_active)
+                                <span class="badge rounded-pill bg-success">Aktif</span>
+                            @else
+                                <span class="badge rounded-pill bg-secondary">Nonaktif</span>
+                            @endif
+                        </td>
+                        <td>{{ $u->last_login_at ? $u->last_login_at->format('Y-m-d H:i') : '-' }}</td>
                         <td>
                             <div class="hstack gap-2 fs-15">
-                                <button type="button" class="btn icon-btn-sm btn-light-danger kick-item" data-label="{{ $it['name'] ?: ('#' . $it['user_id']) }}">
-                                    <i class="ri-logout-box-line"></i>
-                                </button>
+                                <a href="{{ route('admin.management-login.edit', $u) }}" class="btn icon-btn-sm btn-light-primary">
+                                    <i class="ri-pencil-line"></i>
+                                </a>
+                                <a href="#" class="btn icon-btn-sm btn-light-danger kick-item"
+                                   data-action="{{ route('admin.login-management.kick', ['user' => $u->id]) }}"
+                                   data-id="{{ $u->id }}"
+                                   data-label="{{ $u->name ? $u->name : ($u->email ? $u->email : ('#' . $u->id)) }}">
+                                    <i class="ri-logout-box-r-line"></i>
+                                </a>
+                                <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
+                                   data-action="{{ route('admin.management-login.destroy', $u) }}"
+                                   data-label="{{ $u->name ? $u->name : ($u->email ? $u->email : ('#' . $u->id)) }}">
+                                    <i class="ri-delete-bin-line"></i>
+                                </a>
                             </div>
-                            <form action="{{ route('admin.login-management.kick') }}" method="POST" class="d-none kick-form">
+                            <form action="{{ route('admin.management-login.destroy', $u) }}" method="POST" class="d-none delete-form">
                                 @csrf
-                                <input type="hidden" name="user_id" value="{{ $it['user_id'] }}">
+                                @method('DELETE')
+                            </form>
+                            <form action="{{ route('admin.login-management.kick', ['user' => $u->id]) }}" method="POST" class="d-none kick-form">
+                                @csrf
+                                <input type="hidden" name="user_id" value="{{ $u->id }}">
                             </form>
                         </td>
                     </tr>
@@ -44,12 +72,6 @@
             </tbody>
         </table>
     </div>
-@endsection
-
-@section('css')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.6.0/css/select.dataTables.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/jquery-datatables-checkboxes@1.3.0/css/dataTables.checkboxes.min.css" rel="stylesheet">
 @endsection
 
 @section('js')
@@ -61,20 +83,17 @@
     <script src="https://cdn.datatables.net/select/1.6.0/js/dataTables.select.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const tableEl = document.getElementById('loginTable');
-            if (!tableEl) return;
-            if (typeof $ === 'undefined' || !$.fn.DataTable) return;
+            const tableEl = document.getElementById('usersTable');
+            if (!tableEl || typeof $ === 'undefined' || !$.fn.DataTable) return;
 
-            const dt = $('#loginTable').DataTable({
+            const dt = $('#usersTable').DataTable({
                 responsive: false,
                 scrollX: true,
                 lengthMenu: [10, 20, 50],
                 pageLength: 10,
                 ordering: true,
                 order: [[0, 'desc']],
-                columnDefs: [
-                    { targets: -1, orderable: false }
-                ],
+                columnDefs: [{ targets: -1, orderable: false }],
                 dom:
                     '<"card-header dt-head d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3"' +
                     '<"head-label">' +
@@ -86,9 +105,10 @@
                         '<"col-12 col-md-7 d-flex justify-content-md-end justify-content-center"p>' +
                     '>>',
                 language: {
+                    emptyTable: 'Belum ada data user.',
                     sLengthMenu: '_MENU_ ',
                     search: '',
-                    searchPlaceholder: 'Search Files',
+                    searchPlaceholder: 'Search',
                     paginate: {
                         next: '<i class="ri-arrow-right-s-line"></i>',
                         previous: '<i class="ri-arrow-left-s-line"></i>'
@@ -96,47 +116,65 @@
                 }
             });
 
-            const savedPage = sessionStorage.getItem('loginTablePage');
+            const savedPage = sessionStorage.getItem('usersTablePage');
             if (savedPage !== null) {
                 const p = parseInt(savedPage, 10);
-                if (!Number.isNaN(p)) {
-                    dt.page(p).draw('page');
-                }
-                sessionStorage.removeItem('loginTablePage');
+                if (!Number.isNaN(p)) dt.page(p).draw('page');
+                sessionStorage.removeItem('usersTablePage');
             }
 
             const headLabel = document.querySelector('div.head-label');
-            if (headLabel) {
-                headLabel.innerHTML = '<h5 class="card-title text-nowrap mb-0">Daftar Login</h5>';
-            }
+            if (headLabel) headLabel.innerHTML = '<h5 class="card-title text-nowrap mb-0">Daftar User</h5>';
 
             const addBtnContainer = document.querySelector('.add_button');
             if (addBtnContainer) {
-                addBtnContainer.innerHTML = '';
+                addBtnContainer.innerHTML = '<a class="btn btn-primary" href="{{ route('admin.management-login.create') }}"><i class="bi bi-plus-lg fs-6 me-1"></i> Tambah Data</a>';
             }
 
-            document.querySelectorAll('.kick-item').forEach(function(btn) {
+            document.querySelectorAll('.delete-item').forEach(function(btn) {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
-                    const label = this.getAttribute('data-label') || 'Pengguna';
+                    const label = this.getAttribute('data-label') || 'User';
                     const row = this.closest('tr');
-                    const form = row ? row.querySelector('form.kick-form') : null;
+                    const form = row ? row.querySelector('form.delete-form') : null;
                     if (!form) return;
                     Swal.fire({
-                        title: 'Konfirmasi Logout Paksa',
-                        html: `Anda yakin logout paksa <b>${label}</b> dari semua device?`,
+                        title: 'Konfirmasi Hapus',
+                        html: `Anda yakin hapus User <b>${label}</b> ini?`,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#d33',
                         cancelButtonColor: '#6c757d',
-                        confirmButtonText: 'Ya, Logout',
+                        confirmButtonText: 'Ya, Hapus',
                         cancelButtonText: 'Batal'
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            try {
-                                const info = dt.page.info();
-                                sessionStorage.setItem('loginTablePage', String(info.page));
-                            } catch (_) {}
+                            try { const info = dt.page.info(); sessionStorage.setItem('usersTablePage', String(info.page)); } catch (_) {}
+                            form.submit();
+                        }
+                    });
+                });
+            });
+
+            document.querySelectorAll('.kick-item').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const label = this.getAttribute('data-label') || 'User';
+                    const row = this.closest('tr');
+                    const form = row ? row.querySelector('form.kick-form') : null;
+                    if (!form) return;
+                    Swal.fire({
+                        title: 'Konfirmasi Kick',
+                        html: `Keluar paksa semua sesi untuk <b>${label}</b>?`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Ya, Kick',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            try { const info = dt.page.info(); sessionStorage.setItem('usersTablePage', String(info.page)); } catch (_) {}
                             form.submit();
                         }
                     });
@@ -149,6 +187,10 @@
                 if (filterInput) filterInput.classList.remove('form-control-sm');
                 if (lengthSelect) lengthSelect.classList.remove('form-select-sm');
             }, 300);
+
+            @if(session('status'))
+                Swal.fire({ icon: 'success', title: 'Berhasil', text: @json(session('status')), confirmButtonText: 'OK' });
+            @endif
         });
     </script>
 @endsection

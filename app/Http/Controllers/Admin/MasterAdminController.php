@@ -74,4 +74,43 @@ class MasterAdminController extends Controller
             ->route('admin.master.admins.index')
             ->with('success', 'Admin berhasil dihapus.');
     }
+
+    public function setPasswordForm(MasterAdmin $admin)
+    {
+        $user = \App\Models\User::where('master_admin_id', $admin->id)->first();
+        return view('admin.master_admin.set_password', compact('admin', 'user'));
+    }
+
+    public function setPasswordUpdate(Request $request, MasterAdmin $admin)
+    {
+        $data = $request->validate([
+            'password' => ['required', 'string', 'min:8'],
+            'password_confirmation' => ['required', 'same:password'],
+        ]);
+
+        $user = \App\Models\User::where('master_admin_id', $admin->id)->first();
+
+        if (! $user) {
+            if (! empty($admin->email)) {
+                $user = \App\Models\User::create([
+                    'name' => $admin->name ?? ('Admin ' . $admin->id),
+                    'email' => $admin->email,
+                    'password' => $data['password'],
+                    'role' => $admin->is_super_admin ? 'super_admin' : 'admin',
+                    'is_active' => $admin->is_active,
+                ]);
+                $user->master_admin_id = $admin->id;
+                $user->save();
+            } else {
+                return back()->withErrors(['email' => 'Email admin belum diisi, tidak dapat membuat akun sys_user.']);
+            }
+        } else {
+            $user->password = $data['password'];
+            $user->role = $admin->is_super_admin ? 'super_admin' : 'admin';
+            $user->is_active = $admin->is_active;
+            $user->save();
+        }
+
+        return redirect()->route('admin.master.admins.index')->with('success', 'Password sys_user admin diperbarui.');
+    }
 }

@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\TransFifoCalculatorController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\LoginManagementController;
+use App\Http\Controllers\Admin\SysUserManagementController;
 use App\Http\Controllers\Admin\MasterAssetController;
 use App\Http\Controllers\Admin\MasterPaymentSettingController;
 
@@ -220,6 +221,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->parameters([
                     'admins' => 'admin',
                 ])
+                ->middleware('admin');
+
+            Route::get('admins/{admin}/set-password', [MasterAdminController::class, 'setPasswordForm'])
+                ->name('admins.set-password')
+                ->middleware('admin');
+            Route::post('admins/{admin}/set-password', [MasterAdminController::class, 'setPasswordUpdate'])
+                ->name('admins.set-password.update')
                 ->middleware('admin');
 
             // Brand Emas — param {brand}
@@ -454,7 +462,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/login-management', [LoginManagementController::class, 'index'])
             ->name('login-management.index')
             ->middleware('admin');
-        Route::post('/login-management/kick', [LoginManagementController::class, 'kick'])
+        Route::post('/login-management/{user}/kick', [LoginManagementController::class, 'kick'])
             ->name('login-management.kick')
             ->middleware('admin');
 
@@ -472,6 +480,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('roles', RoleController::class)
             ->names('roles')
             ->middleware('admin');
+
+        Route::resource('management-login', SysUserManagementController::class)
+            ->names('management-login');
     });
 });
 
