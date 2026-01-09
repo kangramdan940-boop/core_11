@@ -18,9 +18,31 @@
         </form>
     @endif
 </div>
+ 
 
 <div class="card mb-3">
     <div class="card-body">
+        <h6 class="mb-2">Update Status Keranjang</h6>
+        @php($options = ['pending_payment' => 'Pending Payment','paid' => 'Paid','processing' => 'Diproses','ready_at_agen' => 'Siap di Agen','shipped' => 'Dikirim','completed' => 'Selesai','cancelled' => 'Dibatalkan'])
+        @php($syn = ['perlu_dibayar'=>'pending_payment','terbayar'=>'paid','diproses'=>'processing','dikirim'=>'shipped','selesai'=>'completed','dibatalkan'=>'cancelled'])
+        @php($cur = strtolower((string)($keranjang->status_order ?? '')))
+        @php($curNorm = $syn[$cur] ?? $cur)
+        <form action="{{ route('admin.trans.keranjang.update', $keranjang) }}" method="POST" class="row g-2 align-items-end mb-3" data-index-url="{{ route('admin.trans.keranjang.index') }}">
+            @csrf
+            @method('PUT')
+            <div class="col-12 col-md-6">
+                <label class="form-label mb-1">Status Keranjang</label>
+                <select name="status_order" class="form-select">
+                    @foreach($options as $val => $label)
+                        <option value="{{ $val }}" @selected($curNorm === $val)>{{ $label }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-12 col-md-3">
+                <input type="hidden" name="force" value="1">
+                <button type="button" class="btn btn-primary js-confirm-update">Update Status</button>
+            </div>
+        </form>
         <h6 class="mb-3">Info Keranjang</h6>
         <div class="row g-3">
             <div class="col-12 col-md-4"><strong>Kode:</strong> {{ $keranjang->kode_keranjang }}</div>
@@ -74,4 +96,50 @@
         </table>
     </div>
 </div>
+@endsection
+
+@section('js')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.js-confirm-update').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var form = this.closest('form');
+                if (!form) return;
+                var select = form.querySelector('select[name="status_order"]');
+                var val = select ? select.value : '';
+                var labelMap = {
+                    pending_payment: 'Pending Payment',
+                    paid: 'Paid',
+                    processing: 'Diproses',
+                    ready_at_agen: 'Siap di Agen',
+                    shipped: 'Dikirim',
+                    completed: 'Selesai',
+                    cancelled: 'Dibatalkan'
+                };
+                var label = labelMap[val] || val;
+                Swal.fire({
+                    title: 'Konfirmasi Perubahan Status',
+                    text: 'Ubah status keranjang menjadi ' + label + ' dan samakan semua PO terkait?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, lanjutkan',
+                    cancelButtonText: 'Batal',
+                    customClass: { confirmButton: 'btn btn-primary', cancelButton: 'btn btn-outline-secondary' }
+                }).then(function (res) {
+                    if (res.isConfirmed) {
+                        var fd = new FormData(form);
+                        fetch(form.action, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' }, body: fd })
+                            .then(function (r) { if (!r.ok) throw new Error('Failed'); return r.json(); })
+                            .then(function () {
+                                var base = form.getAttribute('data-index-url') || '{{ route('admin.trans.keranjang.index') }}';
+                                var target = base + '?status=' + encodeURIComponent(val);
+                                Swal.fire('Berhasil', 'Status diperbarui.', 'success').then(function(){ window.location.href = target; });
+                            })
+                            .catch(function () { Swal.fire('Gagal', 'Terjadi kesalahan saat memperbarui status.', 'error'); });
+                    }
+                });
+            });
+        });
+    });
+</script>
 @endsection
