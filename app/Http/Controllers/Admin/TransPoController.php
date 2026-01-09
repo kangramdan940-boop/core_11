@@ -180,7 +180,14 @@ class TransPoController extends Controller
 
         $po->save();
 
-        return redirect()->route('admin.trans.po.show', $po)->with('success', 'Status PO diperbarui.');
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Status PO diperbarui.',
+                'data' => [ 'status' => $po->status ]
+            ]);
+        }
+        return redirect()->back()->with('success', 'Status PO diperbarui.');
     }
 
     public function updateShipping(Request $request, TransPo $po)
@@ -402,7 +409,18 @@ class TransPoController extends Controller
             'description' => 'Update data resi oleh ' . ($request->user()?->name ?? 'SYSTEM') . ' pada ' . now(),
         ]);
 
-        return redirect()->route('admin.trans.po.show', $po)->with('success', 'Data resi diperbarui.');
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Data resi diperbarui.',
+                'data' => [
+                    'resi_number' => $po->resi_number,
+                    'resi_courier' => $po->resi_courier,
+                    'resi_service' => $po->resi_service,
+                ],
+            ]);
+        }
+        return redirect()->back()->with('success', 'Data resi diperbarui.');
     }
 
     public function deliveryNotePdf(TransPo $po)

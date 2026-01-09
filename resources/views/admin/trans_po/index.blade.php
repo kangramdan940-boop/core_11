@@ -136,12 +136,15 @@
                     <th width="10px;">No</th>
                     <th>Kode PO</th>
                     <th>Nama / Telepon</th>
-                    <th>Gramasi (Qty)</th>
-                    <th>Keranjang</th>
-                    <th>Total Gram</th>
+                    @if(request('status') !== 'shipped')
+                        <th>Gramasi (Qty)</th>
+                        <th>Keranjang</th>
+                        <th>Total Gram</th>
+                    @endif
                     <th>Biaya Pengiriman</th>
                     <th>Total (IDR)</th>
                     <th>Status</th>
+                    <th>Update Resi</th>
                     <th>Dibuat</th>
                     <th style="width: 75px;">Aksi</th>
                 </tr>
@@ -155,7 +158,10 @@
                             {{ optional($p->customer)->full_name ?? '-' }}
                             <div class="text-muted small">{{ optional($p->customer)->phone_wa ?? '-' }}</div>
                         </td>
-                        <td>{{ number_format((float)(optional(optional($p->produk)->gramasi)->gramasi ?? 0), 3, ',', '.') }} Gram x ({{ (int)($p->qty ?? 0) }} Keping)</td>
+                        @if(request('status') !== 'shipped')
+                            <td>{{ number_format((float)(optional(optional($p->produk)->gramasi)->gramasi ?? 0), 3, ',', '.') }} Gram x ({{ (int)($p->qty ?? 0) }} Keping)</td>
+                        @endif
+                        @if(request('status') !== 'shipped')
                         <td>
                             @if (!empty($p->id_keranjang))
                                 <a href="{{ route('admin.trans.po.index', ['keranjang_id' => $p->id_keranjang]) }}" class="text-primary text-decoration-underline">
@@ -169,7 +175,10 @@
                                 -
                             @endif
                         </td>
-                        <td>{{ (int)($p->total_gram ) }} Gram</td>
+                        @endif
+                        @if(request('status') !== 'shipped')
+                            <td>{{ (int)($p->total_gram ) }} Gram</td>
+                        @endif
                         <td>{!! ((float)($p->shipping_cost ?? 0)) > 0 ? number_format((float)($p->shipping_cost ?? 0), 2, ',', '.') : '<span class="badge bg-danger">Follow Up Ongkir</span>' !!}</td>
                         <td>{{ number_format((float)$p->total_amount, 2, ',', '.') }}</td>
                         <td>
@@ -188,6 +197,37 @@
                                 <span class="badge bg-success">COMPLETED</span>
                             @else
                                 <span class="badge bg-secondary">CANCELLED</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($p->status === 'shipped')
+                                @if(!empty($p->resi_number))
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <a href="javascript:void(0)" class="resi-value-link" data-resi-number="{{ $p->resi_number }}">{{ $p->resi_number }}</a>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary toggle-resi-edit">Ubah</button>
+                                        <button type="button" class="btn btn-sm btn-success set-delivered-btn" data-action="{{ route('admin.trans.po.update-status', $p) }}" data-status="completed">Set as Delivered</button>
+                                    </div>
+                                    <div class="resi-edit d-none mt-2">
+                                        <form action="{{ route('admin.trans.po.resi.update', $p) }}" method="POST" class="d-flex gap-2 align-items-center resi-update-form">
+                                            @csrf
+                                            <input type="text" name="resi_number" class="form-control form-control-sm" placeholder="Nomor Resi" value="{{ $p->resi_number }}">
+                                            <input type="hidden" name="resi_courier" value="JNE">
+                                            <input type="hidden" name="resi_service" value="{{ $p->resi_service }}">
+                                            <button type="submit" class="btn btn-sm btn-warning">Simpan</button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary cancel-resi-edit">Batal</button>
+                                        </form>
+                                    </div>
+                                @else
+                                    <form action="{{ route('admin.trans.po.resi.update', $p) }}" method="POST" class="d-flex gap-2 align-items-center resi-update-form">
+                                        @csrf
+                                        <input type="text" name="resi_number" class="form-control form-control-sm" placeholder="Nomor Resi" value="">
+                                        <input type="hidden" name="resi_courier" value="JNE">
+                                        <input type="hidden" name="resi_service" value="{{ $p->resi_service }}">
+                                        <button type="submit" class="btn btn-sm btn-warning">Update</button>
+                                    </form>
+                                @endif
+                            @else
+                                <span class="text-muted">-</span>
                             @endif
                         </td>
                         <td>{{ optional($p->created_at)->format('Y-m-d H:i') }}</td>
@@ -324,7 +364,7 @@
                     var gramText = (tds[5] && tds[5].textContent) || '';
                     var gram = parseInt(String(gramText).replace(/\D+/g, ''), 10) || 0;
                     var statusText = ((tds[8] && tds[8].textContent) || '').trim().toLowerCase();
-                    var createdText = (tds[9] && tds[9].textContent || '').trim();
+                    var createdText = (tds[10] && tds[10].textContent || '').trim();
                     var status = 'cancelled';
                     if (statusText.indexOf('pending') >= 0) status = 'pending_payment';
                     else if (statusText.indexOf('paid') >= 0) status = 'paid';
@@ -426,7 +466,7 @@
                     else if (statusText.indexOf('shipp') >= 0) status = 'shipped';
                     else if (statusText.indexOf('complet') >= 0) status = 'completed';
                     if (statuses.indexOf(status) < 0) return;
-                    var createdText = ((tds[9] && tds[9].textContent) || '').trim();
+                    var createdText = ((tds[10] && tds[10].textContent) || '').trim();
                     var d = String(createdText).slice(0, 10);
                     if (startDate || endDate) {
                         if (startDate && endDate && !(d >= startDate && d <= endDate)) return;
@@ -479,6 +519,143 @@
                     var endDate = (document.getElementById('kepingDateEnd')?.value || '').trim();
                     var agg = aggregateByGramasi(statuses, startDate, endDate);
                     renderKepingAggregates(agg);
+                });
+            }
+
+            document.querySelectorAll('form.resi-update-form').forEach(function (form) {
+                form.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+                    var url = form.getAttribute('action');
+                    var token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                    var fd = new FormData(form);
+                    try {
+                        var res = await fetch(url, { method: 'POST', headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': token }, body: fd });
+                        if (res.ok) {
+                            var json = await res.json();
+                            if (typeof Swal !== 'undefined') Swal.fire({ icon: 'success', title: 'Berhasil', text: (json.message || 'Data resi diperbarui.'), timer: 1200, showConfirmButton: false });
+                            var cell = form.closest('td');
+                            var link = cell ? cell.querySelector('.resi-value-link') : null;
+                            var editDiv = cell ? cell.querySelector('.resi-edit') : null;
+                            if (json.data && json.data.resi_number && link) {
+                                link.textContent = json.data.resi_number;
+                                link.setAttribute('data-resi-number', json.data.resi_number);
+                            }
+                            if (editDiv) editDiv.classList.add('d-none');
+                            reloadPoTableSection();
+                        } else {
+                            var msg = 'Gagal memperbarui resi.';
+                            try { var err = await res.json(); msg = err.message || (err.errors ? Object.values(err.errors)[0][0] : msg); } catch (_) {}
+                            if (typeof Swal !== 'undefined') Swal.fire({ icon: 'error', title: 'Error', text: msg });
+                        }
+                    } catch (e2) {
+                        if (typeof Swal !== 'undefined') Swal.fire({ icon: 'error', title: 'Error', text: (e2 && e2.message) || 'Terjadi kesalahan jaringan.' });
+                    }
+                });
+            });
+
+            document.querySelectorAll('.resi-value-link').forEach(function (a) {
+                a.addEventListener('click', function () {
+                    var val = a.getAttribute('data-resi-number') || '';
+                    var done = false;
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(val).then(function(){ done = true; if (typeof Swal !== 'undefined') Swal.fire({ icon:'success', title:'Disalin', text:'Nomor resi disalin ke clipboard', timer: 1000, showConfirmButton:false }); });
+                    }
+                    if (!done) {
+                        var tmp = document.createElement('input'); tmp.value = val; document.body.appendChild(tmp); tmp.select(); try { document.execCommand('copy'); } catch(_){}; document.body.removeChild(tmp);
+                        if (typeof Swal !== 'undefined') Swal.fire({ icon:'success', title:'Disalin', text:'Nomor resi disalin ke clipboard', timer: 1000, showConfirmButton:false });
+                    }
+                });
+            });
+            document.querySelectorAll('.toggle-resi-edit').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var td = btn.closest('td');
+                    var div = td ? td.querySelector('.resi-edit') : null;
+                    if (div) div.classList.toggle('d-none');
+                });
+            });
+            document.querySelectorAll('.cancel-resi-edit').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var div = btn.closest('.resi-edit');
+                    if (div) div.classList.add('d-none');
+                });
+            });
+
+            var isShippedView = {{ request('status') === 'shipped' ? 'true' : 'false' }};
+            document.querySelectorAll('.set-delivered-btn').forEach(function (btn) {
+                btn.addEventListener('click', async function () {
+                    var url = btn.getAttribute('data-action');
+                    var token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                    var fd = new FormData();
+                    fd.append('status', btn.getAttribute('data-status') || 'completed');
+                    try {
+                        var res = await fetch(url, { method: 'POST', headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': token }, body: fd });
+                        if (res.ok) {
+                            var json = await res.json();
+                            if (typeof Swal !== 'undefined') Swal.fire({ icon: 'success', title: 'Berhasil', text: (json.message || 'Status diubah ke COMPLETED'), timer: 1200, showConfirmButton: false });
+                            reloadPoTableSection();
+                        } else {
+                            var msg = 'Gagal mengubah status.';
+                            try { var err = await res.json(); msg = err.message || (err.errors ? Object.values(err.errors)[0][0] : msg); } catch (_) {}
+                            if (typeof Swal !== 'undefined') Swal.fire({ icon: 'error', title: 'Error', text: msg });
+                        }
+                    } catch (e3) {
+                        if (typeof Swal !== 'undefined') Swal.fire({ icon: 'error', title: 'Error', text: (e3 && e3.message) || 'Terjadi kesalahan jaringan.' });
+                    }
+                });
+            });
+            function reloadPoTableSection(){
+                try{
+                    var dt = $('#poTable').DataTable();
+                    var info = dt.page.info();
+                    fetch(window.location.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                        .then(function(r){ return r.text(); })
+                        .then(function(html){
+                            var doc = new DOMParser().parseFromString(html, 'text/html');
+                            var tb = doc.querySelector('#poTable tbody');
+                            if (!tb) return;
+                            dt.clear();
+                            Array.from(tb.querySelectorAll('tr')).forEach(function(tr){ dt.row.add(tr); });
+                            dt.page(info.page).draw(false);
+                            attachResiHandlers();
+                        });
+                } catch(_) {}
+            }
+            function attachResiHandlers(){
+                document.querySelectorAll('form.resi-update-form').forEach(function(form){
+                    if (form.dataset.bound === '1') return; form.dataset.bound = '1';
+                    form.addEventListener('submit', async function(e){
+                        e.preventDefault();
+                        var url = form.getAttribute('action');
+                        var token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                        var fd = new FormData(form);
+                        try {
+                            var res = await fetch(url, { method: 'POST', headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': token }, body: fd });
+                            if (res.ok) {
+                                var json = await res.json();
+                                if (typeof Swal !== 'undefined') Swal.fire({ icon: 'success', title: 'Berhasil', text: (json.message || 'Data resi diperbarui.'), timer: 1200, showConfirmButton: false });
+                                reloadPoTableSection();
+                            } else {
+                                var msg = 'Gagal memperbarui resi.';
+                                try { var err = await res.json(); msg = err.message || (err.errors ? Object.values(err.errors)[0][0] : msg); } catch(_){}
+                                if (typeof Swal !== 'undefined') Swal.fire({ icon: 'error', title: 'Error', text: msg });
+                            }
+                        } catch(e2) {
+                            if (typeof Swal !== 'undefined') Swal.fire({ icon: 'error', title: 'Error', text: (e2 && e2.message) || 'Terjadi kesalahan jaringan.' });
+                        }
+                    });
+                });
+                document.querySelectorAll('.set-delivered-btn').forEach(function(btn){
+                    if (btn.dataset.bound === '1') return; btn.dataset.bound = '1';
+                    btn.addEventListener('click', async function(){
+                        var url = btn.getAttribute('data-action');
+                        var token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                        var fd = new FormData(); fd.append('status', btn.getAttribute('data-status') || 'completed');
+                        try {
+                            var res = await fetch(url, { method: 'POST', headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': token }, body: fd });
+                            if (res.ok) { var json = await res.json(); if (typeof Swal !== 'undefined') Swal.fire({ icon: 'success', title: 'Berhasil', text: (json.message || 'Status diubah ke COMPLETED'), timer: 1200, showConfirmButton: false }); reloadPoTableSection(); }
+                            else { var msg = 'Gagal mengubah status.'; try { var err = await res.json(); msg = err.message || (err.errors ? Object.values(err.errors)[0][0] : msg); } catch(_){} if (typeof Swal !== 'undefined') Swal.fire({ icon: 'error', title: 'Error', text: msg }); }
+                        } catch(e3) { if (typeof Swal !== 'undefined') Swal.fire({ icon: 'error', title: 'Error', text: (e3 && e3.message) || 'Terjadi kesalahan jaringan.' }); }
+                    });
                 });
             }
         });
