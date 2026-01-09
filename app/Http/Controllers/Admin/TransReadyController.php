@@ -61,4 +61,26 @@ class TransReadyController extends Controller
 
         return redirect()->route('admin.trans.ready.show', $ready)->with('success', 'Status transaksi ready diperbarui.');
     }
+
+    public function cancelPendingAll(Request $request)
+    {
+        $count = 0;
+        TransReady::where('status', 'pending_payment')->chunkById(100, function ($items) use (&$count) {
+            foreach ($items as $ready) {
+                $ready->status = 'cancelled';
+                if (!$ready->cancelled_at) {
+                    $ready->cancelled_at = now();
+                }
+                $ready->save();
+                TransReadyLog::create([
+                    'trans_ready_id' => $ready->id,
+                    'status'         => $ready->status,
+                    'description'    => 'Transaksi dibatalkan massal pada ' . now(),
+                ]);
+                $count++;
+            }
+        });
+
+        return redirect()->route('admin.trans.ready.index')->with('success', 'Berhasil membatalkan ' . $count . ' transaksi pending.');
+    }
 }

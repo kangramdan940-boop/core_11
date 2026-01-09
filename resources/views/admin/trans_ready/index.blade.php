@@ -7,6 +7,12 @@
 @section('subLink', route('admin.trans.ready.index'))
 
 @section('content')
+    <div class="d-flex justify-content-end mb-2">
+        <form id="cancelPendingReadyForm" action="{{ route('admin.trans.ready.cancel-pending-all') }}" method="POST" class="d-inline">
+            @csrf
+            <button type="button" id="cancelPendingReadyBtn" class="btn btn-outline-danger btn-sm">Batalkan Semua Pending</button>
+        </form>
+    </div>
     <div class="card shadow-sm">
         <table id="readyTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
             <thead class="bg-light bg-opacity-30">
@@ -116,6 +122,30 @@
                 if (filterInput) filterInput.classList.remove('form-control-sm');
                 if (lengthSelect) lengthSelect.classList.remove('form-select-sm');
             }, 300);
+
+            const cancelBtn = document.getElementById('cancelPendingReadyBtn');
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', function () {
+                    const confirmAction = function () {
+                        const form = document.getElementById('cancelPendingReadyForm');
+                        if (form) form.submit();
+                    };
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            title: 'Konfirmasi',
+                            text: 'Yakin ingin membatalkan semua transaksi PENDING?',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Ya, batalkan',
+                            cancelButtonText: 'Batal'
+                        }).then(function (result) {
+                            if (result.isConfirmed) confirmAction();
+                        });
+                    } else {
+                        if (confirm('Yakin ingin membatalkan semua transaksi PENDING?')) confirmAction();
+                    }
+                });
+            }
         });
     </script>
 @endsection
