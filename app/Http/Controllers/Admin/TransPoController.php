@@ -391,13 +391,34 @@ class TransPoController extends Controller
     public function updateResi(Request $request, TransPo $po)
     {
         $data = $request->validate([
-            'resi_number' => ['required', 'string', 'max:100'],
+            'resi_number' => ['required', 'string', 'max:100', Rule::unique('trans_po', 'resi_number')->ignore($po->id)],
             'resi_courier' => ['required', 'string', 'max:100'],
             'resi_service' => ['nullable', 'string', 'max:100'],
+        ], [
+            'resi_number.unique' => 'Nomor resi sudah digunakan. Gunakan nomor lain.',
         ]);
 
+        $resiNormalized = preg_replace('/\s+/', '', (string) $data['resi_number']);
+
+        $exists = TransPo::where('resi_number', $resiNormalized)
+            ->where('id', '<>', (int) $po->id)
+            ->exists();
+
+        if ($exists) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Nomor resi sudah terdaftar pada transaksi lain.',
+                    'errors' => ['resi_number' => ['Nomor resi sudah digunakan.']],
+                ], 422);
+            }
+            return redirect()->back()->withErrors([
+                'resi_number' => 'Nomor resi sudah digunakan.',
+            ]);
+        }
+
         $po->fill([
-            'resi_number' => $data['resi_number'],
+            'resi_number' => $resiNormalized,
             'resi_courier' => $data['resi_courier'],
             'resi_service' => $data['resi_service'] ?? null,
         ]);
