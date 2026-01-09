@@ -417,6 +417,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 Route::post('/{po}/resi', [TransPoController::class, 'updateResi'])->name('resi.update');
 
                 Route::post('/cancel-pending', [TransPoController::class, 'cancelPendingAll'])->name('cancel-pending-all');
+                Route::post('/paid-to-processing-older-2days', [TransPoController::class, 'paidToProcessingOlderTwoDays'])->name('paid-to-processing-older-2days');
 
                 // Mitra Komisi assign/remove (nama & URL sama seperti awal)
                 Route::post('{po}/mitra-komisi', [\App\Http\Controllers\Admin\TransPoMitraKomisiController::class, 'store'])

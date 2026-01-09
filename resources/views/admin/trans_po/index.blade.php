@@ -16,6 +16,10 @@
             @csrf
             <button type="button" id="cancelPendingBtn" class="btn btn-outline-danger btn-sm">Batalkan Semua Pending</button>
         </form>
+        <form id="paidToProcessingForm" action="{{ route('admin.trans.po.paid-to-processing-older-2days') }}" method="POST">
+            @csrf
+            <button type="button" id="paidToProcessingBtn" class="btn btn-outline-warning btn-sm">Set PAID > PROCESS (≥ 2 hari)</button>
+        </form>
     </div>
     <div class="modal fade" id="manualOrderModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -397,6 +401,25 @@
                     }).then(function (result) {
                         if (result.isConfirmed) {
                             const form = document.getElementById('cancelPendingForm');
+                            if (form) form.submit();
+                        }
+                    });
+                });
+            }
+
+            const paidBtn = document.getElementById('paidToProcessingBtn');
+            if (paidBtn && typeof Swal !== 'undefined') {
+                paidBtn.addEventListener('click', function () {
+                    Swal.fire({
+                        title: 'Konfirmasi',
+                        text: 'Ubah semua PAID menjadi PROCESSING yang sudah > 2 hari?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, ubah',
+                        cancelButtonText: 'Batal'
+                    }).then(function (result) {
+                        if (result.isConfirmed) {
+                            const form = document.getElementById('paidToProcessingForm');
                             if (form) form.submit();
                         }
                     });

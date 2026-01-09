@@ -521,4 +521,24 @@ class TransPoController extends Controller
 
         return redirect()->route('admin.trans.po.show', $po)->with('success', 'PO emas berhasil dibuat untuk customer ini.');
     }
+
+    public function paidToProcessingOlderTwoDays(Request $request)
+    {
+        $threshold = now()->subDays(2);
+        $count = 0;
+        TransPo::where('status', 'paid')
+            ->whereNotNull('paid_at')
+            ->where('paid_at', '<=', $threshold)
+            ->chunkById(100, function ($items) use (&$count) {
+                foreach ($items as $po) {
+                    $po->status = 'processing';
+                    if (!$po->processed_at) {
+                        $po->processed_at = now();
+                    }
+                    $po->save();
+                    $count++;
+                }
+            });
+        return redirect()->route('admin.trans.po.index')->with('success', 'Berhasil mengubah ' . $count . ' transaksi PAID (>2 hari) menjadi PROCESSING.');
+    }
 }
