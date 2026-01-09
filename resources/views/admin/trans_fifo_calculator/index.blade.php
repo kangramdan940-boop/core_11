@@ -157,13 +157,20 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($pricesByFaktur as $fk => $p)
-                                        <tr>
-                                            <td>{{ $fk }}</td>
-                                            <td class="text-end">@if(isset($p['gramasi'])) {{ number_format((float)$p['gramasi'], 3) }} @else - @endif</td>
-                                            <td class="text-end">@if(isset($p['qty'])) {{ (int)$p['qty'] }} @else - @endif</td>
-                                            <td class="text-end">@if(isset($p['berat'])) {{ number_format((float)$p['berat'], 3) }} @else - @endif</td>
-                                        </tr>
+                                    @foreach(($stocksByFaktur ?? []) as $fk => $rows)
+                                        @foreach($rows as $r)
+                                            @php
+                                                $g = isset($r['gramasi']) ? (float)$r['gramasi'] : 0;
+                                                $q = isset($r['qty']) ? (int)$r['qty'] : 0;
+                                                $berat = $g * $q;
+                                            @endphp
+                                            <tr>
+                                                <td>{{ $fk }}</td>
+                                                <td class="text-end">{{ number_format($g ) }}</td>
+                                                <td class="text-end">{{ $q }}</td>
+                                                <td class="text-end">{{ number_format($berat) }}</td>
+                                            </tr>
+                                        @endforeach
                                     @endforeach
                                 </tbody>
                             </table>
