@@ -9,6 +9,7 @@
 @section('content')
     @section('content')
     <div class="d-flex justify-content-end mb-2">
+        <button type="button" class="manual-order-btn btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#manualOrderModal" title="Buat Order Manual by User Customer"><i class="bi bi-cart-plus"></i> Buat Order Manual by User Customer</button>
         <button type="button" class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#fifoCalculatorModal">Kalkulator FIFO</button>
         <button type="button" class="btn btn-outline-secondary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#kepingCalculatorModal">Kalkulator Keping</button>
         <form id="cancelPendingForm" action="{{ route('admin.trans.po.cancel-pending-all') }}" method="POST">
@@ -16,6 +17,49 @@
             <button type="button" id="cancelPendingBtn" class="btn btn-outline-danger btn-sm">Batalkan Semua Pending</button>
         </form>
     </div>
+    <div class="modal fade" id="manualOrderModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Buat Order Manual</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="manualOrderForm" action="{{ route('admin.trans.po.manual.store') }}" method="POST" class="row g-3">
+                        @csrf
+                        <div class="col-12">
+                            <label class="form-label mb-1">Pilih Customer</label>
+                            <select id="manualCustomerSelect" name="master_customer_id" class="form-select" required data-placeholder="Cari customer...">
+                                <option value="" selected disabled>Pilih customer...</option>
+                                @php($customers = \App\Models\MasterCustomer::orderBy('full_name')->get(['id','full_name','phone_wa']))
+                                @foreach($customers as $c)
+                                    <option value="{{ $c->id }}">{{ $c->full_name }} ({{ $c->phone_wa }})</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label mb-1">Produk PO Tersedia</label>
+                            <select name="id_master_produk_dan_layanan" class="form-select" required>
+                                @php($produkPo = \App\Models\MasterProdukDanLayanan::with('gramasi')->where('is_allow_po', true)->where('status','active')->orderBy('urutan')->get())
+                                @foreach($produkPo as $p)
+                                    <option value="{{ $p->id }}">{{ optional($p->gramasi)->nama }} - {{ number_format((float) optional($p->gramasi)->gramasi, 3, ',', '.') }} gr</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label mb-1">Qty</label>
+                            <input type="number" name="qty" class="form-control" min="1" step="1" value="1" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" form="manualOrderForm" class="btn btn-primary btn-sm">Buat Order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="fifoCalculatorModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
@@ -271,6 +315,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/select/1.6.0/css/select.dataTables.min.css">
     <link href="https://cdn.jsdelivr.net/npm/jquery-datatables-checkboxes@1.3.0/css/dataTables.checkboxes.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
 @endsection
 
 @section('js')
@@ -281,6 +326,7 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery-datatables-checkboxes@1.3.0/js/dataTables.checkboxes.min.js"></script>
     <script src="https://cdn.datatables.net/select/1.6.0/js/dataTables.select.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const tableEl = document.getElementById('poTable');
@@ -316,6 +362,16 @@
                 }
             });
 
+            const manualSelectEl = document.getElementById('manualCustomerSelect');
+            if (manualSelectEl && typeof Choices !== 'undefined') {
+                new Choices(manualSelectEl, {
+                    searchEnabled: true,
+                    placeholder: true,
+                    placeholderValue: 'Cari customer...',
+                    shouldSort: false,
+                    searchFloor: 1
+                });
+            }
             const headLabel = document.querySelector('div.head-label');
             if (headLabel) {
                 headLabel.innerHTML = '<div class="d-flex w-100 align-items-center justify-content-between"><h5 class="card-title text-nowrap mb-0">Daftar PO Emas</h5></div>';

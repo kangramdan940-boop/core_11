@@ -461,4 +461,64 @@ class TransPoController extends Controller
         $filename = 'Resi-' . ($po->kode_po ?? ('PO-' . $po->id)) . '.pdf';
         return $pdf->download($filename);
     }
+
+    public function manualStore(\Illuminate\Http\Request $request)
+    {
+        $data = $request->validate([
+            'master_customer_id' => ['required','integer','exists:master_customer,id'],
+            'id_master_produk_dan_layanan' => ['required','integer','exists:master_produk_dan_layanan,id'],
+            'qty' => ['required','integer','min:1'],
+        ]);
+
+        $customerId = (int) $data['master_customer_id'];
+        $produk = \App\Models\MasterProdukDanLayanan::with('gramasi')->findOrFail((int) $data['id_master_produk_dan_layanan']);
+        $jasa = (float) ($produk->harga_jasa ?? 0.0);
+        $hargaPerGram = (float) ($produk->harga_hariini ?? 0.0);
+        $mgramasi = $produk->gramasi;
+        $totalGram = (float) ($mgramasi?->gramasi ?? 0.0);
+
+        $pendingCount = \App\Models\TransPo::where('master_customer_id', $customerId)
+            ->where('status','pending_payment')
+            ->count();
+        if ($pendingCount >= 2) {
+            return redirect()->route('admin.trans.po.index')
+                ->withErrors(['limit' => 'Customer masih memiliki '. $pendingCount .' PO pending_payment. Selesaikan atau batalkan terlebih dahulu.']);
+        }
+
+        $attrs = \App\Models\TransPo::buildAttributesForDraft(
+            customerId: $customerId,
+            agenId: null,
+            produkId: (int) $produk->id,
+            hargaPerGram: $hargaPerGram,
+            jasa: $jasa,
+            qty: (float) $data['qty'],
+            totalGram: $totalGram,
+            deliveryType: 'ship',
+            shipping: [],
+            catatan: null,
+            shippingCost: 0.0
+        );
+
+        $attempts = 0;
+        while ($attempts < 5 && \App\Models\TransPo::where('total_amount', $attrs['total_amount'])->exists()) {
+            $attrs = \App\Models\TransPo::buildAttributesForDraft(
+                customerId: $customerId,
+                agenId: null,
+                produkId: (int) $produk->id,
+                hargaPerGram: $hargaPerGram,
+                jasa: $jasa,
+                qty: (float) $data['qty'],
+                totalGram: $totalGram,
+                deliveryType: 'ship',
+                shipping: [],
+                catatan: null,
+                shippingCost: 0.0
+            );
+            $attempts++;
+        }
+
+        $po = \App\Models\TransPo::create($attrs);
+
+        return redirect()->route('admin.trans.po.show', $po)->with('success', 'PO emas berhasil dibuat untuk customer ini.');
+    }
 }
