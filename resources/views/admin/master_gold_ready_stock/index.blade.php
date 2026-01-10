@@ -7,6 +7,7 @@
 @section('subLink', route('admin.master.ready-stocks.index'))
 
 @section('content')
+
     <div class="card shadow-sm">
         <table id="goldReadyTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
             <thead class="bg-light bg-opacity-30">
@@ -18,6 +19,7 @@
                     <th>Agen</th>
                     <th>Kondisi</th>
                     <th>Status</th>
+                    <th>Aktif</th>
                     <th>Harga Jual Fix</th>
                     <th style="width: 75px;">Aksi</th>
                 </tr>
@@ -38,6 +40,13 @@
                                 <span class="badge rounded-pill bg-warning text-dark">Reserved</span>
                             @else
                                 <span class="badge rounded-pill bg-secondary">Sold</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($s->is_active)
+                                <span class="badge bg-success">Aktif</span>
+                            @else
+                                <span class="badge bg-secondary">Nonaktif</span>
                             @endif
                         </td>
                         <td>{{ $s->harga_jual_fix !== null ? number_format((float)$s->harga_jual_fix, 2, ',', '.') : '-' }}</td>
@@ -131,7 +140,49 @@
 
             const addBtnContainer = document.querySelector('.add_button');
             if (addBtnContainer) {
-                addBtnContainer.innerHTML = '<a class="btn btn-primary" href="{{ route('admin.master.ready-stocks.create') }}"><i class="bi bi-plus-lg fs-6 me-1"></i> Tambah Data</a>';
+                addBtnContainer.innerHTML = '<div class="d-flex flex-wrap gap-2">'+
+                    '<a class="btn btn-primary" href="{{ route('admin.master.ready-stocks.create') }}"><i class="bi bi-plus-lg fs-6 me-1"></i> Tambah Data</a>'+
+                    '<form id="bulkDeactivateForm" action="{{ route('admin.master.ready-stocks.deactivate-all') }}" method="POST" class="d-inline">'+
+                        '<input type="hidden" name="_token" value="{{ csrf_token() }}">'+
+                    '</form>'+
+                    '<form id="bulkActivateForm" action="{{ route('admin.master.ready-stocks.activate-all') }}" method="POST" class="d-inline">'+
+                        '<input type="hidden" name="_token" value="{{ csrf_token() }}">'+
+                    '</form>'+
+                    '<button type="button" id="bulkDeactivateBtn" class="btn btn-outline-danger"><i class="ri-close-circle-line me-1"></i> Nonaktifkan Semua</button>'+
+                    '<button type="button" id="bulkActivateBtn" class="btn btn-outline-success"><i class="ri-check-line me-1"></i> Aktifkan Semua</button>'+
+                '</div>';
+                document.getElementById('bulkDeactivateBtn')?.addEventListener('click', function () {
+                    Swal.fire({
+                        title: 'Nonaktifkan Semua?',
+                        html: 'Semua stok akan diubah menjadi <b>nonaktif</b>.',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Ya, Nonaktifkan',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            document.getElementById('bulkDeactivateForm')?.submit();
+                        }
+                    });
+                });
+                document.getElementById('bulkActivateBtn')?.addEventListener('click', function () {
+                    Swal.fire({
+                        title: 'Aktifkan Semua?',
+                        html: 'Semua stok akan diubah menjadi <b>aktif</b>.',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#198754',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Ya, Aktifkan',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            document.getElementById('bulkActivateForm')?.submit();
+                        }
+                    });
+                });
             }
 
             document.querySelectorAll('.delete-item').forEach(function(btn) {

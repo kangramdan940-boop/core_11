@@ -304,6 +304,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
                     'ready-stocks' => 'stock',
                 ]);
 
+            Route::post('ready-stocks/deactivate-all', [MasterGoldReadyStockController::class, 'deactivateAll'])
+                ->name('ready-stocks.deactivate-all');
+            Route::post('ready-stocks/activate-all', [MasterGoldReadyStockController::class, 'activateAll'])
+                ->name('ready-stocks.activate-all');
+            Route::post('ready-stocks/activate-all', [MasterGoldReadyStockController::class, 'activateAll'])
+                ->name('ready-stocks.activate-all');
+
+            Route::post('ready-stocks/deactivate-all', [MasterGoldReadyStockController::class, 'deactivateAll'])
+                ->name('ready-stocks.deactivate-all');
+
             Route::resource('gold-stocks', MasterGoldStockController::class)
                 ->except(['show'])
                 ->names('gold-stocks')
