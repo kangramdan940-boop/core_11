@@ -228,5 +228,29 @@ class CustomerPoController extends Controller
             return back()->withErrors(['email' => 'Gagal mengirim email: ' . $e->getMessage()]);
         }
     }
+
+    public function confirmReceived(Request $request, TransPo $po)
+    {
+        $customer = MasterCustomer::where('sys_user_id', Auth::id())->firstOrFail();
+        if ((int) $po->master_customer_id !== (int) $customer->id) {
+            abort(404);
+        }
+        if ($po->status !== 'shipped') {
+            return back()->withErrors(['status' => 'Konfirmasi hanya untuk transaksi berstatus shipped.']);
+        }
+        $po->status = 'completed';
+        $po->completed_at = now();
+        $po->save();
+
+        TransPoLog::create([
+            'trans_po_id' => $po->id,
+            'status'      => $po->status,
+            'description' => 'Customer mengonfirmasi barang sudah diterima pada ' . now(),
+        ]);
+
+        return redirect()
+            ->route('customer.po.show', encrypt($po->id))
+            ->with('success', 'Terima kasih, barang dinyatakan sudah diterima. Transaksi ditandai selesai.');
+    }
 }
 

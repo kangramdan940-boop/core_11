@@ -128,6 +128,20 @@
             </div>
         </div>
     </div>
+@if ($po->status === 'shipped')
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <h6 class="mb-3">Konfirmasi Barang Sudah Diterima</h6>
+            <p class="text-muted small mb-3">Jika paket telah Anda terima, tekan tombol berikut agar transaksi ditandai selesai.</p>
+            <form id="confirmReceivedForm" action="{{ route('customer.po.confirm-received', $po) }}" method="POST" class="d-inline">
+                @csrf
+                <button id="confirmReceivedBtn" type="submit" class="btn btn-primary">Konfirmasi Barang Sudah Diterima</button>
+            </form>
+            <div id="confirmOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.3);z-index:1050;"></div>
+            <script>(function(){var form=document.getElementById('confirmReceivedForm');var btn=document.getElementById('confirmReceivedBtn');var ov=document.getElementById('confirmOverlay');var busy=false;function lock(){if(busy)return;busy=true;if(btn){btn.disabled=true;btn.setAttribute('aria-disabled','true');btn.innerHTML='Mengonfirmasi... <span class=\"spinner-border spinner-border-sm ms-1\" role=\"status\" aria-hidden=\"true\"></span>'; }if(ov){ov.style.display='block';}}function go(e){if(busy)return;if(window.Swal&&typeof window.Swal.fire==='function'){e.preventDefault();window.Swal.fire({title:'Konfirmasi',text:'Apakah Anda yakin sudah menerima barang?',icon:'question',showCancelButton:true,confirmButtonText:'Ya, sudah',cancelButtonText:'Batal'}).then(function(res){if(res.isConfirmed){lock();form.submit();}});}else{var ok=window.confirm('Apakah Anda yakin sudah menerima barang?');if(!ok){e.preventDefault();return;}lock();}}if(form){form.addEventListener('submit',function(e){go(e);});}})();</script>
+        </div>
+    </div>
+@elseif ($po->status === 'pending_payment')
     <div class="card shadow-sm mb-3">
         <div class="card-body">
             <h6 class="mb-3">Notifikasi "Saya Sudah Transfer"</h6>
@@ -140,25 +154,11 @@
                     <button id="notifyTransferBtn" type="submit" class="btn btn-outline-primary">Kirim Notifikasi</button>
                 </form>
                 <div id="notifyOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.3);z-index:1050;"></div>
-                <script>
-                (function(){
-                    var form = document.getElementById('notifyTransferForm');
-                    var btn = document.getElementById('notifyTransferBtn');
-                    var ov = document.getElementById('notifyOverlay');
-                    var busy = false;
-                    function lock(){
-                        if (busy) return;
-                        busy = true;
-                        if (btn){ btn.disabled = true; btn.setAttribute('aria-disabled','true'); btn.innerHTML = 'Mengirim... <span class="spinner-border spinner-border-sm ms-1" role="status" aria-hidden="true"></span>'; }
-                        if (ov){ ov.style.display = 'block'; }
-                    }
-                    if (form){ form.addEventListener('submit', function(){ lock(); }); }
-                })();
-                </script>
+                <script>(function(){ var form=document.getElementById('notifyTransferForm'); var btn=document.getElementById('notifyTransferBtn'); var ov=document.getElementById('notifyOverlay'); var busy=false; function lock(){ if(busy) return; busy=true; if(btn){ btn.disabled=true; btn.setAttribute('aria-disabled','true'); btn.innerHTML='Mengirim... <span class=\"spinner-border spinner-border-sm ms-1\" role=\"status\" aria-hidden=\"true\"></span>'; } if(ov){ ov.style.display='block'; } } if(form){ form.addEventListener('submit', function(){ lock(); }); } })();</script>
             @endif
         </div>
     </div>
-    @if ($po->status === 'pending_payment')
+@endif    @if ($po->status === 'pending_payment')
     @php $pendingManual = ($paymentLogs ?? collect())
         ->filter(function($pl){ return ($pl->payment_method === 'manual_transfer') && ($pl->status === 'pending'); })
         ->count(); @endphp
