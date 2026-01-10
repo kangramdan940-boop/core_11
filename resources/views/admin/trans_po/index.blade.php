@@ -204,7 +204,22 @@
                         <td>{{ $p->kode_po }}</td>
                         <td>
                             {{ optional($p->customer)->full_name ?? '-' }}
-                            <div class="text-muted small">{{ optional($p->customer)->phone_wa ?? '-' }}</div>
+                            @if (!empty(optional($p->customer)->phone_wa))
+                                @php($rawWa = optional($p->customer)->phone_wa)
+                                @php($waDigits = preg_replace('/\D+/', '', (string) $rawWa))
+                                @php(\Illuminate\Support\Str::startsWith($waDigits, '0') ? $waDigits = '62' . substr($waDigits, 1) : null)
+                                <a href="https://wa.me/{{ $waDigits }}" target="_blank" rel="noopener" class="small text-success text-decoration-none d-inline-flex align-items-center gap-1 wa-link"
+                                   data-phone="{{ optional($p->customer)->phone_wa }}"
+                                   data-name="{{ optional($p->customer)->full_name }}"
+                                   data-kode="{{ $p->kode_po }}"
+                                   data-gram="{{ (int)($p->total_gram ?? 0) }}"
+                                   onclick="window.openWaLink && window.openWaLink(this); return false;">
+                                    <i class="bi bi-whatsapp"></i>
+                                    <span>{{ optional($p->customer)->phone_wa }}</span>
+                                </a>
+                            @else
+                                <div class="text-muted small">-</div>
+                            @endif
                         </td>
                         @if(request('status') !== 'shipped')
                             <td>{{ number_format((float)(optional(optional($p->produk)->gramasi)->gramasi ?? 0), 3, ',', '.') }} Gram x ({{ (int)($p->qty ?? 0) }} Keping)</td>
@@ -437,8 +452,8 @@
                     var telepon = '';
                     if (customerCell) {
                         nama = (customerCell.childNodes[0]?.textContent || '').trim();
-                        var phoneDiv = customerCell.querySelector('div.small');
-                        telepon = (phoneDiv?.textContent || '').trim();
+                        var phoneEl = customerCell.querySelector('div.small, a.small');
+                        telepon = (phoneEl?.textContent || '').trim();
                     }
                     var gramText = (tds[5] && tds[5].textContent) || '';
                     var gram = parseInt(String(gramText).replace(/\D+/g, ''), 10) || 0;
@@ -477,7 +492,15 @@
                     'Kode Pos:\n\n' +
                     'Terima kasih 🙏\nTim jajanemas.com';
             }
-
+            window.openWaLink = function (el) {
+                var phone = el.dataset.phone || '';
+                var item = { nama: el.dataset.name || '', kode: el.dataset.kode || '-', gram: parseInt(el.dataset.gram || '0', 10) || 0 };
+                var digits = normalizeWaPhone(phone);
+                if (!digits) return;
+                var url = 'https://wa.me/' + digits + '?text=' + encodeURIComponent(buildWaMessage(item));
+                window.open(url, '_blank', 'noopener');
+            };
+            
             function renderFifoResult(items, stokAwal) {
                 var sisa = stokAwal;
                 var selected = [];
