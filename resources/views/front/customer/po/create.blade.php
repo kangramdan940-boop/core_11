@@ -91,6 +91,18 @@
     </div>
     <div class="app-content style-3">
         <div class="tf-container">
+            @if ($produkPo->isEmpty())
+                <div class="card shadow-sm border-0 my-4">
+                    <div class="card-body text-center py-5">
+                        <div class="mb-3">
+                            <img src="{{ asset('close.png') }}" alt="Pre Order Ditutup" class="img-fluid" style="width:50%;height:auto;">
+                        </div>
+                        <h5 class="mb-2">Pre Order sedang ditutup</h5>
+                        <p class="text-muted mb-5">Pre order sedang tutup, akan segera buka lain waktu.</p>
+                        <a href="{{ route('customer.dashboard') }}" class="tf-btn primary">Kembali ke Dashboard</a>
+                    </div>
+                </div>
+            @else
             <form action="{{ route('customer.po.store') }}" method="POST" class="mt-10">
                 @csrf
                 @if ($errors->any())
@@ -117,11 +129,13 @@
                                     try { $selectedId = decrypt($pidEnc); } catch (\Throwable $e) { $selectedId = null; }
                                 }
                             @endphp
-                            @foreach($produkPo as $p)
+                            @forelse($produkPo as $p)
                                 <option value="{{ encrypt((string)$p->id) }}" data-harga="{{ (float)($p->harga_hariini ?? 0) }}" data-jasa="{{ (float)($p->harga_jasa ?? 0) }}" data-gram="{{ (float)optional($p->gramasi)->gramasi }}" {{ (string)$selectedId === (string)$p->id ? 'selected' : '' }}>
                                     {{ optional($p->gramasi)->nama }} - {{ number_format((float)optional($p->gramasi)->gramasi, 3, ',', '.') }} gram
                                 </option>
-                            @endforeach
+                            @empty
+                                <option value="" selected disabled>— Produk PO tidak tersedia —</option>
+                            @endforelse
                             @error('id_master_produk_dan_layanan')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </select>
                     </fieldset>
@@ -227,11 +241,13 @@
                     <button id="btnSubmit" class="tf-btn primary">Lanjutkan</button>
                 </div>
             </form>
+            @endif
 
         </div>
 
     </div>
     @include('front.customer.partials.menubar-footer', ['active' => 'pre-order-emas'])
+
     <script type="text/javascript" src="{{ asset('front/js/bootstrap.min.js')}}"></script>
     <script type="text/javascript" src="{{ asset('front/js/jquery.min.js')}}"></script>
     <script type="text/javascript" src="{{ asset('front/js/lazysize.min.js')}}"></script>
@@ -267,6 +283,8 @@
             $(document).ready(function(){
                 $('select[name="id_master_produk_dan_layanan"], #qty').on('change', updateEstimasi);
                 updateEstimasi();
+
+
 
                 // Delivery Type Toggle
                 $('input[name="delivery_type"]').on('change', function() {
