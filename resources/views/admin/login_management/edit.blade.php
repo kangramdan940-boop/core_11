@@ -16,7 +16,7 @@
     <div class="card shadow-sm">
         <div class="card-header"><h5 class="mb-0">Edit User</h5></div>
         <div class="card-body">
-            <form action="{{ route('admin.management-login.update', $user) }}" method="POST" class="row g-3">
+            <form action="{{ route('admin.management-login.update', ['user' => $user->id]) }}" method="POST" class="row g-3">
                 @csrf
                 @method('PUT')
                 <div class="col-12 col-md-6">
