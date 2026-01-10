@@ -23,6 +23,7 @@ class TransKeranjang extends Model
         'bukti_transfer_url',
         'nama_pengirim',
         'nominal_transfer',
+        'resi_ekspedisi',
     ];
 
     protected $casts = [
