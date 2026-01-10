@@ -3,6 +3,7 @@
         $menu = [
             [ 'type' => 'title', 'text' => 'Main' ],
             [ 'type' => 'link', 'icon' => 'ri-home-3-line', 'text' => 'Dashboard', 'url' => route('admin.dashboard'), 'routeIs' => 'admin.dashboard' ],
+            [ 'type' => 'link', 'icon' => 'ri-file-chart-line', 'text' => 'Laporan Keuangan', 'url' => route('admin.reports.index'), 'routeIs' => 'admin.reports.*' ],
             [ 'type' => 'link', 'icon' => 'ri-mail-send-line', 'text' => 'Email Logs', 'url' => route('admin.email-logs.index'), 'routeIs' => 'admin.email-logs.*' ],
             [ 'type' => 'link', 'icon' => 'ri-receipt-line', 'text' => 'Payment Log', 'url' => route('admin.trans.payment-logs.index'), 'routeIs' => 'admin.trans.payment-logs.*' ],
 
