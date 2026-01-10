@@ -152,4 +152,22 @@ class MasterGoldReadyStockController extends Controller
             ->route('admin.master.ready-stocks.index')
             ->with('success', 'Stok emas berhasil dihapus.');
     }
+
+    public function deactivateAll(Request $request)
+    {
+        MasterGoldReadyStock::query()->update(['is_active' => false]);
+
+        return redirect()
+            ->route('admin.master.ready-stocks.index')
+            ->with('success', 'Semua stok emas ready berhasil dinonaktifkan.');
+    }
+
+    public function activateAll(Request $request)
+    {
+        MasterGoldReadyStock::query()->update(['is_active' => true]);
+
+        return redirect()
+            ->route('admin.master.ready-stocks.index')
+            ->with('success', 'Semua stok emas ready berhasil diaktifkan.');
+    }
 }
