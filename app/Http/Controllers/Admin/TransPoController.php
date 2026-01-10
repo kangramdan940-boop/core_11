@@ -61,7 +61,30 @@ class TransPoController extends Controller
             return $p;
         });
 
-        return view('admin.trans_po.index', compact('pos'));
+        $countsBase = TransPo::query();
+        if ($dateFilter === 'today') {
+            $countsBase->whereDate('created_at', now()->toDateString());
+        } elseif ($createdDate !== '') {
+            $countsBase->whereDate('created_at', $createdDate);
+        }
+        $totalCount = (clone $countsBase)->count();
+        $todayCount = (clone TransPo::query())->whereDate('created_at', now()->toDateString())->count();
+        $rawCounts = (clone $countsBase)
+            ->selectRaw('status, COUNT(*) as cnt')
+            ->groupBy('status')
+            ->pluck('cnt', 'status')
+            ->toArray();
+        $statusCounts = [
+            'pending_payment' => (int) ($rawCounts['pending_payment'] ?? 0),
+            'paid' => (int) ($rawCounts['paid'] ?? 0),
+            'processing' => (int) ($rawCounts['processing'] ?? 0),
+            'ready_at_agen' => (int) ($rawCounts['ready_at_agen'] ?? 0),
+            'shipped' => (int) ($rawCounts['shipped'] ?? 0),
+            'completed' => (int) ($rawCounts['completed'] ?? 0),
+            'cancelled' => (int) ($rawCounts['cancelled'] ?? 0),
+        ];
+
+        return view('admin.trans_po.index', compact('pos', 'statusCounts', 'totalCount', 'todayCount'));
     }
 
     public function show(TransPo $po)

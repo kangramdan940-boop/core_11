@@ -445,6 +445,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::prefix('keranjang')->name('keranjang.')->group(function () {
                 Route::get('/', [TransKeranjangController::class, 'index'])->name('index');
                 Route::get('/{keranjang}', [TransKeranjangController::class, 'show'])->name('show');
+                Route::put('/{keranjang}', [TransKeranjangController::class, 'update'])->name('update');
                 Route::post('/{keranjang}/approve-payment', [TransKeranjangController::class, 'approvePayment'])->name('approve-payment');
             });
 
