@@ -8,6 +8,7 @@ use Illuminate\Contracts\View\View;
 use App\Models\TransPo;
 use App\Models\TransReady;
 use App\Models\TransKeranjang;
+use Illuminate\Support\Facades\DB;
 
 final class FinancialReportController extends Controller
 {
@@ -16,7 +17,7 @@ final class FinancialReportController extends Controller
         $since = (string) $request->query('since', '');
         $until = (string) $request->query('until', '');
 
-        $poQuery = TransPo::query()->whereIn('status', ['paid', 'processed', 'ready', 'shipped', 'completed']);
+        $poQuery = TransPo::query()->whereNotIn('status', ['pending_payment', 'cancelled']);
         $readyQuery = TransReady::query()->whereIn('status', ['paid', 'shipped', 'completed']);
 
         if ($since !== '') {
@@ -28,8 +29,17 @@ final class FinancialReportController extends Controller
             $readyQuery->whereDate('paid_at', '<=', $until);
         }
 
-        $poItems = $poQuery->get(['id', 'total_amount', 'shipping_cost', 'status', 'paid_at']);
+        $poItems = $poQuery->get(['id', 'total_amount', 'total_gram', 'shipping_cost', 'status', 'paid_at']);
         $readyItems = $readyQuery->get(['id', 'total_amount', 'shipping_cost', 'status', 'paid_at']);
+
+        $poStatusRows = TransPo::query()
+            ->select('status', DB::raw('COUNT(*) as total_trans'), DB::raw('SUM(total_amount) as total_uang'), DB::raw('SUM(total_gram) as total_gram'))
+            ->whereNotIn('status', ['pending_payment', 'cancelled'])
+            ->when($since !== '', function ($q) use ($since) { $q->whereDate('paid_at', '>=', $since); })
+            ->when($until !== '', function ($q) use ($until) { $q->whereDate('paid_at', '<=', $until); })
+            ->groupBy('status')
+            ->orderBy('status')
+            ->get();
 
         $sum = static function ($items, string $field): float {
             $t = 0.0;
@@ -45,7 +55,10 @@ final class FinancialReportController extends Controller
 
         return view('admin.reports.index', [
             'filters' => ['since' => $since, 'until' => $until],
+            'po_status_rows' => $poStatusRows,
+            'po_total_count' => (int) $poQuery->count(),
             'po_total_amount' => $sum($poItems, 'total_amount'),
+            'po_total_gram' => (float) number_format((float) $poQuery->sum('total_gram'), 3, '.', ''),
             'po_total_shipping' => $sum($poItems, 'shipping_cost'),
             'ready_total_amount' => $sum($readyItems, 'total_amount'),
             'ready_total_shipping' => $sum($readyItems, 'shipping_cost'),

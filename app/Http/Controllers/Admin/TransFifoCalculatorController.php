@@ -17,7 +17,7 @@ class TransFifoCalculatorController extends Controller
 {
     public function index(Request $request): View
     {
-        $statuses = array_values(array_filter(array_map('strval', (array) $request->query('statuses', ['paid']))));
+        $statuses = array_values(array_filter(array_map('strval', (array) $request->query('statuses', ['processing']))));
         $stockGram = (float) $request->query('stockGram', 0);
 
         $pos = TransPo::query()
@@ -254,7 +254,7 @@ class TransFifoCalculatorController extends Controller
 
         $groupByGramasi = [];
         foreach ($items as $it) {
-            if ((string)($it['status'] ?? '') !== 'paid') { continue; }
+            if ((string)($it['status'] ?? '') !== 'processing') { continue; }
             $g = (float) ($it['gramasi'] ?? 0.0);
             $q = (int) ($it['qty'] ?? 0);
             if ($g <= 0 || $q <= 0) { continue; }
@@ -286,7 +286,7 @@ class TransFifoCalculatorController extends Controller
         $poQueueList = [];
         $thresholdDate = now()->subWeeks(3);
         foreach ($items as $it) {
-            if ((string)($it['status'] ?? '') !== 'paid') { continue; }
+            if ((string)($it['status'] ?? '') !== 'processing') { continue; }
             $refDate = $it['paid_at'] ?? $it['ordered_at'] ?? $it['created_at'];
             if (!$refDate || $refDate > $thresholdDate) { continue; }
             $qty = max(0, (int) ($it['qty'] ?? 0));
@@ -295,6 +295,7 @@ class TransFifoCalculatorController extends Controller
                     'po_id' => (int) ($it['id'] ?? 0),
                     'created_at' => $it['created_at']  ?? '',
                     'kode_po' => (string) ($it['kode_po'] ?? ''),
+                    'status' => (string) ($it['status'] ?? ''),
                     'customer_name' => (string) ($it['customer_name'] ?? ''),
                     'customer_wa' => (string) ($it['customer_wa'] ?? ''),
                     'gramasi' => (float) ($it['gramasi'] ?? 0.0),

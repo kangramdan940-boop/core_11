@@ -25,6 +25,44 @@
     </div>
 </div>
 
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h6 class="mb-3">Ringkasan TransPo per Status</h6>
+        <div class="table-responsive">
+            <table class="table table-sm table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th class="text-end">Jumlah Transaksi</th>
+                        <th class="text-end">Total Uang</th>
+                        <th class="text-end">Total Gram</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($po_status_rows as $row)
+                        <tr>
+                            <td>{{ $row->status }}</td>
+                            <td class="text-end">{{ (int) ($row->total_trans ?? 0) }}</td>
+                            <td class="text-end">Rp {{ number_format((float) ($row->total_uang ?? 0), 0, ',', '.') }}</td>
+                            <td class="text-end">{{ number_format((float) ($row->total_gram ?? 0), 3, ',', '.') }} g</td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="4" class="text-center text-muted">Tidak ada data</td></tr>
+                    @endforelse
+                </tbody>
+                <tfoot>
+                    <tr class="fw-semibold">
+                        <td>Total</td>
+                        <td class="text-end">{{ (int) ($po_total_count ?? 0) }}</td>
+                        <td class="text-end">Rp {{ number_format((float) ($po_total_amount ?? 0), 0, ',', '.') }}</td>
+                        <td class="text-end">{{ number_format((float) ($po_total_gram ?? 0), 3, ',', '.') }} g</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
 <div class="row g-3">
     <div class="col-md-4">
         <div class="card h-100">

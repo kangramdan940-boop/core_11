@@ -323,7 +323,7 @@
         <div class="col-12 col-md-8">
             <div id="antrianTransPoSection" class="card shadow-sm">
                 <div class="card-body">
-                    <div class="h6 mb-2">Antrian Trans PO (Status: PAID)</div>
+                    <div class="h6 mb-2">Antrian Trans PO (Status: PAID & PROCESSING)</div>
                     &nbsp;
                     @if(!empty($poQueueResume))
                         <div class="mb-2 d-flex flex-wrap gap-3">
@@ -339,7 +339,7 @@
                         </div>
                     @endif
                     @if(empty($poQueueList))
-                        <div class="text-muted">Tidak ada data antrian (status PAID).</div>
+                        <div class="text-muted">Tidak ada data antrian (status PAID & PROCESSING).</div>
                     @else
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped">
@@ -348,6 +348,7 @@
                                         <th class="text-center" style="width:48px;"><input type="checkbox" id="antrianCheckAll"></th>
                                         <th style="width:260px;">Kode PO</th>
                                         <th style="width:150px;">Nama Customer</th>
+                                        <th style="width:120px;">Status</th>
                                         <th class="text-end" style="width:140px;">Gramasi (g)</th>
                                         <th class="text-end" style="width:100px;">Qty</th>
                                         <th class="text-end" style="width:160px;">Total Gram (g)</th>
@@ -363,11 +364,12 @@
                                             <td class="text-center"><input type="checkbox" class="antrianCheck" name="antrianSelected[]" value="{{ $r['kode_po'] ?? '' }}" data-totalgram="{{ number_format((float)($r['total_gram'] ?? 0), 3, '.', '') }}" data-customer="{{ $r['customer_name'] ?? '' }}" data-wa="{{ $r['customer_wa'] ?? '' }}" data-kode="{{ $r['kode_po'] ?? '' }}" data-id="{{ (int)($r['po_id'] ?? 0) }}"></td>
                                             <td>{{ $r['kode_po'] ?? '-' }}</td>
                                             <td class="text-truncate" style="max-width:80px;">{{ $r['customer_name'] ?? '-' }}</td>
+                                            <td>{{ $r['status'] ?? '-' }}</td>
                                             <td class="text-end">@if(isset($r['gramasi'])) {{ number_format((float)$r['gramasi'], 0) }} @else - @endif</td>
                                             <td class="text-end">@if(isset($r['qty'])) {{ (int)$r['qty'] }} @else - @endif</td>
                                             <td class="text-end">@if(isset($r['total_gram'])) {{ number_format((float)$r['total_gram'], 3) }} @else - @endif</td>
                                             <td class="text-end">{{ number_format((float)$acc, 0) }}</td>
-                                            <td class="text-end">{{ $r['created_at'] }}</td>
+                                            <td class="text-end">{{ $r['paid_at'] ?? $r['processed_at'] ?? $r['created_at'] }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -375,7 +377,7 @@
                         </div>
                     @endif
                     <div class="mt-2">
-                        <small class="text-muted">Antrian ditampilkan dari Trans PO berstatus PAID.</small>
+                        <small class="text-muted">Antrian ditampilkan dari Trans PO berstatus PAID atau PROCESSING.</small>
                     </div>
                 </div>
             </div>
