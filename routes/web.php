@@ -506,7 +506,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
             ->middleware('admin');
 
         Route::resource('management-login', SysUserManagementController::class)
-            ->names('management-login');
+            ->names('management-login')
+            ->parameters(['management-login' => 'user']);
     });
 });
 
