@@ -54,6 +54,8 @@
                 <th>Status Kadaluarsa</th>
                 <th>Kadaluarsa</th>
                 <th>Ongkos Kirim</th>
+                <th>Catatan</th>
+                <th>Resi Ekspedisi</th>
                 <th>Jumlah PO</th>
                 <th>Bukti Transfer</th>
                 <th>Dibuat</th>
@@ -73,6 +75,121 @@
                     <td><span class="badge {{ ($k->status_kadaluarsa === 'expired') ? 'bg-danger' : 'bg-success' }}">{{ strtoupper((string)($k->status_kadaluarsa ?? '-')) }}</span></td>
                     <td>{{ optional($k->expires_at)->format('Y-m-d H:i') ?? '-' }}</td>
                     <td>{{ number_format((float)($k->ongkos_kirim ?? 0), 2, ',', '.') }}</td>
+                    <td>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <span class="me-2">{{ (string)($k->catatan ?? '-') }}</span>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#noteEditModal-{{ $k->id }}">Update</button>
+                        </div>
+                        <div class="modal fade" id="noteEditModal-{{ $k->id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Update Catatan</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form action="{{ route('admin.trans.keranjang.update', $k) }}" method="POST">
+                                        @csrf
+                                        @method('PUT')
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="catatan-{{ $k->id }}" class="form-label">Catatan</label>
+                                                <textarea id="catatan-{{ $k->id }}" name="catatan" class="form-control" rows="3">{{ old('catatan', (string)($k->catatan ?? '')) }}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                                            <button type="submit" class="btn btn-primary">Simpan</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        @if(($curNorm ?? '') === 'shipped')
+                            @php($posList = $k->pos()->get())
+                            @php($firstResi = $posList->firstWhere('resi_number', '!=', null))
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="me-2">
+                                    @if(!$firstResi)
+                                        -
+                                    @else
+                                        {{ $firstResi->resi_number }} ({{ $firstResi->resi_courier ?? '-' }})
+                                    @endif
+                                </span>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#resiEditModal-{{ $k->id }}">Update</button>
+                            </div>
+                            <div class="modal fade" id="resiEditModal-{{ $k->id }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Update Resi Ekspedisi</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <ul class="nav nav-tabs mb-3">
+                                                <li class="nav-item">
+                                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tabKeranjang-{{ $k->id }}" type="button">Keranjang</button>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabPerPo-{{ $k->id }}" type="button">Per PO</button>
+                                                </li>
+                                            </ul>
+                                            <div class="tab-content">
+                                                <div class="tab-pane fade show active" id="tabKeranjang-{{ $k->id }}">
+                                                    <form action="{{ route('admin.trans.keranjang.resi.update', $k) }}" method="POST" class="row g-2">
+                                                        @csrf
+                                                        <div class="col-12 col-md-4">
+                                                            <input type="text" name="resi_number" class="form-control" placeholder="Nomor Resi" value="{{ old('resi_number', (string)($firstResi->resi_number ?? '')) }}">
+                                                        </div>
+                                                        <div class="col-12 col-md-4">
+                                                            <input type="text" name="resi_courier" class="form-control" placeholder="Kurir" value="{{ old('resi_courier', (string)($firstResi->resi_courier ?? '')) }}">
+                                                        </div>
+                                                        <div class="col-12 col-md-4">
+                                                            <input type="text" name="resi_service" class="form-control" placeholder="Layanan" value="{{ old('resi_service', (string)($firstResi->resi_service ?? '')) }}">
+                                                        </div>
+                                                        <div class="col-12 d-flex justify-content-end">
+                                                            <button type="submit" class="btn btn-primary">Simpan</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <div class="tab-pane fade" id="tabPerPo-{{ $k->id }}">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-sm align-middle">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Kode PO</th>
+                                                                    <th style="width: 60%">Resi</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach($posList as $p)
+                                                                    <tr>
+                                                                        <td>{{ $p->kode_po }}</td>
+                                                                        <td>
+                                                                            <form action="{{ route('admin.trans.po.resi.update', $p) }}" method="POST" class="d-flex gap-2">
+                                                                                @csrf
+                                                                                <input type="text" name="resi_number" class="form-control form-control-sm" placeholder="Nomor Resi" value="{{ old('resi_number', (string)($p->resi_number ?? '')) }}">
+                                                                                <input type="text" name="resi_courier" class="form-control form-control-sm" placeholder="Kurir" value="{{ old('resi_courier', (string)($p->resi_courier ?? '')) }}">
+                                                                                <input type="text" name="resi_service" class="form-control form-control-sm" placeholder="Layanan" value="{{ old('resi_service', (string)($p->resi_service ?? '')) }}">
+                                                                                <button type="submit" class="btn btn-sm btn-primary">Simpan</button>
+                                                                            </form>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            <span class="text-muted">-</span>
+                        @endif
+                    </td>
                     <td>{{ (int)($k->pos_count ?? 0) }}</td>
                     <td>
                         @if(!empty($k->bukti_transfer_url))

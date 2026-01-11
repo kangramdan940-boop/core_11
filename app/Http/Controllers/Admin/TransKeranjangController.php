@@ -124,6 +124,15 @@ final class TransKeranjangController extends Controller
         ];
         $currentNorm = $syn[$current] ?? $current;
 
+        if ($request->has('catatan') && !$request->has('status_order')) {
+            $keranjang->catatan = (string) $request->input('catatan');
+            $keranjang->save();
+            if ($request->ajax()) {
+                return response()->json(['success' => true]);
+            }
+            return back()->with('success', 'Catatan keranjang diperbarui.');
+        }
+
         $next = strtolower((string)$request->input('status_order', ''));
         $map = [
             'pending_payment' => 'paid',
@@ -187,6 +196,69 @@ final class TransKeranjangController extends Controller
             return response()->json(['success' => true]);
         }
         return redirect()->route('admin.trans.keranjang.show', $keranjang)->with('success', 'Status keranjang & semua PO terkait diperbarui.');
+    }
+
+    public function updateResiBulk(Request $request, TransKeranjang $keranjang)
+    {
+        $data = $request->validate([
+            'resi_number' => ['required', 'string', 'max:100'],
+            'resi_courier' => ['required', 'string', 'max:100'],
+            'resi_service' => ['nullable', 'string', 'max:100'],
+        ], [
+            'resi_number.required' => 'Nomor resi wajib diisi.',
+            'resi_courier.required' => 'Kurir wajib diisi.',
+        ]);
+
+        $resiNormalized = preg_replace('/\s+/', '', (string) $data['resi_number']);
+
+        $exists = TransPo::where('resi_number', $resiNormalized)
+            ->where('id_keranjang', '<>', (int) $keranjang->id)
+            ->exists();
+        if ($exists) {
+            $message = 'Nomor resi sudah digunakan pada transaksi lain.';
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $message,
+                    'errors' => ['resi_number' => ['Nomor resi sudah digunakan.']],
+                ], 422);
+            }
+            return redirect()->back()->withErrors(['resi_number' => 'Nomor resi sudah digunakan.']);
+        }
+
+        DB::transaction(function () use ($keranjang, $resiNormalized, $data, $request) {
+            $keranjang->resi_ekspedisi = $resiNormalized;
+            $keranjang->save();
+
+            $pos = TransPo::where('id_keranjang', (int) $keranjang->id)
+                ->where('status', 'shipped')
+                ->get();
+            foreach ($pos as $po) {
+                $po->resi_number = $resiNormalized;
+                $po->resi_courier = (string) $data['resi_courier'];
+                $po->resi_service = $data['resi_service'] ?? null;
+                $po->save();
+
+                TransPoLog::create([
+                    'trans_po_id' => $po->id,
+                    'status' => $po->status,
+                    'description' => 'Update resi (bulk keranjang) oleh ' . ($request->user()?->name ?? 'SYSTEM') . ' pada ' . now(),
+                ]);
+            }
+        });
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Data resi keranjang diperbarui.',
+                'data' => [
+                    'resi_number' => $resiNormalized,
+                    'resi_courier' => (string) $data['resi_courier'],
+                    'resi_service' => $data['resi_service'] ?? null,
+                ],
+            ]);
+        }
+        return redirect()->back()->with('success', 'Data resi keranjang diperbarui.');
     }
 
     private function computeEstimasiEmasDiterima(): string
