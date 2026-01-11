@@ -633,6 +633,7 @@
             });
 
             document.querySelectorAll('.resi-value-link').forEach(function (a) {
+                if (a.dataset.bound === '1') return; a.dataset.bound = '1';
                 a.addEventListener('click', function () {
                     var val = a.getAttribute('data-resi-number') || '';
                     var done = false;
@@ -646,6 +647,7 @@
                 });
             });
             document.querySelectorAll('.toggle-resi-edit').forEach(function (btn) {
+                if (btn.dataset.bound === '1') return; btn.dataset.bound = '1';
                 btn.addEventListener('click', function () {
                     var td = btn.closest('td');
                     var div = td ? td.querySelector('.resi-edit') : null;
@@ -653,6 +655,7 @@
                 });
             });
             document.querySelectorAll('.cancel-resi-edit').forEach(function (btn) {
+                if (btn.dataset.bound === '1') return; btn.dataset.bound = '1';
                 btn.addEventListener('click', function () {
                     var div = btn.closest('.resi-edit');
                     if (div) div.classList.add('d-none');
@@ -734,6 +737,35 @@
                             if (res.ok) { var json = await res.json(); if (typeof Swal !== 'undefined') Swal.fire({ icon: 'success', title: 'Berhasil', text: (json.message || 'Status diubah ke COMPLETED'), timer: 1200, showConfirmButton: false }); reloadPoTableSection(); }
                             else { var msg = 'Gagal mengubah status.'; try { var err = await res.json(); msg = err.message || (err.errors ? Object.values(err.errors)[0][0] : msg); } catch(_){} if (typeof Swal !== 'undefined') Swal.fire({ icon: 'error', title: 'Error', text: msg }); }
                         } catch(e3) { if (typeof Swal !== 'undefined') Swal.fire({ icon: 'error', title: 'Error', text: (e3 && e3.message) || 'Terjadi kesalahan jaringan.' }); }
+                    });
+                });
+                document.querySelectorAll('.resi-value-link').forEach(function(a){
+                    if (a.dataset.bound === '1') return; a.dataset.bound = '1';
+                    a.addEventListener('click', function(){
+                        var val = a.getAttribute('data-resi-number') || '';
+                        var done = false;
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            navigator.clipboard.writeText(val).then(function(){ done = true; if (typeof Swal !== 'undefined') Swal.fire({ icon:'success', title:'Disalin', text:'Nomor resi disalin ke clipboard', timer: 1000, showConfirmButton:false }); });
+                        }
+                        if (!done) {
+                            var tmp = document.createElement('input'); tmp.value = val; document.body.appendChild(tmp); tmp.select(); try { document.execCommand('copy'); } catch(_){}; document.body.removeChild(tmp);
+                            if (typeof Swal !== 'undefined') Swal.fire({ icon:'success', title:'Disalin', text:'Nomor resi disalin ke clipboard', timer: 1000, showConfirmButton:false });
+                        }
+                    });
+                });
+                document.querySelectorAll('.toggle-resi-edit').forEach(function(btn){
+                    if (btn.dataset.bound === '1') return; btn.dataset.bound = '1';
+                    btn.addEventListener('click', function(){
+                        var td = btn.closest('td');
+                        var div = td ? td.querySelector('.resi-edit') : null;
+                        if (div) div.classList.toggle('d-none');
+                    });
+                });
+                document.querySelectorAll('.cancel-resi-edit').forEach(function(btn){
+                    if (btn.dataset.bound === '1') return; btn.dataset.bound = '1';
+                    btn.addEventListener('click', function(){
+                        var div = btn.closest('.resi-edit');
+                        if (div) div.classList.add('d-none');
                     });
                 });
             }
