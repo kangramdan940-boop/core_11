@@ -25,12 +25,15 @@ class TransKeranjang extends Model
         'nama_pengirim',
         'nominal_transfer',
         'resi_ekspedisi',
+        'customer_rating',
+        'customer_review',
     ];
 
     protected $casts = [
         'ongkos_kirim' => 'decimal:2',
         'expires_at' => 'datetime',
         'nominal_transfer' => 'decimal:2',
+        'customer_rating' => 'integer',
     ];
 
     public function pos()
