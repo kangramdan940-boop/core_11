@@ -19,6 +19,7 @@ class TransKeranjang extends Model
         'status_kadaluarsa',
         'created_by',
         'catatan',
+        'resi_ekspedisi',
         'status_order',
         'bukti_transfer_url',
         'nama_pengirim',
