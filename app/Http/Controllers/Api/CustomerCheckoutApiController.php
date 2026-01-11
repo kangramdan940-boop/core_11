@@ -180,6 +180,8 @@ class CustomerCheckoutApiController extends Controller
                     'nama_pengirim' => $keranjang->nama_pengirim ?: null,
                     'nominal_transfer' => $keranjang->nominal_transfer !== null ? (float) $keranjang->nominal_transfer : 0.0,
                     'resi_ekspedisi' => $keranjang->resi_ekspedisi ?: null,
+                    'customer_rating' => $keranjang->customer_rating !== null ? (int) $keranjang->customer_rating : null,
+                    'customer_review' => $keranjang->customer_review ?: null,
                 ],
                 'pos' => $items,
                 'grandTotal' => $grandTotal,
