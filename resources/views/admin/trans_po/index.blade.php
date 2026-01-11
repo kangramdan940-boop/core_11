@@ -203,27 +203,8 @@
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $p->kode_po }}</td>
                         <td>
-                            
                             {{ optional($p->customer)->full_name ?? '-' }}
-                            @if (!empty(optional($p->customer)->phone_wa))
-                                @php($rawWa = optional($p->customer)->phone_wa)
-                                @php($waDigits = preg_replace('/\D+/', '', (string) $rawWa))
-                                @php(\Illuminate\Support\Str::startsWith($waDigits, '0') ? $waDigits = '62' . substr($waDigits, 1) : null)
-                                 @if(request('status') == 'shipped')
-                                <a href="https://wa.me/{{ $waDigits }}" target="_blank" rel="noopener" class="small text-success text-decoration-none d-inline-flex align-items-center gap-1 wa-link"
-                                   data-phone="{{ optional($p->customer)->phone_wa }}"
-                                   data-name="{{ optional($p->customer)->full_name }}"
-                                   data-kode="{{ $p->kode_po }}"
-                                   data-gram="{{ (int)($p->total_gram ?? 0) }}"
-                                   onclick="window.openWaLink && window.openWaLink(this); return false;">
-                                    <i class="bi bi-whatsapp"></i>
-                                    <span>{{ optional($p->customer)->phone_wa }}</span>
-                                </a>
-                            @endif
-                                
-                            @else
-                                <div class="text-muted small">-</div>
-                            @endif
+                            <div class="text-muted small">{{ optional($p->customer)->phone_wa ?? '-' }}</div>
                         </td>
                         @if(request('status') !== 'shipped')
                             <td>{{ number_format((float)(optional(optional($p->produk)->gramasi)->gramasi ?? 0), 3, ',', '.') }} Gram x ({{ (int)($p->qty ?? 0) }} Keping)</td>
@@ -303,19 +284,10 @@
                                 <a href="{{ route('admin.trans.po.show', $p) }}" class="btn icon-btn-sm btn-light-primary">
                                     <i class="bi bi-eye"></i>
                                 </a>
-                                @php($cusWa = optional($p->customer)->phone_wa)
-                                @php($rawWa = $cusWa ?: ($p->shipping_phone ?? ''))
-                                @php($waDigits = preg_replace('/\D+/', '', (string)$rawWa))
-                                @php(\Illuminate\Support\Str::startsWith($waDigits, '0') ? $waDigits = '62' . substr($waDigits, 1) : null)
-                            @if($p->status === 'shipped')
-                                
-                                @if (!empty($waDigits))
-                                    <a href="https://wa.me/{{ $waDigits }}" target="_blank" rel="noopener" class="btn icon-btn-sm btn-light-success d-inline-flex align-items-center gap-1" title="WhatsApp"
-                                       data-phone="{{ $rawWa }}" data-name="{{ optional($p->customer)->full_name }}" data-kode="{{ $p->kode_po }}" data-gram="{{ (int)($p->total_gram ?? 0) }}"
-                                       onclick="if(window.openWaLink){window.openWaLink(this);return false;}">
+                                @if (!empty($p->wa_url))
+                                    <a href="{{ $p->wa_url }}" target="_blank" rel="noopener" class="btn icon-btn-sm btn-light-success" title="WhatsApp">
                                         <i class="bi bi-whatsapp"></i>
                                     </a>
-                                @endif
                                 @endif
                                 @if ($p->status === 'paid' && !empty(optional($p->customer)->email))
                                     <form action="{{ route('admin.trans.po.send-email', $p) }}" method="POST" class="d-inline">
@@ -366,11 +338,11 @@
             if (typeof $ === 'undefined' || !$.fn.DataTable) return;
 
             const dt = $('#poTable').DataTable({
-                responsive: false,
-                scrollX: true,
-                lengthMenu: [10, 20, 50],
-                pageLength: 10,
-                ordering: true,
+                    responsive: false,
+                    scrollX: true,
+                    lengthMenu: [10, 20, 50],
+                    pageLength: 50,
+                    ordering: true,
                 order: [[0, 'asc']],
                 columnDefs: [{ targets: -1, orderable: false }],
                 dom:
@@ -465,8 +437,8 @@
                     var telepon = '';
                     if (customerCell) {
                         nama = (customerCell.childNodes[0]?.textContent || '').trim();
-                        var phoneEl = customerCell.querySelector('div.small, a.small');
-                        telepon = (phoneEl?.textContent || '').trim();
+                        var phoneDiv = customerCell.querySelector('div.small');
+                        telepon = (phoneDiv?.textContent || '').trim();
                     }
                     var gramText = (tds[5] && tds[5].textContent) || '';
                     var gram = parseInt(String(gramText).replace(/\D+/g, ''), 10) || 0;
@@ -505,15 +477,7 @@
                     'Kode Pos:\n\n' +
                     'Terima kasih 🙏\nTim jajanemas.com';
             }
-            window.openWaLink = function (el) {
-                var phone = el.dataset.phone || '';
-                var item = { nama: el.dataset.name || '', kode: el.dataset.kode || '-', gram: parseInt(el.dataset.gram || '0', 10) || 0 };
-                var digits = normalizeWaPhone(phone);
-                if (!digits) return;
-                var url = 'https://wa.me/' + digits + '?text=' + encodeURIComponent(buildWaMessage(item));
-                window.open(url, '_blank', 'noopener');
-            };
-            
+
             function renderFifoResult(items, stokAwal) {
                 var sisa = stokAwal;
                 var selected = [];
