@@ -69,7 +69,12 @@ final class TransKeranjangController extends Controller
             ->orderBy('id')
             ->get();
 
-        return view('admin.trans_keranjang.show', compact('keranjang','pos'));
+        $readies = \App\Models\TransReady::with(['customer','readyStock'])
+            ->where('id_keranjang', (int) $keranjang->id)
+            ->orderBy('id')
+            ->get();
+
+        return view('admin.trans_keranjang.show', compact('keranjang','pos','readies'));
     }
 
     public function approvePayment(Request $request, TransKeranjang $keranjang)
