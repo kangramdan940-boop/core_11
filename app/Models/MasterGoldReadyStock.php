@@ -31,6 +31,7 @@ class MasterGoldReadyStock extends Model
         'video_url',
         'deskripsi_pengiriman',
         'jumlah_terjual',
+        'stok',
         'acara',
         'negara_asal',
         'is_custom',
@@ -47,6 +48,7 @@ class MasterGoldReadyStock extends Model
         'is_active'          => 'boolean',
         'images'             => 'array',
         'jumlah_terjual'     => 'integer',
+        'stok'               => 'integer',
         'is_custom'          => 'boolean',
         'is_mystery_box'     => 'boolean',
     ];

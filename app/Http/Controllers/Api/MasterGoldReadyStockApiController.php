@@ -98,6 +98,7 @@ class MasterGoldReadyStockApiController extends Controller
             'lokasiSimpan' => $s->lokasi_simpan ?? null,
             'deskripsiPengiriman' => $s->deskripsi_pengiriman ?? null,
             'jumlahTerjual' => $s->jumlah_terjual !== null ? (int) $s->jumlah_terjual : null,
+            'stok' => $s->stok !== null ? (int) $s->stok : null,
             'acara' => $s->acara ?? null,
             'negaraAsal' => $s->negara_asal ?? null,
             'tags' => $s->tags ?? null,

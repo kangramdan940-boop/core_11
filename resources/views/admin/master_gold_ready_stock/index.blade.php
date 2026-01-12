@@ -19,6 +19,7 @@
                     <th>Agen</th>
                     <th>Kondisi</th>
                     <th>Status</th>
+                    <th>Stok</th>
                     <th>Aktif</th>
                     <th>Harga Jual Fix</th>
                     <th style="width: 75px;">Aksi</th>
@@ -42,6 +43,7 @@
                                 <span class="badge rounded-pill bg-secondary">Sold</span>
                             @endif
                         </td>
+                        <td class="text-end">{{ (int) ($s->stok ?? 0) }}</td>
                         <td>
                             @if($s->is_active)
                                 <span class="badge bg-success">Aktif</span>

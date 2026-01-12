@@ -191,6 +191,15 @@
     </div>
 
     <div class="col-md-2">
+        <label class="form-label">Stok Tersedia</label>
+        <div class="input-group">
+            <span class="input-group-text"><i class="ri-archive-stack-line"></i></span>
+            <input type="number" min="0" name="stok" class="form-control @error('stok') is-invalid @enderror" value="{{ old('stok', $stock->stok ?? 1) }}">
+        </div>
+        @error('stok') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    </div>
+
+    <div class="col-md-2">
         <label class="form-label">Jumlah Terjual</label>
         <div class="input-group">
             <span class="input-group-text"><i class="ri-shopping-bag-3-line"></i></span>

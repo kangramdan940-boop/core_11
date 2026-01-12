@@ -79,6 +79,9 @@ class ReadyCheckoutApiController extends Controller
                     if ($unitPrice <= 0) {
                         abort(422, 'Harga jual item belum diatur: '.$stock->id);
                     }
+                    if ((int) ($it['qty'] ?? 0) > (int) ($stock->stok ?? 0)) {
+                        abort(422, 'Jumlah melebihi stok tersedia: '.$stock->id);
+                    }
                     $produkId = null;
                     $gramasi = MasterGramasiEmas::where('gramasi', $stock->gramasi)->first();
                     if ($gramasi) {
