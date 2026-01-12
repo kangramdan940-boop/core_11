@@ -8,6 +8,7 @@ use App\Models\MasterCustomerAddress;
 use App\Models\MasterProdukDanLayanan;
 use App\Models\TransKeranjang;
 use App\Models\TransPo;
+use App\Models\MasterGoldReadyStock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -168,6 +169,12 @@ class CustomerCheckoutApiController extends Controller
         })->all();
 
         $readyItems = $readies->map(function (\App\Models\TransReady $r) {
+            $stock = MasterGoldReadyStock::find((int) $r->master_gold_ready_stock_id);
+            $img = null;
+            if ($stock && is_array($stock->images) && count($stock->images) > 0) {
+                $p = (string) $stock->images[0];
+                $img = (str_starts_with($p, 'http://') || str_starts_with($p, 'https://') || str_starts_with($p, '/')) ? $p : asset(ltrim($p, '/'));
+            }
             return [
                 'id' => (int) $r->id,
                 'kode_ready' => (string) $r->kode_trans,
@@ -178,6 +185,8 @@ class CustomerCheckoutApiController extends Controller
                 'shippingCost' => (float) $r->shipping_cost,
                 'status' => (string) ($r->status ?? ''),
                 'deliveryType' => (string) ($r->delivery_type ?? ''),
+                'gramasi' => $stock && $stock->gramasi !== null ? (float) $stock->gramasi : null,
+                'imageUrl' => $img,
             ];
         })->all();
 
@@ -253,6 +262,12 @@ class CustomerCheckoutApiController extends Controller
             })->all();
 
             $readyItems = $readies->map(function (\App\Models\TransReady $r) {
+                $stock = MasterGoldReadyStock::find((int) $r->master_gold_ready_stock_id);
+                $img = null;
+                if ($stock && is_array($stock->images) && count($stock->images) > 0) {
+                    $p = (string) $stock->images[0];
+                    $img = (str_starts_with($p, 'http://') || str_starts_with($p, 'https://') || str_starts_with($p, '/')) ? $p : asset(ltrim($p, '/'));
+                }
                 return [
                     'id' => (int) $r->id,
                     'kode_ready' => (string) $r->kode_trans,
@@ -263,6 +278,8 @@ class CustomerCheckoutApiController extends Controller
                     'shippingCost' => (float) $r->shipping_cost,
                     'status' => (string) ($r->status ?? ''),
                     'deliveryType' => (string) ($r->delivery_type ?? ''),
+                    'gramasi' => $stock && $stock->gramasi !== null ? (float) $stock->gramasi : null,
+                    'imageUrl' => $img,
                 ];
             })->all();
 
