@@ -54,6 +54,7 @@
                 <th>Status Kadaluarsa</th>
                 <th>Kadaluarsa</th>
                 <th>Ongkos Kirim</th>
+                <th>Rating</th>
                 <th>Catatan</th>
                 <th>Resi Ekspedisi</th>
                 <th>Jumlah PO</th>
@@ -75,6 +76,30 @@
                     <td><span class="badge {{ ($k->status_kadaluarsa === 'expired') ? 'bg-danger' : 'bg-success' }}">{{ strtoupper((string)($k->status_kadaluarsa ?? '-')) }}</span></td>
                     <td>{{ optional($k->expires_at)->format('Y-m-d H:i') ?? '-' }}</td>
                     <td>{{ number_format((float)($k->ongkos_kirim ?? 0), 2, ',', '.') }}</td>
+                    <td>
+                        @php($r = (int) ($k->customer_rating ?? 0))
+                        @if($r > 0)
+                            <a href="#" class="text-warning text-decoration-none" data-bs-toggle="modal" data-bs-target="#ratingModal-{{ $k->id }}">
+                                {!! str_repeat('&#9733;', $r) !!}{!! str_repeat('&#9734;', 5 - $r) !!}
+                            </a>
+                            <div class="modal fade" id="ratingModal-{{ $k->id }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Ulasan Pelanggan</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-2 text-warning">{!! str_repeat('&#9733;', $r) !!}{!! str_repeat('&#9734;', 5 - $r) !!}</div>
+                                            <p class="mb-0">{{ (string)($k->customer_review ?? '-') }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            <span class="text-muted">-</span>
+                        @endif
+                    </td>
                     <td>
                         <div class="d-flex align-items-center justify-content-between">
                             <span class="me-2">{{ (string)($k->catatan ?? '-') }}</span>

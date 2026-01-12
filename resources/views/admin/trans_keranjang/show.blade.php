@@ -60,6 +60,7 @@
                     -
                 @endif
             </div>
+            <div class="col-12 col-md-4"><strong>Resi Ekspedisi:</strong> {{ $keranjang->resi_ekspedisi ?? '-' }}</div>
         </div>
     </div>
 </div>

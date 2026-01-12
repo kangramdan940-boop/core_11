@@ -59,6 +59,7 @@ class CustomerCheckoutApiController extends Controller
                 $produk = MasterProdukDanLayanan::find((int) $it['id']);
                 $gram = (float) optional($produk?->gramasi)->gramasi;
                 if ($gram <= 0) { $gram = 1.0; }
+
                 $qty = (int) $it['qty'];
                 $hargaPerGram = (float) ($produk->harga_hariini ?? 0);
                 $jasa = (float) ($produk->harga_jasa ?? 0);
@@ -113,6 +114,9 @@ class CustomerCheckoutApiController extends Controller
                         'expires_at' => optional($keranjang->expires_at)->toIso8601String(),
                         'status_kadaluarsa' => $keranjang->status_kadaluarsa,
                         'status_order' => (string) ($keranjang->status_order ?? ''),
+                        'resi_ekspedisi' => $keranjang->resi_ekspedisi ?: null,
+                        'customer_rating' => $keranjang->customer_rating !== null ? (int) $keranjang->customer_rating : null,
+                        'customer_review' => $keranjang->customer_review ?: null,
                     ],
                     'pos' => $pos,
                     'grandTotal' => $grandTotal,
@@ -175,6 +179,9 @@ class CustomerCheckoutApiController extends Controller
                     'bukti_transfer_url' => $keranjang->bukti_transfer_url ?: null,
                     'nama_pengirim' => $keranjang->nama_pengirim ?: null,
                     'nominal_transfer' => $keranjang->nominal_transfer !== null ? (float) $keranjang->nominal_transfer : 0.0,
+                    'resi_ekspedisi' => $keranjang->resi_ekspedisi ?: null,
+                    'customer_rating' => $keranjang->customer_rating !== null ? (int) $keranjang->customer_rating : null,
+                    'customer_review' => $keranjang->customer_review ?: null,
                 ],
                 'pos' => $items,
                 'grandTotal' => $grandTotal,
@@ -234,6 +241,9 @@ class CustomerCheckoutApiController extends Controller
                     'bukti_transfer_url' => $k->bukti_transfer_url ?: null,
                     'nama_pengirim' => $k->nama_pengirim ?: null,
                     'nominal_transfer' => $k->nominal_transfer !== null ? (float) $k->nominal_transfer : 0.0,
+                    'resi_ekspedisi' => $k->resi_ekspedisi ?: null,
+                    'customer_rating' => $k->customer_rating !== null ? (int) $k->customer_rating : null,
+                    'customer_review' => $k->customer_review ?: null,
                 ],
                 'pos' => $items,
                 'grandTotal' => $grandTotal,
@@ -285,6 +295,41 @@ class CustomerCheckoutApiController extends Controller
                 ],
             ],
         ]);
+    }
+
+    public function completeAndReview(Request $request, int $id)
+    {
+        $userId = Auth::id();
+        $customer = MasterCustomer::where('sys_user_id', $userId)->firstOrFail();
+        $keranjang = TransKeranjang::whereKey($id)->where('created_by', (int) $userId)->first();
+        if (!$keranjang) {
+            return response()->json(['status' => false, 'error' => 'Keranjang tidak ditemukan'], 404);
+        }
+        $data = $request->validate([
+            'rating' => ['required','integer','min:1','max:5'],
+            'review' => ['nullable','string'],
+        ]);
+        $cur = strtolower((string) ($keranjang->status_order ?? ''));
+        $syn = ['perlu_dibayar'=>'pending_payment','terbayar'=>'paid','diproses'=>'processing','dikirim'=>'shipped','selesai'=>'completed','dibatalkan'=>'cancelled'];
+        $norm = $syn[$cur] ?? $cur;
+        if ($norm !== 'shipped' && $norm !== 'ready_at_agen') {
+            return response()->json(['status' => false, 'error' => 'Status tidak valid untuk penyelesaian'], 422);
+        }
+        DB::transaction(function () use ($keranjang, $customer, $data) {
+            $keranjang->status_order = 'completed';
+            $keranjang->customer_rating = (int) $data['rating'];
+            $keranjang->customer_review = (string) ($data['review'] ?? '');
+            $keranjang->save();
+            $pos = TransPo::where('id_keranjang', (int) $keranjang->id)
+                ->where('master_customer_id', (int) $customer->id)
+                ->get();
+            foreach ($pos as $po) {
+                $po->status = 'completed';
+                if (!$po->completed_at) { $po->completed_at = now(); }
+                $po->save();
+            }
+        });
+        return response()->json(['status' => true]);
     }
 
 }
