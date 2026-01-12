@@ -15,6 +15,8 @@
                     <th>Gambar</th>
                     <th>Gramasi</th>
                     <th>Harga Hari Ini</th>
+                    <th>Harga Jasa</th>
+                    <th>Grand Total</th>
                     <th>Ready/PO</th>
                     <th>Status</th>
                     <th style="width: 75px;">Aksi</th>
@@ -34,6 +36,8 @@
                         </td>
                         <td>{{ optional($i->gramasi)->gramasi ? number_format($i->gramasi->gramasi, 0).' g' : '-' }}</td>
                         <td>{{ number_format($i->harga_hariini, 0) }}</td>
+                        <td>{{ number_format($i->harga_jasa, 0) }}</td>
+                        <td>{{ number_format((float)($i->harga_hariini ?? 0) + (float)($i->harga_jasa ?? 0), 0) }}</td>
                         <td>
                             <span class="badge {{ $i->is_allow_ready ? 'bg-success' : 'bg-secondary' }}">Ready</span>
                             <span class="badge {{ $i->is_allow_po ? 'bg-success' : 'bg-secondary' }}">PO</span>
