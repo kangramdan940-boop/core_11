@@ -41,6 +41,11 @@ class TransKeranjang extends Model
         return $this->hasMany(TransPo::class, 'id_keranjang');
     }
 
+    public function readies()
+    {
+        return $this->hasMany(TransReady::class, 'id_keranjang');
+    }
+
     public function alamat()
     {
         return $this->belongsTo(\App\Models\MasterCustomerAddress::class, 'id_alamat_pengiriman');

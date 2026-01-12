@@ -15,6 +15,7 @@ class TransReady extends Model
         'kode_trans',
         'master_customer_id',
         'master_agen_id',
+        'id_keranjang',
         'id_master_produk_dan_layanan',
         'master_gold_ready_stock_id',
         'qty',
@@ -69,6 +70,11 @@ class TransReady extends Model
     public function produk()
     {
         return $this->belongsTo(MasterProdukDanLayanan::class, 'id_master_produk_dan_layanan');
+    }
+
+    public function keranjang()
+    {
+        return $this->belongsTo(TransKeranjang::class, 'id_keranjang');
     }
 
     public static function calculateAmount(float $hargaJualSatuan, int $qty): float

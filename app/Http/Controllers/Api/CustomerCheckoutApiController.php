@@ -141,11 +141,16 @@ class CustomerCheckoutApiController extends Controller
             ->orderBy('id')
             ->get();
 
-        if ($pos->isEmpty()) {
-            return response()->json(['status' => false, 'error' => 'Keranjang tidak memiliki PO untuk pengguna ini'], 404);
+        $readies = \App\Models\TransReady::where('id_keranjang', (int) $keranjang->id)
+            ->where('master_customer_id', (int) $customer->id)
+            ->orderBy('id')
+            ->get();
+
+        if ($pos->isEmpty() && $readies->isEmpty()) {
+            return response()->json(['status' => false, 'error' => 'Keranjang tidak memiliki transaksi untuk pengguna ini'], 404);
         }
 
-        $items = $pos->map(function (TransPo $po) {
+        $poItems = $pos->map(function (TransPo $po) {
             $produkId = (int) ($po->id_master_produk_dan_layanan ?? 0);
             $qty = (int) ($po->qty ?? 0);
             $totalGram = (float) ($po->total_gram ?? 0.0);
@@ -162,7 +167,22 @@ class CustomerCheckoutApiController extends Controller
             ];
         })->all();
 
-        $grandTotal = array_sum(array_map(fn ($p) => (float) $p['totalAmount'], $items));
+        $readyItems = $readies->map(function (\App\Models\TransReady $r) {
+            return [
+                'id' => (int) $r->id,
+                'kode_ready' => (string) $r->kode_trans,
+                'readyStockId' => (int) $r->master_gold_ready_stock_id,
+                'qty' => (int) $r->qty,
+                'unitPrice' => (float) $r->harga_jual_satuan,
+                'totalAmount' => (float) $r->total_amount,
+                'shippingCost' => (float) $r->shipping_cost,
+                'status' => (string) ($r->status ?? ''),
+                'deliveryType' => (string) ($r->delivery_type ?? ''),
+            ];
+        })->all();
+
+        $grandTotal = array_sum(array_map(fn ($p) => (float) $p['totalAmount'], $poItems))
+            + array_sum(array_map(fn ($r) => (float) $r['totalAmount'], $readyItems));
 
         return response()->json([
             'status' => true,
@@ -183,7 +203,8 @@ class CustomerCheckoutApiController extends Controller
                     'customer_rating' => $keranjang->customer_rating !== null ? (int) $keranjang->customer_rating : null,
                     'customer_review' => $keranjang->customer_review ?: null,
                 ],
-                'pos' => $items,
+                'pos' => $poItems,
+                'readies' => $readyItems,
                 'grandTotal' => $grandTotal,
             ],
         ]);
@@ -209,7 +230,12 @@ class CustomerCheckoutApiController extends Controller
                 ->orderBy('id')
                 ->get();
 
-            $items = $pos->map(function (\App\Models\TransPo $po) {
+            $readies = \App\Models\TransReady::where('id_keranjang', (int) $k->id)
+                ->where('master_customer_id', (int) $customer->id)
+                ->orderBy('id')
+                ->get();
+
+            $poItems = $pos->map(function (\App\Models\TransPo $po) {
                 $produkId = (int) ($po->id_master_produk_dan_layanan ?? 0);
                 $qty = (int) ($po->qty ?? 0);
                 $totalGram = (float) ($po->total_gram ?? 0.0);
@@ -226,7 +252,22 @@ class CustomerCheckoutApiController extends Controller
                 ];
             })->all();
 
-            $grandTotal = array_sum(array_map(fn ($p) => (float) $p['totalAmount'], $items));
+            $readyItems = $readies->map(function (\App\Models\TransReady $r) {
+                return [
+                    'id' => (int) $r->id,
+                    'kode_ready' => (string) $r->kode_trans,
+                    'readyStockId' => (int) $r->master_gold_ready_stock_id,
+                    'qty' => (int) $r->qty,
+                    'unitPrice' => (float) $r->harga_jual_satuan,
+                    'totalAmount' => (float) $r->total_amount,
+                    'shippingCost' => (float) $r->shipping_cost,
+                    'status' => (string) ($r->status ?? ''),
+                    'deliveryType' => (string) ($r->delivery_type ?? ''),
+                ];
+            })->all();
+
+            $grandTotal = array_sum(array_map(fn ($p) => (float) $p['totalAmount'], $poItems))
+                + array_sum(array_map(fn ($r) => (float) $r['totalAmount'], $readyItems));
 
             return [
                 'keranjang' => [
@@ -245,7 +286,8 @@ class CustomerCheckoutApiController extends Controller
                     'customer_rating' => $k->customer_rating !== null ? (int) $k->customer_rating : null,
                     'customer_review' => $k->customer_review ?: null,
                 ],
-                'pos' => $items,
+                'pos' => $poItems,
+                'readies' => $readyItems,
                 'grandTotal' => $grandTotal,
             ];
         })->values()->all();
