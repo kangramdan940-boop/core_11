@@ -110,6 +110,23 @@ final class TransKeranjangController extends Controller
                     ]);
                 }
             }
+
+            $readies = \App\Models\TransReady::where('id_keranjang', (int) $keranjang->id)->get();
+            foreach ($readies as $ready) {
+                if ($ready->status === 'pending_payment') {
+                    $ready->status = 'paid';
+                    $ready->payment_method = 'manual_transfer';
+                    $ready->payment_reference = 'KERANJANG:' . (string) ($keranjang->kode_keranjang ?? $keranjang->id);
+                    $ready->paid_at = now();
+                    $ready->save();
+
+                    \App\Models\TransReadyLog::create([
+                        'trans_ready_id' => $ready->id,
+                        'status'         => $ready->status,
+                        'description'    => 'Pembayaran via keranjang disetujui oleh ' . ($request->user()?->name ?? 'SYSTEM') . ' pada ' . now(),
+                    ]);
+                }
+            }
         });
 
         return redirect()->route('admin.trans.keranjang.show', $keranjang)->with('success', 'Keranjang disetujui. Semua PO pending menjadi PAID.');
@@ -193,6 +210,31 @@ final class TransKeranjangController extends Controller
                         'status'      => $po->status,
                         'description' => 'Status PO disamakan dengan keranjang oleh ' . ($request->user()?->name ?? 'SYSTEM') . ' pada ' . now(),
                     ]);
+                }
+            }
+
+            $readyAllowed = ['paid','shipped','completed','cancelled'];
+            if (in_array($next, $readyAllowed, true)) {
+                $readies = \App\Models\TransReady::where('id_keranjang', (int) $keranjang->id)->get();
+                foreach ($readies as $ready) {
+                    if ($ready->status !== $next) {
+                        $ready->status = $next;
+                        if ($next === 'paid' && !$ready->paid_at) {
+                            $ready->paid_at = now();
+                        } elseif ($next === 'shipped' && !$ready->shipped_at) {
+                            $ready->shipped_at = now();
+                        } elseif ($next === 'completed' && !$ready->completed_at) {
+                            $ready->completed_at = now();
+                        } elseif ($next === 'cancelled' && !$ready->cancelled_at) {
+                            $ready->cancelled_at = now();
+                        }
+                        $ready->save();
+                        \App\Models\TransReadyLog::create([
+                            'trans_ready_id' => $ready->id,
+                            'status'         => $ready->status,
+                            'description'    => 'Status transaksi Ready disamakan dengan keranjang oleh ' . ($request->user()?->name ?? 'SYSTEM') . ' pada ' . now(),
+                        ]);
+                    }
                 }
             }
         });
