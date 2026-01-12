@@ -18,7 +18,7 @@ final class TransKeranjangController extends Controller
         $createdDate = (string) $request->query('created_date', '');
 
         $allowed = ['pending_payment','paid','processing','ready_at_agen','shipped','completed','cancelled'];
-        $query = TransKeranjang::withCount('pos')->orderByDesc('id');
+        $query = TransKeranjang::withCount(['pos','readies'])->orderByDesc('id');
 
         $aliasGroups = [
             'pending_payment' => ['pending_payment','perlu_dibayar'],

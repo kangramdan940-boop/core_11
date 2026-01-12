@@ -128,6 +128,42 @@
         </div>
     </div>
 
+    @if($ready->keranjang)
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <h6 class="mb-3 fs-5"># Transaksi Ready Dalam Keranjang</h6>
+            <table class="table table-sm table-bordered align-middle">
+                <thead>
+                    <tr>
+                        <th>Kode Ready</th>
+                        <th>Customer</th>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Harga Satuan</th>
+                        <th>Biaya Pengiriman</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($ready->keranjang->readies as $r)
+                        <tr>
+                            <td>{{ $r->kode_trans }}</td>
+                            <td>{{ optional($r->customer)->full_name ?? '-' }}</td>
+                            <td>{{ optional($r->readyStock)->kode_item ?? '-' }}</td>
+                            <td>{{ (int)($r->qty ?? 0) }}</td>
+                            <td>{{ number_format((float)($r->harga_jual_satuan ?? 0), 2, ',', '.') }}</td>
+                            <td>{{ number_format((float)($r->shipping_cost ?? 0), 2, ',', '.') }}</td>
+                            <td>{{ number_format((float)($r->total_amount ?? 0), 2, ',', '.') }}</td>
+                            <td>{{ strtoupper((string)($r->status ?? '-')) }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
+
     <div class="card shadow-sm">
         <div class="card-body">
             <h6 class="mb-3 fs-5"># Payment Logs Terkait</h6>

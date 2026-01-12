@@ -58,6 +58,7 @@
                 <th>Catatan</th>
                 <th>Resi Ekspedisi</th>
                 <th>Jumlah PO</th>
+                <th>Jumlah Ready</th>
                 <th>Bukti Transfer</th>
                 <th>Dibuat</th>
                 <th style="width:90px;">Aksi</th>
@@ -216,6 +217,7 @@
                         @endif
                     </td>
                     <td>{{ (int)($k->pos_count ?? 0) }}</td>
+                    <td>{{ (int)($k->readies_count ?? 0) }}</td>
                     <td>
                         @if(!empty($k->bukti_transfer_url))
                             <a href="#" class="proof-preview" data-bs-toggle="modal" data-bs-target="#proofPreviewModal-{{ $k->id }}">
