@@ -19,6 +19,7 @@
                 <tr>
                     <th class="text-center" style="width:64px;">ID</th>
                     <th class="text-center" style="width:160px;">Kode Trans</th>
+                    <th class="text-center" style="width:120px;">ID Keranjang</th>
                     <th style="min-width:200px;">Customer</th>
                     <th style="min-width:160px;">Agen</th>
                     <th style="min-width:160px;">Item</th>
@@ -34,6 +35,13 @@
                     <tr>
                         <td>{{ $t->id }}</td>
                         <td>{{ $t->kode_trans }}</td>
+                        <td>
+                            @if($t->id_keranjang)
+                                <a href="{{ route('admin.trans.keranjang.show', $t->id_keranjang) }}" class="text-decoration-none">{{ $t->id_keranjang }}</a>
+                            @else
+                                -
+                            @endif
+                        </td>
                         <td>{{ optional($t->customer)->full_name ?? '-' }}</td>
                         <td>{{ optional($t->agen)->name ?? '-' }}</td>
                         <td>{{ optional($t->readyStock)->kode_item ?? '-' }}</td>
