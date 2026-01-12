@@ -39,7 +39,7 @@ class CustomerCheckoutApiController extends Controller
         }
 
         return DB::transaction(function () use ($customer, $address, $items, $userId, $request) {
-            $kodeKeranjang = 'KRG-' . date('Ymd-His') . '-' . Str::upper(Str::random(6));
+            $kodeKeranjang = 'KRG-PO-' . date('Ymd-His') . '-' . Str::upper(Str::random(6));
             $keranjang = TransKeranjang::create([
                 'kode_keranjang' => $kodeKeranjang,
                 'ongkos_kirim' => (float) ($address->shipping_cost ?? 0),

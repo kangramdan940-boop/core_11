@@ -44,7 +44,7 @@ class ReadyCheckoutApiController extends Controller
                 $address = MasterCustomerAddress::where('id', (int) $data['addressId'])
                     ->where('sys_user_id', (int) $userId)
                     ->firstOrFail();
-                $kodeKeranjang = 'KRG-' . date('Ymd-His') . '-' . Str::upper(Str::random(6));
+                $kodeKeranjang = 'KRG-READY-' . date('Ymd-His') . '-' . Str::upper(Str::random(6));
                 $keranjang = TransKeranjang::create([
                     'kode_keranjang' => $kodeKeranjang,
                     'ongkos_kirim' => (float) ($data['shippingCost'] ?? ($address->shipping_cost ?? 0.0)),
@@ -199,7 +199,7 @@ class ReadyCheckoutApiController extends Controller
         $deliveryType = (string) ($data['deliveryType'] ?? 'ship');
         $agenId = $stock->master_agen_id ? (int) $stock->master_agen_id : null;
 
-        $kodeKeranjang = 'KRG-' . date('Ymd-His') . '-' . Str::upper(Str::random(6));
+        $kodeKeranjang = 'KRG-READY-' . date('Ymd-His') . '-' . Str::upper(Str::random(6));
         $keranjang = TransKeranjang::create([
             'kode_keranjang' => $kodeKeranjang,
             'ongkos_kirim' => (float) $shippingCost,
