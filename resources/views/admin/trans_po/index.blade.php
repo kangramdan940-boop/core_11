@@ -207,7 +207,7 @@
                             <div class="text-muted small">{{ optional($p->customer)->phone_wa ?? '-' }}</div>
                         </td>
                         @if(request('status') !== 'shipped')
-                            <td>{{ number_format((float)(optional(optional($p->produk)->gramasi)->gramasi ?? 0), 3, ',', '.') }} Gram x ({{ (int)($p->qty ?? 0) }} Keping)</td>
+                            <td>{{ number_format((float)(optional(optional($p->produk)->gramasi)->gramasi ?? 0), 0, ',', '.') }} Gram x ({{ (int)($p->qty ?? 0) }} Keping)</td>
                         @endif
                         @if(request('status') !== 'shipped')
                         <td>
@@ -225,7 +225,7 @@
                         </td>
                         @endif
                         @if(request('status') !== 'shipped')
-                            <td>{{ (int)($p->total_gram ) }} Gram</td>
+                            <td>{{ (int)($p->total_gram * $p->qty) }} Gram</td>
                         @endif
                         <td>{!! ((float)($p->shipping_cost ?? 0)) > 0 ? number_format((float)($p->shipping_cost ?? 0), 2, ',', '.') : '<span class="badge bg-danger">Follow Up Ongkir</span>' !!}</td>
                         <td>{{ number_format((float)$p->total_amount, 2, ',', '.') }}</td>
