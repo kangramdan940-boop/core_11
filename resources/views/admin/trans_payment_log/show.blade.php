@@ -104,9 +104,8 @@
                 <div class="row g-3">
                     <div class="col-md-4">
                         @if ($payloadReq && !empty($payloadReq['proof_path']))
-                            <img src="{{ asset($payloadReq['proof_path']) }}"
-                                 alt="Bukti Transfer"
-                                 class="img-fluid rounded border">
+                            @php $path = $payloadReq['proof_path']; $url = \Illuminate\Support\Str::startsWith($path, 'payment_proofs/') ? asset('storage/'.$path) : asset($path); @endphp
+                            <img src="{{ $url }}" alt="Bukti Transfer" class="img-fluid rounded border">
                         @else
                             <div class="text-muted">Tidak ada bukti transfer</div>
                         @endif

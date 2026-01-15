@@ -7,10 +7,20 @@
 @section('subLink', route('admin.trans.cicilan.index'))
 
 @section('content')
-    <div class="mb-3">
+    <div class="mb-3 d-flex gap-2 align-items-center">
         <a href="{{ route('admin.trans.cicilan.index') }}" class="btn btn-sm btn-secondary">← Kembali</a>
+        <form action="{{ route('admin.trans.cicilan.update-status', $contract) }}" method="POST" class="d-inline-flex align-items-center gap-2">
+            @csrf
+            <select name="status" class="form-select form-select-sm">
+                @php $allowedStatuses = ['menunggu DP','active','pembayaran telat','sudah di bayar','selesai','canceled']; @endphp
+                @foreach ($allowedStatuses as $st)
+                    <option value="{{ $st }}" @selected($contract->status === $st)>{{ strtoupper($st) }}</option>
+                @endforeach
+            </select>
+            <button type="submit" class="btn btn-sm btn-primary">Update</button>
+        </form>
     </div>
-
+ 
     <div class="card shadow-sm mb-3">
         <div class="card-body">
             <h6 class="mb-3 fs-5"># Ringkasan Kontrak</h6>

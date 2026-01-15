@@ -18,7 +18,6 @@ Route::prefix('v1')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\V
     Route::delete('/customers/addresses/{id}', [\App\Http\Controllers\Api\MasterCustomerAddressApiController::class, 'destroy'])->whereNumber('id')->name('customer.addresses.destroy');
     Route::get('/customers/jne/cities', [\App\Http\Controllers\Api\JneProxyApiController::class, 'cities'])->name('customer.api.jne.cities');
     Route::get('/customers/jne/shipping-fee', [\App\Http\Controllers\Api\JneProxyApiController::class, 'shippingFee'])->name('customer.api.jne.shipping-fee');
-    Route::delete('/customers/addresses/{id}', [\App\Http\Controllers\Api\MasterCustomerAddressApiController::class, 'destroy'])->whereNumber('id')->name('customer.addresses.destroy');
     Route::post('/customers/po/checkout', [\App\Http\Controllers\Api\CustomerCheckoutApiController::class, 'checkout'])->name('customer.po.checkout');
     Route::post('/customers/ready-stocks/checkout', [\App\Http\Controllers\Api\ReadyCheckoutApiController::class, 'checkout'])->name('customer.ready-stocks.checkout');
     Route::get('/customers/keranjang', [\App\Http\Controllers\Api\CustomerCheckoutApiController::class, 'carts'])->name('customer.keranjang.index');
