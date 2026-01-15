@@ -70,29 +70,21 @@
             <div class="card-body p-3">
                 <div class="h7 text-dark mb-2">Informasi Agen & Rekening</div>
                 <div class="row g-3">
-                    <div class="col-6"><div class="body-6 text-dark-4">Nama Agen</div><div class="h7 text-dark">{{ optional($item->agen)->name ?? '-' }}</div></div>
-                    <div class="col-6"><div class="body-6 text-dark-4">WhatsApp</div><div class="h7 text-dark">{{ optional($item->agen)->phone_wa ?? '-' }}</div></div>
-                    <div class="col-12"><div class="body-6 text-dark-4">Nomor Rekening Agen</div><div class="h7 text-dark d-flex align-items-center gap-2"><span class="js-copy-target">{{ optional($item->agen)->rekening_nomor ?? '-' }}</span>@if(optional($item->agen)->rekening_nomor)<span class="js-copy" data-copy="{{ optional($item->agen)->rekening_nomor }}" title="Salin" aria-label="Salin" style="cursor:pointer;display:inline-flex;align-items:center;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 1.5A1.5 1.5 0 0 1 6.5 0h5A1.5 1.5 0 0 1 13 1.5v9A1.5 1.5 0 0 1 11.5 12h-5A1.5 1.5 0 0 1 5 10.5v-9z" stroke="#6c757d" stroke-width="1"/><path d="M3 4h6c.55 0 1 .45 1 1v8c0 .55-.45 1-1 1H3c-.55 0-1-.45-1-1V5c0-.55.45-1 1-1z" stroke="#6c757d" stroke-width="1"/></svg></span><span class="text-success small js-copy-feedback d-none">Disalin</span>@endif</div></div>
-                    @php $pay = \App\Models\MasterPaymentSetting::first(); @endphp
-                    <div class="col-6"><div class="body-6 text-dark-4">Bank</div><div class="h7 text-dark">{{ $pay->bank_nama ?? 'BCA' }}</div></div>
-                    <div class="col-6"><div class="body-6 text-dark-4">Atas Nama</div><div class="h7 text-dark">{{ optional($item->agen)->name ?? '-' }}</div></div>
+                    @php
+                        $pay = \App\Models\MasterPaymentSetting::first();
+                        $hasAgen = optional($item->agen)->name || optional($item->agen)->rekening_nomor;
+                        $namaAgen = $hasAgen ? (string) optional($item->agen)->name : 'M Ramdan Gumelar';
+                        $waAgen = $hasAgen ? (string) optional($item->agen)->phone_wa : '082126357645';
+                        $rekAgen = $hasAgen ? (string) optional($item->agen)->rekening_nomor : '7391383182';
+                        $bankAgen = $hasAgen ? ($pay->bank_nama ?? 'BCA') : 'BCA';
+                        $atasNama = $hasAgen ? (string) (optional($item->agen)->rekening_nama ?: optional($item->agen)->name) : 'M RAMDAN GUMELAR';
+                    @endphp
+                    <div class="col-6"><div class="body-6 text-dark-4">Nama Agen</div><div class="h7 text-dark">{{ $namaAgen }}</div></div>
+                    <div class="col-6"><div class="body-6 text-dark-4">WhatsApp</div><div class="h7 text-dark">{{ $waAgen }}</div></div>
+                    <div class="col-12"><div class="body-6 text-dark-4">Nomor Rekening Agen</div><div class="h7 text-dark d-flex align-items-center gap-2"><span class="js-copy-target">{{ $rekAgen }}</span>@if(!empty($rekAgen))<span class="js-copy" data-copy="{{ $rekAgen }}" title="Salin" aria-label="Salin" style="cursor:pointer;display:inline-flex;align-items:center;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 1.5A1.5 1.5 0 0 1 6.5 0h5A1.5 1.5 0 0 1 13 1.5v9A1.5 1.5 0 0 1 11.5 12h-5A1.5 1.5 0 0 1 5 10.5v-9z" stroke="#6c757d" stroke-width="1"/><path d="M3 4h6c.55 0 1 .45 1 1v8c0 .55-.45 1-1 1H3c-.55 0-1-.45-1-1V5c0-.55.45-1 1-1z" stroke="#6c757d" stroke-width="1"/></svg></span><span class="text-success small js-copy-feedback d-none">Disalin</span>@endif</div></div>
+                    <div class="col-6"><div class="body-6 text-dark-4">Bank</div><div class="h7 text-dark">{{ $bankAgen }}</div></div>
+                    <div class="col-6"><div class="body-6 text-dark-4">Atas Nama</div><div class="h7 text-dark">{{ $atasNama }}</div></div>
                 </div>
-            </div>
-        </div>
-
-        <div class="card shadow-sm mb-2">
-            <div class="card-body p-3">
-                <div class="h7 text-dark mb-2">Akad Murabahah (PDF)</div>
-                @if ($pdfUrl)
-                    <div class="ratio ratio-4x3">
-                        <iframe src="{{ $pdfUrl }}#toolbar=1&navpanes=0&scrollbar=1" title="PDF Preview" style="width:100%;height:100%;" frameborder="0"></iframe>
-                    </div>
-                    <div class="mt-2">
-                        <a class="btn-app button-1" href="{{ $pdfUrl }}" target="_blank" rel="noopener">Buka PDF</a>
-                    </div>
-                @else
-                    <div class="body-6 text-dark-4">Belum ada dokumen PDF terlampir.</div>
-                @endif
             </div>
         </div>
 
@@ -108,7 +100,7 @@
                     <div class="col-12">
                         <label class="form-label">Tenor (bulan)</label>
                         <div class="input-group">
-                            <input type="number" name="tenor_bulan" min="{{ (int)$item->layanan->tenor_min_bulan }}" max="{{ (int)$item->layanan->tenor_max_bulan }}" step="1" value="{{ old('tenor_bulan', (int)$item->layanan->tenor_min_bulan) }}" class="form-control @error('tenor_bulan') is-invalid @enderror" required>
+                            <input type="number" name="tenor_bulan" min="{{ (int)$item->layanan->tenor_min_bulan }}" max="{{ (int)$item->layanan->tenor_max_bulan }}" step="1" value="{{ old('tenor_bulan', (int)$item->layanan->tenor_max_bulan) }}" class="form-control @error('tenor_bulan') is-invalid @enderror" required>
                             <span class="input-group-text">bulan</span>
                         </div>
                         <small class="text-muted">Rentang: {{ (int)$item->layanan->tenor_min_bulan }}–{{ (int)$item->layanan->tenor_max_bulan }} bulan</small>
@@ -133,7 +125,7 @@
                         @enderror
                     </div>
                     <div class="col-12">
-                        <label class="form-label">Nominal DP (Rp)</label>
+                        <label class="form-label">Nominal DP + ADM 25,000 (Rp)</label>
                         <div class="input-group">
                             <input type="text" id="dpAmountInput" class="form-control" value="Rp 0" readonly>
                             <span class="input-group-text">IDR</span>
@@ -192,9 +184,11 @@
 <script>
 const hargaPerGram = parseFloat('{{ (float) optional($item->latestAkad)->harga_per_gram_fix }}') || 0;
 const gramPerKeping = parseFloat('{{ (float) optional($item->gramasi)->gramasi }}') || 0;
+const avgGramPerKeping = parseFloat('{{ (int)$item->jumlah_keping_dibuka > 0 ? (float)$item->total_gram_dibuka / (float)$item->jumlah_keping_dibuka : 0 }}') || 0;
+const adminFee = 25000;
 function formatRupiah(n){return 'Rp ' + (n||0).toLocaleString('id-ID',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function calcUniqueCode(jumlah, dpPercent){const base=(jumlah*37)+Math.round(dpPercent*10);return (base % 900) + 100;}
-function updateDpInfo(){const dpField=document.querySelector('[name="dp_persen"]');const kepingInput=document.querySelector('input[name="jumlah_keping_diambil"]');const dpPercent=parseFloat(dpField?.value)||0;let jumlah=parseInt(kepingInput?.value)||0;const maxVal=parseInt(kepingInput?.max)||0;const minVal=parseInt(kepingInput?.min)||1;if(kepingInput){if(maxVal>0&&jumlah>maxVal){jumlah=maxVal;kepingInput.value=String(maxVal);}if(jumlah<minVal){jumlah=minVal;kepingInput.value=String(minVal);}}const gramasi=jumlah*gramPerKeping;const total=gramasi*hargaPerGram;const dpAmount=total*dpPercent/100;const baseInt=Math.floor(dpAmount);const uniq=calcUniqueCode(jumlah, dpPercent);const dpTotal=baseInt+uniq;const inf=document.getElementById('dpAmountInfo');if(inf)inf.textContent=formatRupiah(dpTotal);const inputAmt=document.getElementById('dpAmountInput');if(inputAmt)inputAmt.value=formatRupiah(dpTotal);const uniqEl=document.getElementById('uniqueCodeDisplay');if(uniqEl)uniqEl.textContent=String(uniq).padStart(3,'0');}document.addEventListener('DOMContentLoaded',()=>{updateDpInfo();['input','change'].forEach(evt=>{document.querySelector('[name="dp_persen"]')?.addEventListener(evt,updateDpInfo);document.querySelector('input[name="jumlah_keping_diambil"]')?.addEventListener(evt,updateDpInfo);});});
+function updateDpInfo(){const dpField=document.querySelector('[name="dp_persen"]');const kepingInput=document.querySelector('input[name="jumlah_keping_diambil"]');const dpPercent=parseFloat(dpField?.value)||0;let jumlah=parseInt(kepingInput?.value)||0;const maxVal=parseInt(kepingInput?.max)||0;const minVal=parseInt(kepingInput?.min)||1;if(kepingInput){if(maxVal>0&&jumlah>maxVal){jumlah=maxVal;kepingInput.value=String(maxVal);}if(jumlah<minVal){jumlah=minVal;kepingInput.value=String(minVal);}}const gramasi=jumlah*((gramPerKeping>0?gramPerKeping:avgGramPerKeping));const total=gramasi*hargaPerGram;const dpAmount=total*dpPercent/100;const baseInt=Math.floor(dpAmount);const uniq=calcUniqueCode(jumlah, dpPercent);const dpTotal=baseInt+uniq+adminFee;const inf=document.getElementById('dpAmountInfo');if(inf)inf.textContent=formatRupiah(dpTotal);const inputAmt=document.getElementById('dpAmountInput');if(inputAmt)inputAmt.value=formatRupiah(dpTotal);const uniqEl=document.getElementById('uniqueCodeDisplay');if(uniqEl)uniqEl.textContent=String(uniq).padStart(3,'0');}document.addEventListener('DOMContentLoaded',()=>{updateDpInfo();['input','change'].forEach(evt=>{document.querySelector('[name="dp_persen"]')?.addEventListener(evt,updateDpInfo);document.querySelector('input[name="jumlah_keping_diambil"]')?.addEventListener(evt,updateDpInfo);});});
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
