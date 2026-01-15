@@ -2,22 +2,45 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Detail Kontrak Cicilan - Customer</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, viewport-fit=cover">
+    <link rel="stylesheet" href="{{ asset('front/fonts/fonts.css')}}">
+    <link rel="stylesheet" href="{{ asset('front/fonts/font-icons.css')}}">
+    <link rel="stylesheet" href="{{ asset('front/css/bootstrap.min.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('front/css/nouislider.min.css')}}" />
+    <link rel="stylesheet" href="{{ asset('front/css/swiper-bundle.min.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('front/css/styles.css')}}" />
+    <link rel="shortcut icon" href="{{ asset('front/images/logo/168.png')}}" />
+    <link rel="apple-touch-icon-precomposed" href="{{ asset('front/images/logo/168.png')}}" />
+    <title>Detail Kontrak Cicilan || Jajan Emas</title>
+    <script>if (localStorage.toggled === "dark-theme") { document.documentElement.classList.add('dark-theme'); }</script>
 </head>
-<body class="bg-light">
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="h5 mb-0">Detail Kontrak Cicilan</h1>
-        <a href="{{ route('customer.cicilan.index') }}" class="btn btn-outline-secondary btn-sm">← Kembali</a>
+<body>
+<div class="header fixed-top">
+    <div class="left">
+        <a href="{{ route('customer.cicilan.index') }}" class="icon back-btn">
+            <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.88986 12.2951L1.60986 7.00008L6.88986 1.70508" stroke="#121927" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </a>
     </div>
+    <h3>Kontrak Cicilan</h3>
+</div>
+<div class="app-content style-3">
+    <div class="tf-container">
 
     @if (session('success'))
         <div class="alert alert-success py-2">{{ session('success') }}</div>
     @endif
     @if (session('error'))
         <div class="alert alert-danger py-2">{{ session('error') }}</div>
+    @endif
+    @if ($errors->any())
+        <div class="alert alert-danger py-2">
+            <div class="fw-semibold mb-2">Terjadi kesalahan:</div>
+            <ul class="mb-0 ps-3">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
     @endif
 
     <div class="card shadow-sm mb-3">
@@ -36,6 +59,14 @@
         </div>
     </div>
 
+    @if (strtolower($contract->status) === 'menunggu dp')
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h6 class="mb-2">Status Kontrak</h6>
+            <div class="alert alert-info mb-0">Kontrak sedang menunggu verifikasi DP oleh admin. Jadwal cicilan akan tersedia setelah DP diverifikasi.</div>
+        </div>
+    </div>
+    @else
     <div class="card shadow-sm">
         <div class="card-body">
             <h6 class="mb-2">Pembayaran Cicilan</h6>
@@ -73,7 +104,7 @@
                                         <form action="{{ route('customer.cicilan.confirm-payment', $p) }}" method="POST" enctype="multipart/form-data" class="row g-2">
                                             @csrf
                                             <div class="col-auto">
-                                                <input type="number" step="0.01" min="0.01" name="nominal_transfer" class="form-control form-control-sm" placeholder="Nominal" required>
+                                                <input type="number" step="0.01" min="0.01" name="nominal_transfer" class="form-control form-control-sm" placeholder="Nominal" required value="{{ old('nominal_transfer', (int) floor((float) $p->amount_due) + (($p->id % 900) + 100)) }}">
                                             </div>
                                             <div class="col-auto">
                                                 <input type="text" name="nama_pengirim" class="form-control form-control-sm" placeholder="Nama Pengirim" required>
@@ -98,6 +129,13 @@
             </table>
         </div>
     </div>
+    @endif
 </div>
+@include('front.customer.partials.menubar-footer', ['active' => 'produk'])
+<script type="text/javascript" src="{{ asset('front/js/bootstrap.min.js')}}"></script>
+<script type="text/javascript" src="{{ asset('front/js/jquery.min.js')}}"></script>
+<script type="text/javascript" src="{{ asset('front/js/lazysize.min.js')}}"></script>
+<script type="text/javascript" src="{{ asset('front/js/jquery.nice-select.min.js')}}"></script>
+<script type="text/javascript" src="{{ asset('front/js/main.js')}}"></script>
 </body>
 </html>

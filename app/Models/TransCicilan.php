@@ -15,8 +15,10 @@ class TransCicilan extends Model
         'kode_kontrak',
         'master_customer_id',
         'master_agen_id',
+        'master_layanan_emas_cicilan_id',
         'master_gold_ready_stock_id',
         'gramasi',
+        'jumlah_keping_diambil',
         'harga_per_gram_fix',
         'harga_total_kontrak',
         'tenor_bulan',
@@ -45,10 +47,12 @@ class TransCicilan extends Model
         'shipped_at',
         'received_at',
         'catatan',
+        'file_bukti_bayar_dp',
     ];
 
     protected $casts = [
         'gramasi'             => 'decimal:3',
+        'jumlah_keping_diambil' => 'integer',
         'harga_per_gram_fix'  => 'decimal:2',
         'harga_total_kontrak' => 'decimal:2',
         'dp_persen'           => 'decimal:2',
@@ -81,6 +85,11 @@ class TransCicilan extends Model
     public function readyStock()
     {
         return $this->belongsTo(MasterGoldReadyStock::class, 'master_gold_ready_stock_id');
+    }
+
+    public function layananCicilan()
+    {
+        return $this->belongsTo(MasterLayananEmasCicilan::class, 'master_layanan_emas_cicilan_id');
     }
 
     public function cicilanPayments()

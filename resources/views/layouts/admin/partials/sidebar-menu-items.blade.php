@@ -15,9 +15,16 @@
             [ 'type' => 'link', 'icon' => 'ri-calculator-line', 'text' => 'Kalkulator FIFO', 'url' => route('admin.trans.fifo-calculator'), 'routeIs' => 'admin.trans.fifo-calculator' ],
             [ 'type' => 'link', 'icon' => 'ri-shopping-bag-3-line', 'text' => 'Produk & Layanan', 'url' => route('admin.master.produk-layanan.index'), 'routeIs' => 'admin.master.produk-layanan.*' ],
             [ 'type' => 'link', 'icon' => 'ri-flashlight-line', 'text' => 'Emas Ready', 'url' => route('admin.trans.ready.index'), 'routeIs' => 'admin.trans.ready.*' ],
-            // [ 'type' => 'link', 'icon' => 'ri-calendar-check-line', 'text' => 'Cicilan Emas', 'url' => route('admin.trans.cicilan.index'), 'routeIs' => 'admin.trans.cicilan.*' ],
-            // [ 'type' => 'link', 'icon' => 'ri-hand-coin-line', 'text' => 'Pembayaran Cicilan', 'url' => route('admin.trans.cicilan-payments.index'), 'routeIs' => 'admin.trans.cicilan-payments.*' ],
-            // [ 'type' => 'link', 'icon' => 'ri-wallet-3-line', 'text' => 'WD Mitra', 'url' => route('admin.trans.mitra-withdrawals.index'), 'routeIs' => 'admin.trans.mitra-withdrawals.*' ],
+            [ 'type' => 'title', 'text' => 'Cicilan' ],
+            [ 'type' => 'group', 'icon' => 'ri-hand-coin-line', 'text' => 'Cicilan', 'children' => [
+                [ 'type' => 'link', 'icon' => 'ri-hand-heart-line', 'text' => 'Layanan Emas Cicilan', 'url' => route('admin.master.layanan-emas-cicilan.index'), 'routeIs' => 'admin.master.layanan-emas-cicilan.*' ],
+                [ 'type' => 'link', 'icon' => 'ri-scales-3-line', 'text' => 'Cicilan Emas Dibuka', 'url' => route('admin.trans.cicilan-emas.index'), 'routeIs' => 'admin.trans.cicilan-emas.*' ],
+                [ 'type' => 'link', 'icon' => 'ri-file-list-3-line', 'text' => 'Kontrak Cicilan', 'url' => route('admin.trans.cicilan.index'), 'routeIs' => 'admin.trans.cicilan.*' ],
+                [ 'type' => 'link', 'icon' => 'ri-article-line', 'text' => 'Akad Murabahah', 'url' => route('admin.trans.cicilan-akad.index'), 'routeIs' => 'admin.trans.cicilan-akad.*' ],
+                [ 'type' => 'link', 'icon' => 'ri-bank-card-line', 'text' => 'Pembayaran Cicilan', 'url' => route('admin.trans.cicilan-payments.index'), 'routeIs' => 'admin.trans.cicilan-payments.*' ],
+            ] ],
+           
+           
 
             [ 'type' => 'title', 'text' => 'Master' ],
             [ 'type' => 'link', 'icon' => 'ri-user-3-line', 'text' => 'Customer', 'url' => route('admin.master.customers.index'), 'routeIs' => 'admin.master.customers.*' ],
@@ -59,8 +66,17 @@
             if ($type === 'title') {
                 $html .= '<li class="menu-title" role="presentation">'.e($item['text'] ?? '').'</li>';
             } elseif ($type === 'group') {
-                $html .= '<li class="slide">';
-                $html .= '<a href="#!" class="side-menu__item app-menu-item" role="menuitem">';
+                $isActiveGroup = false;
+                if (!empty($item['children']) && is_array($item['children'])) {
+                    foreach ($item['children'] as $child) {
+                        $routeIs = $child['routeIs'] ?? null;
+                        if ($routeIs && request()->routeIs($routeIs)) { $isActiveGroup = true; break; }
+                    }
+                }
+                $liClass = 'slide' . ($isActiveGroup ? ' open-menu' : '');
+                $aClass  = 'side-menu__item app-menu-item' . ($isActiveGroup ? ' active' : '');
+                $html .= '<li class="'.$liClass.'">';
+                $html .= '<a href="#!" class="'.$aClass.'" role="menuitem">';
                 if (!empty($item['icon'])) {
                     $html .= '<span class="side_menu_icon"><i class="'.htmlspecialchars($item['icon'], ENT_QUOTES, 'UTF-8').'"></i></span>';
                 }

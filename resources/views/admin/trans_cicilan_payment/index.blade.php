@@ -43,7 +43,7 @@
                 @endforelse
             </tbody>
         </table>
-        @if ($payments->hasPages())
+        @if (method_exists($payments, 'hasPages') && $payments->hasPages())
             <div class="p-2">
                 {{ $payments->links() }}
             </div>

@@ -17,11 +17,14 @@ use App\Http\Controllers\Admin\MasterSettingController;
 use App\Http\Controllers\Admin\MasterMenuHomeCustomerController;
 use App\Http\Controllers\Admin\MasterProdukDanLayananController;
 use App\Http\Controllers\Admin\MasterGramasiEmasController;
+use App\Http\Controllers\Admin\MasterLayananEmasCicilanController;
 use App\Http\Controllers\Admin\TransPaymentLogController;
 use App\Http\Controllers\Admin\TransPoController;
 use App\Http\Controllers\Admin\TransCicilanController;
 use App\Http\Controllers\Admin\TransReadyController;
+use App\Http\Controllers\Admin\TransCicilanEmasController;
 use App\Http\Controllers\Admin\TransCicilanPaymentController;
+use App\Http\Controllers\Admin\TransCicilanAkadController;
 use App\Http\Controllers\Admin\MitraWithdrawalController;
 use App\Http\Controllers\Admin\TransFifoCalculatorController;
 use App\Http\Controllers\Admin\TransKeranjangController;
@@ -79,8 +82,8 @@ Route::prefix('customer')->name('customer.')->group(function () {
         Route::get('/all-order', [FrontController::class, 'customerAllOrders'])->name('all-order');
 
         // Proxy API
-        Route::get('/api/jne/cities', [FrontController::class, 'jneCities'])->name('api.jne.cities');
-        Route::get('/api/jne/shipping-fee', [FrontController::class, 'jneShippingFee'])->name('api.jne.shipping-fee');
+        Route::get('/api/jne/cities', [FrontController::class, 'jneCities'])->name('web.jne.cities');
+        Route::get('/api/jne/shipping-fee', [FrontController::class, 'jneShippingFee'])->name('web.jne.shipping-fee');
 
         // PO / Pre-order emas
         Route::get('/po/create', [FrontController::class, 'customerPoCreate'])->name('po.create');
@@ -103,7 +106,10 @@ Route::prefix('customer')->name('customer.')->group(function () {
 
         // Cicilan
         Route::get('/cicilan', [CustomerCicilanController::class, 'index'])->name('cicilan.index');
+        Route::get('/cicilan-layanan/{layanan}', [CustomerCicilanController::class, 'layanan'])->name('cicilan.layanan'); // Detail
         Route::get('/cicilan/{stock}', [CustomerCicilanController::class, 'stock'])->name('cicilan.stock');
+        Route::get('/cicilan-emas/{record}/choose', [CustomerCicilanController::class, 'choose'])->name('cicilan.choose');
+        Route::post('/cicilan-emas/{record}/create-contract', [CustomerCicilanController::class, 'storeFromRecord'])->name('cicilan.store-record');
         Route::post('/cicilan', [CustomerCicilanController::class, 'store'])->name('cicilan.store');
         Route::get('/cicilan-kontrak/{contract}', [CustomerCicilanController::class, 'show'])->name('cicilan.show');
         Route::post('/cicilan-payment/{payment}/confirm-payment', [CustomerCicilanController::class, 'confirmPayment'])->name('cicilan.confirm-payment');
@@ -277,6 +283,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
                     'gramasi-emas' => 'item',
                 ]);
 
+            // Layanan Emas Cicilan — param {item}
+            Route::resource('layanan-emas-cicilan', MasterLayananEmasCicilanController::class)
+                ->except(['show'])
+                ->names('layanan-emas-cicilan')
+                ->parameters([
+                    'layanan-emas-cicilan' => 'item',
+                ])
+                ->middleware('admin');
             // Gold Prices — param {price}
             Route::resource('gold-prices', MasterGoldPriceController::class)
                 ->except(['show'])
@@ -397,6 +411,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         |--------------------------------------------------------------------------
         */
         Route::prefix('trans')->name('trans.')->group(function () {
+            Route::pattern('akad', '[0-9]+');
 
             // Payment Logs (index, show, approve, reject)
             Route::get('/payment-logs', [TransPaymentLogController::class, 'index'])
@@ -466,6 +481,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->name('cicilan.index');
             Route::get('/cicilan/{contract}', [TransCicilanController::class, 'show'])
                 ->name('cicilan.show');
+            Route::post('/cicilan/{contract}/status', [TransCicilanController::class, 'updateStatus'])
+                ->name('cicilan.update-status');
 
             // Ready
             Route::get('/ready', [TransReadyController::class, 'index'])
@@ -482,6 +499,21 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->name('cicilan-payments.index');
             Route::get('/cicilan-payments/{payment}', [TransCicilanPaymentController::class, 'show'])
                 ->name('cicilan-payments.show');
+
+            // Akad Murabahah (Cicilan)
+            Route::resource('cicilan-akad', TransCicilanAkadController::class)
+                ->names('cicilan-akad')
+                ->parameters(['cicilan-akad' => 'akad']);
+
+            Route::get('/cicilan-akad/create-simple', [TransCicilanAkadController::class, 'createSimple'])
+                ->name('cicilan-akad.create-simple');
+            Route::post('/cicilan-akad/store-simple', [TransCicilanAkadController::class, 'storeSimple'])
+                ->name('cicilan-akad.store-simple');
+
+            // Trans Cicilan Emas (dibuka)
+            Route::resource('cicilan-emas', TransCicilanEmasController::class)
+                ->names('cicilan-emas')
+                ->parameters(['cicilan-emas' => 'record']);
 
             // Mitra Withdrawals
             Route::get('/mitra-withdrawals', [MitraWithdrawalController::class, 'index'])
