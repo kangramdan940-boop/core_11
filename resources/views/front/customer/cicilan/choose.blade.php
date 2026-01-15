@@ -50,7 +50,7 @@
                     <div class="col-6"><div class="body-6 text-dark-4">Total Gram Dibuka</div><div class="h7 text-dark">{{ number_format((float)$item->total_gram_dibuka, 3) }} g</div></div>
                     <div class="col-6"><div class="body-6 text-dark-4">Jumlah Keping Dibuka</div><div class="h7 text-dark">{{ (int)$item->jumlah_keping_dibuka }}</div></div>
                     <div class="col-6"><div class="body-6 text-dark-4">Tenor Tersedia</div><div class="h7 text-dark">{{ (int)$item->layanan->tenor_min_bulan }}–{{ (int)$item->layanan->tenor_max_bulan }} bulan</div></div>
-                    <div class="col-6"><div class="body-6 text-dark-4">DP (%)</div><div class="h7 text-dark">{{ number_format((float)$item->layanan->dp_min_persen, 2) }}%–{{ number_format((float)$item->layanan->dp_max_persen, 2) }}%</div></div>
+                    <div class="col-6"><div class="body-6 text-dark-4">DP (%)</div><div class="h7 text-dark">10%</div></div>
                     <div class="col-6"><div class="body-6 text-dark-4">Harga per Gram (Akad)</div><div class="h7 text-dark">Rp {{ number_format((float) optional($item->latestAkad)->harga_per_gram_fix, 2) }}</div></div>
                     <div class="col-6"><div class="body-6 text-dark-4">Total Harga (Akad)</div><div class="h7 text-dark">Rp {{ number_format((float) ($item->total_gram_dibuka * (float) optional($item->latestAkad)->harga_per_gram_fix), 2) }}</div></div>
                 </div>
@@ -111,14 +111,12 @@
                     <div class="col-12">
                         <label class="form-label">DP (%)</label>
                         <div class="input-group">
-                            @php $selectedDp = (float) old('dp_persen', 12); @endphp
+                            @php $selectedDp = (float) old('dp_persen', 10); @endphp
                             <select name="dp_persen" class="form-select @error('dp_persen') is-invalid @enderror" required>
-                                @foreach ([5,10,20] as $v)
-                                    <option value="{{ $v }}" {{ (float)$selectedDp === (float)$v ? 'selected' : '' }}>{{ number_format((float)$v, 2) }}%</option>
-                                @endforeach
+                                    <option value="10" selected>10.00%</option>
                             </select><span class="input-group-text">%</span>
                         </div>
-                        <small class="text-muted">Rentang: {{ number_format((float)$item->layanan->dp_min_persen, 2) }}%–{{ number_format((float)$item->layanan->dp_max_persen, 2) }}%</small>
+                        <small class="text-muted">DP yang berlaku: 10%</small>
                         <small class="text-muted d-block">Perkiraan DP dibayar: <span id="dpAmountInfo">Rp {{ number_format((float) (((old('jumlah_keping_diambil', 1) * (float) optional($item->gramasi)->gramasi) * (float) optional($item->latestAkad)->harga_per_gram_fix) * ($selectedDp) / 100), 2) }}</span></small>
                         @error('dp_persen')
                             <div class="invalid-feedback d-block">{{ $message }}</div>

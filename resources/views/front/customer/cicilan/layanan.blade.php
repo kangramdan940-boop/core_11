@@ -40,7 +40,7 @@
                         <div class="col-6"><div class="body-6 text-dark-4">Harga/Gram</div><div class="h7 text-dark">{{ $akad && $akad->harga_per_gram_fix !== null ? 'Rp '.number_format((float)$akad->harga_per_gram_fix, 0) : '-' }}</div></div>
                         <div class="col-6"><div class="body-6 text-dark-4">Total Kontrak</div><div class="h7 text-dark">{{ $akad && $akad->harga_total_kontrak !== null ? 'Rp '.number_format((float)$akad->harga_total_kontrak, 0) : '-' }}</div></div>
                         <div class="col-6"><div class="body-6 text-dark-4">Status</div><span class="badge {{ ($akad?->status ?? 'draft') === 'active' ? 'bg-success' : 'bg-secondary' }}">{{ strtoupper($akad?->status ?? 'DRAFT') }}</span></div>
-                        <div class="col-6"><div class="body-6 text-dark-4">Penjual</div><div class="h7 text-dark">{{ $akad?->penjual_nama ?? optional($akad?->agen)->name ?? '-' }}</div></div>
+                        <div class="col-6"><div class="body-6 text-dark-4">Penjual</div><div class="h7 text-dark">M Ramdan Gumelar</div></div>
                     </div>
                 </div>
 
