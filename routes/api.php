@@ -24,4 +24,12 @@ Route::prefix('v1')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\V
     Route::get('/customers/keranjang/{id}', [\App\Http\Controllers\Api\CustomerCheckoutApiController::class, 'cart'])->whereNumber('id')->name('customer.keranjang.show');
     Route::post('/customers/keranjang/{id}/confirm-payment', [\App\Http\Controllers\Api\CustomerCheckoutApiController::class, 'confirmPayment'])->whereNumber('id')->name('customer.keranjang.confirm-payment');
     Route::post('/customers/keranjang/{id}/complete-and-review', [\App\Http\Controllers\Api\CustomerCheckoutApiController::class, 'completeAndReview'])->whereNumber('id')->name('customer.keranjang.complete-and-review');
+
+    // Cicilan (Bearer)
+    Route::get('/customers/cicilan/records', [\App\Http\Controllers\Api\CicilanApiController::class, 'publicRecords'])->name('customer.cicilan.records');
+    Route::get('/customers/cicilan/records/{id}', [\App\Http\Controllers\Api\CicilanApiController::class, 'publicRecord'])->whereNumber('id')->name('customer.cicilan.records.show');
+    Route::get('/customers/cicilan/contracts', [\App\Http\Controllers\Api\CicilanApiController::class, 'contracts'])->name('customer.cicilan.contracts');
+    Route::get('/customers/cicilan/contracts/{contract}', [\App\Http\Controllers\Api\CicilanApiController::class, 'contract'])->name('customer.cicilan.contracts.show');
+    Route::post('/customers/cicilan/records/{recordId}/create-contract', [\App\Http\Controllers\Api\CicilanApiController::class, 'createContractFromRecord'])->whereNumber('recordId')->name('customer.cicilan.records.create-contract');
+    Route::post('/customers/cicilan/payments/{payment}/confirm-payment', [\App\Http\Controllers\Api\CicilanApiController::class, 'confirmPayment'])->whereNumber('payment')->name('customer.cicilan.payments.confirm-payment');
 });
