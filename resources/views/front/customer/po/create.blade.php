@@ -177,13 +177,13 @@
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="delivery_type" id="delivery_ship" value="ship" checked>
                             <label class="form-check-label" for="delivery_ship">
-                                Pakai Ekspedisi
+                                Pakai Ekspedisi 
                             </label>
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="delivery_type" id="delivery_pickup" value="pickup">
                             <label class="form-check-label" for="delivery_pickup">
-                                Ambil Sendiri
+                                Alamat akan dihubungi admin 
                             </label>
                         </div>
                     </fieldset>
