@@ -177,13 +177,13 @@
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="delivery_type" id="delivery_ship" value="ship" checked>
                             <label class="form-check-label" for="delivery_ship">
-                                Pakai Ekspedisi 
+                                -
                             </label>
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="delivery_type" id="delivery_pickup" value="pickup">
                             <label class="form-check-label" for="delivery_pickup">
-                                Alamat akan dihubungi admin 
+                                Alamat Pengiriman detail akan dihubungi admin 
                             </label>
                         </div>
                     </fieldset>
@@ -294,7 +294,7 @@
                         $('#shipping_cost').val(0);
                         updateEstimasi();
                     } else if (type === 'ship') {
-                        alert('Pengiriman via ekspedisi sedang dalam perbaikan. Silakan gunakan Ambil Sendiri untuk sementara.');
+                        alert('Alamat dan Ongkos kirim akan di hubungi admin .');
                         $('#delivery_ship').prop('disabled', true).prop('checked', false);
                         $('#delivery_pickup').prop('checked', true);
                         $('#shipping-section').hide();
