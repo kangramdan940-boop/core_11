@@ -12,7 +12,13 @@
             <a href="{{ route('admin.trans.cicilan-akad.index') }}" class="btn btn-light"><i class="ri-arrow-left-line"></i> Kembali</a>
         </div>
         <div class="card-body">
-            <form action="{{ route('admin.trans.cicilan-akad.update', $akad) }}" method="POST" enctype="multipart/form-data">
+            @if ($errors->any())
+                <div class="alert alert-danger">{{ $errors->first() }}</div>
+            @endif
+            @if (session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+            <form action="{{ route('admin.trans.cicilan-akad.update', $akad) }}" method="POST" enctype="multipart/form-data" novalidate>
                 @csrf
                 @method('PUT')
                 @include('admin.trans_cicilan_akad._form')
