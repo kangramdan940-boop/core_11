@@ -133,9 +133,15 @@ final class CicilanApiController extends Controller
             $attempts++;
         }
 
-        $fileBuktiPath = $request->hasFile('file_bukti_bayar_dp')
-            ? $request->file('file_bukti_bayar_dp')->store('bukti_dp', 'public')
-            : null;
+        $fileBuktiPath = null;
+        if ($request->hasFile('file_bukti_bayar_dp')) {
+            $f = $request->file('file_bukti_bayar_dp');
+            $dir = public_path('bukti_dp');
+            if (!is_dir($dir)) { @mkdir($dir, 0755, true); }
+            $name = uniqid('dp_') . '.' . $f->getClientOriginalExtension();
+            $f->move($dir, $name);
+            $fileBuktiPath = 'bukti_dp/' . $name;
+        }
 
         $kontrak = null;
 
@@ -233,7 +239,12 @@ final class CicilanApiController extends Controller
             'bukti_transfer'   => ['required','file','mimes:jpg,jpeg,png,webp','max:5120'],
         ]);
 
-        $path = $request->file('bukti_transfer')->store('payment_proofs', 'public');
+        $f = $request->file('bukti_transfer');
+        $dir = public_path('payment_proofs');
+        if (!is_dir($dir)) { @mkdir($dir, 0755, true); }
+        $name = uniqid('proof_') . '.' . $f->getClientOriginalExtension();
+        $f->move($dir, $name);
+        $path = 'payment_proofs/' . $name;
 
         TransPaymentLog::create([
             'ref_type'        => 'cicilan_payment',

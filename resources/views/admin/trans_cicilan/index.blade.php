@@ -8,7 +8,7 @@
 
 @section('content')
     <div class="card shadow-sm">
-        <table id="cicilanTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
+        <table id="cicilanTable" class="table table-hover align-middle table-nowrap w-100">
             <thead class="bg-light bg-opacity-30">
                 <tr>
                     <th>ID</th>
@@ -37,7 +37,7 @@
                             <div class="hstack gap-2 fs-15">
                                 <a href="{{ route('admin.trans.cicilan.show', $c) }}" class="btn icon-btn-sm btn-light-primary"><i class="bi bi-eye"></i></a>
                                 @if ($c->file_bukti_bayar_dp)
-                                    <button type="button" class="btn icon-btn-sm btn-light-secondary js-dp-proof" data-src="{{ asset('storage/'.$c->file_bukti_bayar_dp) }}" title="Preview Bukti Transfer"><i class="bi bi-card-image"></i></button>
+                                    <button type="button" class="btn icon-btn-sm btn-light-secondary js-dp-proof" data-src="{{ asset($c->file_bukti_bayar_dp) }}" title="Preview Bukti Transfer"><i class="bi bi-card-image"></i></button>
                                 @endif
                             </div>
                         </td>
@@ -46,68 +46,15 @@
                 @endforelse
             </tbody>
         </table>
-        @if ($contracts->hasPages())
-            <div class="p-2">
-                {{ $contracts->links() }}
-            </div>
-        @endif
+
     </div>
 @endsection
 
 @section('css')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.6.0/css/select.dataTables.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/jquery-datatables-checkboxes@1.3.0/css/dataTables.checkboxes.min.css" rel="stylesheet">
 @endsection
 
 @section('js')
     <script>window._dpProofModalInit=function(){var m=document.getElementById('dpProofModal');if(!m){document.body.insertAdjacentHTML('beforeend','<div class="modal fade" id="dpProofModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content"><div class="modal-body p-0"><img id="dpProofImg" src="" class="w-100 d-none" alt="Bukti Transfer"><iframe id="dpProofPdf" src="" class="w-100 d-none" style="height:80vh;border:0;"></iframe></div></div></div></div>');}};document.addEventListener('DOMContentLoaded',function(){window._dpProofModalInit();document.addEventListener('click',function(e){var t=e.target.closest('.js-dp-proof');if(!t)return;var src=t.getAttribute('data-src');if(!src)return;var isPdf=/\.pdf($|\?)/i.test(src);var img=document.getElementById('dpProofImg');var pdf=document.getElementById('dpProofPdf');if(isPdf){img&&img.classList.add('d-none');pdf&&(pdf.classList.remove('d-none'),pdf.setAttribute('src',src));}else{pdf&&pdf.classList.add('d-none');img&&(img.classList.remove('d-none'),img.setAttribute('src',src));}var modal=new bootstrap.Modal(document.getElementById('dpProofModal'));modal.show();});});</script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.4.0/js/dataTables.responsive.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery-datatables-checkboxes@1.3.0/js/dataTables.checkboxes.min.js"></script>
-    <script src="https://cdn.datatables.net/select/1.6.0/js/dataTables.select.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const tableEl = document.getElementById('cicilanTable');
-            if (!tableEl || typeof $ === 'undefined' || !$.fn.DataTable) return;
-            const dt = $('#cicilanTable').DataTable({
-                responsive: false,
-                scrollX: true,
-                lengthMenu: [10, 20, 50],
-                pageLength: 10,
-                ordering: true,
-                order: [[0, 'desc']],
-                columnDefs: [{ targets: -1, orderable: false }],
-                dom:
-                    '<"card-header dt-head d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3"' +
-                    '<"head-label">' +
-                    '<"d-flex flex-column flex-sm-row align-items-center justify-content-sm-end gap-3 w-100"f>>' +
-                    't' +
-                    '<"card-footer d-flex flex-column align-items-center gap-2"' +
-                    '<"row w-100 align-items-center g-2"' +
-                        '<"col-12 col-md-5 d-flex align-items-center justify-content-md-start justify-content-center gap-2"l i>' +
-                        '<"col-12 col-md-7 d-flex justify-content-md-end justify-content-center"p>' +
-                    '>>',
-                language: {
-                    sLengthMenu: '_MENU_ ',
-                    search: '',
-                    searchPlaceholder: 'Search Contracts',
-                    paginate: {
-                        next: '<i class="ri-arrow-right-s-line"></i>',
-                        previous: '<i class="ri-arrow-left-s-line"></i>'
-                    }
-                }
-            });
-            const headLabel = document.querySelector('div.head-label');
-            if (headLabel) headLabel.innerHTML = '<h5 class="card-title text-nowrap mb-0">Daftar Kontrak Cicilan</h5>';
-            setTimeout(function () {
-                const filterInput = document.querySelector('.dataTables_filter .form-control');
-                const lengthSelect = document.querySelector('.dataTables_length .form-select');
-                if (filterInput) filterInput.classList.remove('form-control-sm');
-                if (lengthSelect) lengthSelect.classList.remove('form-select-sm');
-            }, 300);
-        });
-    </script>
+
+
 @endsection
