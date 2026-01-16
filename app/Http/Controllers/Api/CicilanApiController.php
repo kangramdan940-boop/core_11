@@ -19,7 +19,7 @@ final class CicilanApiController extends Controller
 
     public function publicRecords(): \Illuminate\Http\JsonResponse
     {
-        $items = TransCicilanEmas::with(['layanan','gramasi','latestAkad'])
+        $items = TransCicilanEmas::with(['layanan','gramasi','latestAkad','agen'])
             ->orderByDesc('id')
             ->get();
 
@@ -33,7 +33,7 @@ final class CicilanApiController extends Controller
 
     public function publicRecord(int $id): \Illuminate\Http\JsonResponse
     {
-        $r = TransCicilanEmas::with(['layanan','gramasi','latestAkad'])->find($id);
+        $r = TransCicilanEmas::with(['layanan','gramasi','latestAkad','agen'])->find($id);
         return response()->json([
             'status' => (bool) $r,
             'data'   => $r ? $this->mapRecord($r) : null,
@@ -274,6 +274,16 @@ final class CicilanApiController extends Controller
             'kepingSisa'             => (int) $sisa,
             'hargaPerGramAkad'       => (float) (optional($r->latestAkad)->harga_per_gram_fix ?? 0.0),
             'pdfAkadUrl'             => $pdf,
+            'agen'                   => $r->agen ? [
+                'id'            => (int) $r->agen->id,
+                'name'          => (string) ($r->agen->name ?? ''),
+                'phone'         => (string) ($r->agen->phone_wa ?? ''),
+                'email'         => (string) ($r->agen->email ?? ''),
+                'address'       => (string) ($r->agen->address_line ?? ''),
+                'kodeAgen'      => (string) ($r->agen->kode_agen ?? ''),
+                'area'          => (string) ($r->agen->area ?? ''),
+                'rekeningNomor' => (string) ($r->agen->rekening_nomor ?? ''),
+            ] : null,
         ];
     }
 
