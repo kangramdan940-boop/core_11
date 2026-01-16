@@ -293,12 +293,24 @@
                         $('#shipping-section').hide();
                         $('#shipping_cost').val(0);
                         updateEstimasi();
-                    } else {
-                        $('#shipping-section').show();
-                        var cost = $('#shipping_cost').val();
+                    } else if (type === 'ship') {
+                        alert('Pengiriman via ekspedisi sedang dalam perbaikan. Silakan gunakan Ambil Sendiri untuk sementara.');
+                        $('#delivery_ship').prop('disabled', true).prop('checked', false);
+                        $('#delivery_pickup').prop('checked', true);
+                        $('#shipping-section').hide();
+                        $('#shipping_cost').val(0);
                         updateEstimasi();
+                        return;
                     }
                 });
+                $('#delivery_pickup').prop('checked', true);
+                $('#shipping-section').hide();
+                $('#shipping_cost').val(0);
+                updateEstimasi();
+                // Aktifkan default: Ambil Sendiri (klik otomatis)
+                $('#shipping-section').hide();
+                $('#delivery_pickup').prop('checked', true);
+                $('#delivery_pickup').trigger('change');
 
                 // JNE City Search
                 var searchTimer;
