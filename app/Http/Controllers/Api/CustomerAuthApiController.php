@@ -136,6 +136,7 @@ class CustomerAuthApiController extends Controller
 
         $user->forceFill(['last_login_at' => now()])->save();
 
+        $user->tokens()->delete();
         $token = $user->createToken('mobile')->plainTextToken;
 
         return response()->json([
@@ -154,6 +155,25 @@ class CustomerAuthApiController extends Controller
             ],
             'meta' => [
                 'loggedInAt' => now()->toIso8601String(),
+                'requestId' => (string) Str::uuid(),
+            ],
+        ]);
+    }
+
+    public function logout(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        if ($user) {
+            $token = $user->currentAccessToken();
+            if ($token) {
+                $token->delete();
+            }
+        }
+        return response()->json([
+            'status' => true,
+            'data' => null,
+            'meta' => [
+                'loggedOutAt' => now()->toIso8601String(),
                 'requestId' => (string) Str::uuid(),
             ],
         ]);

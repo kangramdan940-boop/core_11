@@ -32,4 +32,7 @@ Route::prefix('v1')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\V
     Route::get('/customers/cicilan/contracts/{contract}', [\App\Http\Controllers\Api\CicilanApiController::class, 'contract'])->name('customer.cicilan.contracts.show');
     Route::post('/customers/cicilan/records/{recordId}/create-contract', [\App\Http\Controllers\Api\CicilanApiController::class, 'createContractFromRecord'])->whereNumber('recordId')->name('customer.cicilan.records.create-contract');
     Route::post('/customers/cicilan/payments/{payment}/confirm-payment', [\App\Http\Controllers\Api\CicilanApiController::class, 'confirmPayment'])->whereNumber('payment')->name('customer.cicilan.payments.confirm-payment');
+
+    Route::get('/customers/portfolio/summary', [\App\Http\Controllers\Api\PortfolioApiController::class, 'summary'])->name('customer.portfolio.summary');
+    Route::post('/customers/auth/logout', [\App\Http\Controllers\Api\CustomerAuthApiController::class, 'logout'])->name('customer.auth.logout');
 });
