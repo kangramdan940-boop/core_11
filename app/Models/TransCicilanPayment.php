@@ -21,6 +21,7 @@ class TransCicilanPayment extends Model
         'status',
         'payment_method',
         'payment_reference',
+        'bukti_transfer',
         'catatan',
     ];
 

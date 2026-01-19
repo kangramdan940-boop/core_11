@@ -241,10 +241,12 @@ final class CicilanApiController extends Controller
 
         $f = $request->file('bukti_transfer');
         $dir = public_path('payment_proofs');
-        if (!is_dir($dir)) { @mkdir($dir, 0755, true); }
+        \Illuminate\Support\Facades\File::ensureDirectoryExists($dir);
         $name = uniqid('proof_') . '.' . $f->getClientOriginalExtension();
         $f->move($dir, $name);
         $path = 'payment_proofs/' . $name;
+        $payment->bukti_transfer = $path;
+        $payment->save();
 
         TransPaymentLog::create([
             'ref_type'        => 'cicilan_payment',

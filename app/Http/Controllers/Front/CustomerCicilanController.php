@@ -290,16 +290,17 @@ class CustomerCicilanController extends Controller
         $data = $request->validate([
             'nominal_transfer' => ['required', 'numeric', 'min:0.01'],
             'nama_pengirim'    => ['required', 'string', 'max:150'],
-            'bukti_transfer'   => ['required', 'file', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'bukti_transfer'   => ['required', 'image', 'max:5120'],
         ]);
 
         $f = $request->file('bukti_transfer');
         $dir = public_path('payment_proofs');
-        if (!is_dir($dir)) { @mkdir($dir, 0755, true); }
+        \Illuminate\Support\Facades\File::ensureDirectoryExists($dir);
         $name = uniqid('proof_') . '.' . $f->getClientOriginalExtension();
         $f->move($dir, $name);
         $path = 'payment_proofs/' . $name;
-
+        $payment->bukti_transfer = $path;
+        $payment->save();
         TransPaymentLog::create([
             'ref_type'        => 'cicilan_payment',
             'ref_id'          => $payment->id,
