@@ -58,6 +58,22 @@ class TransPoController extends Controller
             $p->wa_url = ($p->status === 'pending_payment' && $waDigits)
                 ? ('https://wa.me/' . $waDigits . '?text=' . rawurlencode($waText))
                 : null;
+
+            $waShipText = "Assalamu’alaikum " . $sapaan . " 🙏\n\nPemberitahuan: Pesanan emas Anda (Kode PO: " . ($p->kode_po ?? '-') . ") telah dikirim.\n\nKurir: " . ($p->resi_courier ?? 'JNE') . " " . ($p->resi_service ?? '') . "\nNomor Resi: " . ($p->resi_number ?? '-') . "\n\nTerima kasih 🙏\nTim jajanemas.com";
+            $p->wa_ship_url = ($p->status === 'shipped' && $waDigits && !empty($p->resi_number))
+                ? ('https://wa.me/' . $waDigits . '?text=' . rawurlencode($waShipText))
+                : null;
+
+            $shipCost = (float) ($p->shipping_cost ?? 0);
+            $alamatFormat = "Nama Penerima: " . ($p->shipping_name ?? '-') . "\nNo. HP: " . ($p->shipping_phone ?? '-') . "\nAlamat Lengkap: " . ($p->shipping_address ?? '-') . "\nKota: " . ($p->shipping_city ?? '-') . "\nProvinsi: " . ($p->shipping_province ?? '-') . "\nKode Pos: " . ($p->shipping_postal_code ?? '-');
+            if ($shipCost > 0) {
+                $shipCostText = number_format($shipCost, 2, ',', '.');
+                $waOngkirText = "Assalamu’alaikum " . $sapaan . " 🙏\n\nMohon konfirmasi alamat pengiriman berikut:\n\n" . $alamatFormat . "\n\nTagihan ongkos kirim: Rp " . $shipCostText . ".\nMohon bantuannya untuk pembayaran ongkir. Terima kasih 🙏\nTim jajanemas.com";
+            } else {
+                $waOngkirText = "Assalamu’alaikum " . $sapaan . " 🙏\n\nMohon kirimkan alamat lengkap pengiriman dengan format berikut:\n\nNama Penerima:\nNo. HP:\nAlamat Lengkap:\nKota:\nProvinsi:\nKode Pos:\n\nSetelah menerima data, kami akan menginformasikan tagihan ongkos kirim. Terima kasih 🙏\nTim jajanemas.com";
+            }
+            $p->wa_ongkir_url = $waDigits ? ('https://wa.me/' . $waDigits . '?text=' . rawurlencode($waOngkirText)) : null;
+
             return $p;
         });
 

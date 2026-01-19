@@ -227,7 +227,14 @@
                         @if(request('status') !== 'shipped')
                             <td>{{ (int)($p->total_gram * $p->qty) }} Gram</td>
                         @endif
-                        <td>{!! ((float)($p->shipping_cost ?? 0)) > 0 ? number_format((float)($p->shipping_cost ?? 0), 2, ',', '.') : '<span class="badge bg-danger">Follow Up Ongkir</span>' !!}</td>
+                        <td>
+                            {!! ((float)($p->shipping_cost ?? 0)) > 0 ? number_format((float)($p->shipping_cost ?? 0), 2, ',', '.') : '<span class="badge bg-danger">Follow Up Ongkir</span>' !!}
+                            @if (!empty($p->wa_ongkir_url))
+                                <a href="{{ $p->wa_ongkir_url }}" target="_blank" rel="noopener" class="btn icon-btn-sm btn-light-success ms-1" title="WhatsApp Ongkir">
+                                    <i class="bi bi-whatsapp"></i>
+                                </a>
+                            @endif
+                        </td>
                         <td>{{ number_format((float)$p->total_amount, 2, ',', '.') }}</td>
                         <td>
                             @php($st = $p->status)
@@ -304,6 +311,11 @@
                                             <i class="bi bi-envelope"></i>
                                         </button>
                                     </form>
+                                    @if (!empty($p->wa_ship_url))
+                                        <a href="{{ $p->wa_ship_url }}" target="_blank" rel="noopener" class="btn icon-btn-sm btn-light-success" title="WhatsApp Pengiriman">
+                                            <i class="bi bi-whatsapp"></i>
+                                        </a>
+                                    @endif
                                 @endif
                             </div>
                         </td>
