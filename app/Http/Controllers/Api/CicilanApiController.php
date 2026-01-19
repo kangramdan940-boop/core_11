@@ -329,13 +329,28 @@ final class CicilanApiController extends Controller
 
     private function mapPayment(TransCicilanPayment $p): array
     {
+        $log = TransPaymentLog::where('ref_type', 'cicilan_payment')
+            ->where('ref_id', $p->id)
+            ->orderByDesc('id')
+            ->first();
+        $payload = $log && $log->request_payload ? json_decode($log->request_payload, true) : null;
+        $proofPath = $payload['proof_path'] ?? null;
+        $bukti = $p->bukti_transfer ?: $proofPath;
+        if ($bukti && !\Illuminate\Support\Str::startsWith($bukti, ['http://','https://'])) {
+            $bukti = asset($bukti);
+        }
+
         return [
-            'id'          => (int)$p->id,
-            'kontrakId'   => (int)$p->trans_cicilan_id,
-            'cicilanKe'   => (int)$p->cicilan_ke,
-            'dueDate'     => (string)$p->due_date,
-            'amountDue'   => (float)$p->amount_due,
-            'status'      => (string)$p->status,
+            'id'                 => (int)$p->id,
+            'kontrakId'          => (int)$p->trans_cicilan_id,
+            'cicilanKe'          => (int)$p->cicilan_ke,
+            'dueDate'            => (string)$p->due_date,
+            'amountDue'          => (float)$p->amount_due,
+            'status'             => (string)$p->status,
+            'bukti_transfer'     => $bukti,
+            'konfirmasi_status'  => $log ? (string) $log->status : null,
+            'nama_pengirim'      => $payload['sender_name'] ?? null,
+            'nominal_transfer'   => $log ? (float) $log->amount : null,
         ];
     }
 
