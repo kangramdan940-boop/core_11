@@ -89,7 +89,7 @@ class TransCicilanController extends Controller
         $contract->file_bukti_bayar_dp = $path;
         $contract->save();
 
-        return redirect()->route('admin.trans.cicilan.index')->with('success', 'Bukti DP berhasil diupload/diupdate.');
+        return redirect()->route('admin.trans.cicilan.index', ['status' => 'active'])->with('success', 'Bukti DP berhasil diupload/diupdate.');
     }
 
     public function cancelWaitingDpAll(\Illuminate\Http\Request $request)
