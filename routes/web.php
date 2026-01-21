@@ -483,6 +483,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->name('cicilan.show');
             Route::post('/cicilan/{contract}/status', [TransCicilanController::class, 'updateStatus'])
                 ->name('cicilan.update-status');
+            Route::post('/cicilan/cancel-waiting-dp', [TransCicilanController::class, 'cancelWaitingDpAll'])
+                ->name('cicilan.cancel-waiting-dp');
 
             // Ready
             Route::get('/ready', [TransReadyController::class, 'index'])

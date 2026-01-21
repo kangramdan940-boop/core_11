@@ -64,7 +64,6 @@
                         </div>
                         <div class="box-btn">
                             <a href="{{ route('customer.ready.stock', ['stock' => encrypt((string)$s->id)]) }}" class="btn-app button-1">Detail</a>
-                            <a href="{{ route('customer.cicilan.stock', ['stock' => encrypt((string)$s->id)]) }}" class="btn-app button-1">Cicilan</a>
                             <a href="{{ route('customer.ready.buy', ['stock' => encrypt((string)$s->id)]) }}" class="btn-app button-1 view-app">Beli</a>
                         </div>
                     </div>

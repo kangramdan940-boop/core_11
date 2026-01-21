@@ -139,6 +139,93 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="penawaranInformasiModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-md modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Penawaran & Informasi (Shipped)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info small mb-3">
+                        <strong>Informasi Pengiriman:</strong><br>
+                        Halo, emas kamu mau dikirim nih. Mohon diketahui ada risiko pengiriman karena menjadi tanggung jawab ekspedisi (kurir). Sejauh ini aman dan belum pernah terjadi masalah; ini hanya pengingat ya. Apabila terjadi kendala/kerusakan/hilang, klaim mengikuti ketentuan kurir.
+                    </div>
+                    <div class="mb-2"><strong>Kode PO:</strong> <span id="offerKode">-</span></div>
+                    <div class="mb-2"><strong>Nama:</strong> <span id="offerNama">-</span></div>
+                    <div class="mb-2"><strong>Total Gram:</strong> <span id="offerTotalGram">-</span></div>
+                    <div class="mb-2"><strong>Total (IDR):</strong> <span id="offerTotalIdr">-</span></div>
+                    <div class="mb-3">
+                        <label class="form-label mb-1">Harga Buyback per gram (IDR)</label>
+                        <input type="number" min="0" step="1" id="buybackPriceInput" class="form-control" placeholder="Masukkan harga buyback per gram">
+                    </div>
+                    <div class="mb-2"><strong>Total Buyback:</strong> <span id="offerTotalBuyback">-</span></div>
+                    <div class="mb-2"><strong>Estimasi Keuntungan:</strong> <span id="offerEstimatedProfit">-</span></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-primary btn-sm" id="sendWaOfferBtn">Buka WhatsApp</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="penawaranInformasiModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-md modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Penawaran & Informasi (Shipped)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-2"><strong>Kode PO:</strong> <span id="offerKode">-</span></div>
+                    <div class="mb-2"><strong>Nama:</strong> <span id="offerNama">-</span></div>
+                    <div class="mb-2"><strong>Total Gram:</strong> <span id="offerTotalGram">-</span></div>
+                    <div class="mb-2"><strong>Total (IDR):</strong> <span id="offerTotalIdr">-</span></div>
+                    <div class="mb-3">
+                        <label class="form-label mb-1">Harga Buyback per gram (IDR)</label>
+                        <input type="number" min="0" step="1" id="buybackPriceInput" class="form-control" placeholder="Masukkan harga buyback per gram">
+                    </div>
+                    <div class="mb-2"><strong>Total Buyback:</strong> <span id="offerTotalBuyback">-</span></div>
+                    <div class="mb-2"><strong>Estimasi Keuntungan:</strong> <span id="offerEstimatedProfit">-</span></div>
+                    <div class="mt-3 text-muted small">Informasi: Pengiriman adalah tanggung jawab ekspedisi (kurir). Klaim mengikuti ketentuan kurir.</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-primary btn-sm" id="sendWaOfferBtn">Buka WhatsApp</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="penawaranInformasiModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-md modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Penawaran & Informasi (Shipped)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-2"><strong>Kode PO:</strong> <span id="offerKode">-</span></div>
+                    <div class="mb-2"><strong>Nama:</strong> <span id="offerNama">-</span></div>
+                    <div class="mb-2"><strong>Total Gram:</strong> <span id="offerTotalGram">-</span></div>
+                    <div class="mb-2"><strong>Total (IDR):</strong> <span id="offerTotalIdr">-</span></div>
+                    <div class="mb-3">
+                        <label class="form-label mb-1">Harga Buyback per gram (IDR)</label>
+                        <input type="number" min="0" step="1" id="buybackPriceInput" class="form-control" placeholder="Masukkan harga buyback per gram">
+                    </div>
+                    <div class="mb-2"><strong>Total Buyback:</strong> <span id="offerTotalBuyback">-</span></div>
+                    <div class="mb-2"><strong>Estimasi Keuntungan:</strong> <span id="offerEstimatedProfit">-</span></div>
+                    <div class="mt-3 text-muted small">Informasi: Pengiriman adalah tanggung jawab ekspedisi (kurir). Klaim mengikuti ketentuan kurir.</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-primary btn-sm" id="sendWaOfferBtn">Buka WhatsApp</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="card shadow-sm mb-3">
         <div class="card-body">
             <form action="{{ route('admin.trans.po.index') }}" method="GET" class="row g-3 align-items-end">
@@ -200,7 +287,19 @@
             <tbody>
                 @forelse ($pos as $p)
                     <tr>
-                        <td>{{ $loop->iteration }}</td>
+                        <td>
+                            <div>{{ $loop->iteration }}</div>
+                            @if($p->status === 'shipped')
+                                <button type="button" class="btn btn-outline-info btn-sm w-100 mt-1 penawaran-info-btn" title="Penawaran & Informasi"
+                                    data-kode="{{ $p->kode_po }}"
+                                    data-nama="{{ optional($p->customer)->full_name ?? '' }}"
+                                    data-wa="{{ optional($p->customer)->phone_wa ?? '' }}"
+                                    data-total-gram="{{ (float)($p->total_gram ?? 0) * (int)($p->qty ?? 1) }}"
+                                    data-total-idr="{{ (float)($p->total_amount ?? 0) }}">
+                                    Penawaran & Informasi
+                                </button>
+                            @endif
+                        </td>
                         <td>{{ $p->kode_po }}</td>
                         <td>
                             {{ optional($p->customer)->full_name ?? '-' }}
@@ -227,7 +326,14 @@
                         @if(request('status') !== 'shipped')
                             <td>{{ (int)($p->total_gram * $p->qty) }} Gram</td>
                         @endif
-                        <td>{!! ((float)($p->shipping_cost ?? 0)) > 0 ? number_format((float)($p->shipping_cost ?? 0), 2, ',', '.') : '<span class="badge bg-danger">Follow Up Ongkir</span>' !!}</td>
+                        <td>
+                            {!! ((float)($p->shipping_cost ?? 0)) > 0 ? number_format((float)($p->shipping_cost ?? 0), 2, ',', '.') : '<span class="badge bg-danger">Follow Up Ongkir</span>' !!}
+                            @if (!empty($p->wa_ongkir_url))
+                                <a href="{{ $p->wa_ongkir_url }}" target="_blank" rel="noopener" class="btn icon-btn-sm btn-light-success ms-1" title="WhatsApp Ongkir">
+                                    <i class="bi bi-whatsapp"></i>
+                                </a>
+                            @endif
+                        </td>
                         <td>{{ number_format((float)$p->total_amount, 2, ',', '.') }}</td>
                         <td>
                             @php($st = $p->status)
@@ -304,6 +410,19 @@
                                             <i class="bi bi-envelope"></i>
                                         </button>
                                     </form>
+                                    @if (!empty($p->wa_ship_url))
+                                        <a href="{{ $p->wa_ship_url }}" target="_blank" rel="noopener" class="btn icon-btn-sm btn-light-success" title="WhatsApp Pengiriman">
+                                            <i class="bi bi-whatsapp"></i>
+                                        </a>
+                                    @endif
+                                    <button type="button" class="btn icon-btn-sm btn-light-info penawaran-info-btn" title="Penawaran & Informasi"
+                                        data-kode="{{ $p->kode_po }}"
+                                        data-nama="{{ optional($p->customer)->full_name ?? '' }}"
+                                        data-wa="{{ optional($p->customer)->phone_wa ?? '' }}"
+                                        data-total-gram="{{ (float)($p->total_gram ?? 0) * (int)($p->qty ?? 1) }}"
+                                        data-total-idr="{{ (float)($p->total_amount ?? 0) }}">
+                                        <i class="bi bi-info-circle"></i>
+                                    </button>
                                 @endif
                             </div>
                         </td>
@@ -685,6 +804,231 @@
                     }
                 });
             });
+
+            var currentOfferData = null;
+            function formatNumberID(n){ return (n||0).toLocaleString('id-ID'); }
+            function formatCurrencyID(n){ return 'Rp ' + formatNumberID(Math.round(n||0)); }
+            document.querySelectorAll('.penawaran-info-btn').forEach(function(btn){
+                if (btn.dataset.bound === '1') return; btn.dataset.bound = '1';
+                btn.addEventListener('click', function(){
+                    var kode = btn.getAttribute('data-kode') || '-';
+                    var nama = btn.getAttribute('data-nama') || '';
+                    var waRaw = btn.getAttribute('data-wa') || '';
+                    var totalGram = parseFloat(btn.getAttribute('data-total-gram') || '0') || 0;
+                    var totalIdr = parseFloat(btn.getAttribute('data-total-idr') || '0') || 0;
+                    currentOfferData = { kode: kode, nama: nama, waDigits: normalizeWaPhone(waRaw), totalGram: totalGram, totalIdr: totalIdr };
+                    var elKode = document.getElementById('offerKode');
+                    var elNama = document.getElementById('offerNama');
+                    var elTGram = document.getElementById('offerTotalGram');
+                    var elTIdr = document.getElementById('offerTotalIdr');
+                    var elTBuy = document.getElementById('offerTotalBuyback');
+                    var elProfit = document.getElementById('offerEstimatedProfit');
+                    var input = document.getElementById('buybackPriceInput');
+                    if (elKode) elKode.textContent = kode;
+                    if (elNama) elNama.textContent = (nama || '-');
+                    if (elTGram) elTGram.textContent = formatNumberID(totalGram) + ' g';
+                    if (elTIdr) elTIdr.textContent = formatCurrencyID(totalIdr);
+                    if (elTBuy) elTBuy.textContent = '-';
+                    if (elProfit) elProfit.textContent = '-';
+                    if (input) input.value = '';
+                    var modalEl = document.getElementById('penawaranInformasiModal');
+                    if (modalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                        new bootstrap.Modal(modalEl).show();
+                    }
+                });
+            });
+            var buyInput = document.getElementById('buybackPriceInput');
+            if (buyInput) {
+                buyInput.addEventListener('input', function(){
+                    var perGram = parseFloat(buybackPriceInput.value || '0') || 0;
+                    var tg = (currentOfferData && currentOfferData.totalGram) || 0;
+                    var ti = (currentOfferData && currentOfferData.totalIdr) || 0;
+                    var totalBuyback = perGram * tg;
+                    var profit = totalBuyback - ti;
+                    var elTBuy = document.getElementById('offerTotalBuyback');
+                    var elProfit = document.getElementById('offerEstimatedProfit');
+                    if (elTBuy) elTBuy.textContent = formatCurrencyID(totalBuyback);
+                    if (elProfit) elProfit.textContent = formatCurrencyID(profit);
+                });
+            }
+            var sendBtn = document.getElementById('sendWaOfferBtn');
+            if (sendBtn) {
+                sendBtn.addEventListener('click', function(){
+                    var d = currentOfferData;
+                    if (!d || !d.waDigits) {
+                        if (typeof Swal !== 'undefined') Swal.fire({ icon:'warning', title:'Nomor WA tidak tersedia', text:'Nomor WhatsApp customer tidak ditemukan.' });
+                        return;
+                    }
+                    var perGram = parseFloat(document.getElementById('buybackPriceInput')?.value || '0') || 0;
+                    var totalBuyback = perGram * (d.totalGram || 0);
+                    var profit = totalBuyback - (d.totalIdr || 0);
+                    var nama = d.nama || '';
+                    var sapaan = nama.trim() !== '' ? ('Kak ' + nama.trim()) : 'Kak';
+                    var msg = 'Assalamu’alaikum ' + sapaan + ' 🙏\n\n' +
+                        'Informasi Pengiriman:\n' +
+                        'Halo, emas kamu mau dikirim nih. Mohon diketahui ada risiko pengiriman karena menjadi tanggung jawab ekspedisi (kurir). Sejauh ini aman dan belum pernah terjadi masalah; ini hanya pengingat ya. Apabila terjadi kendala/kerusakan/hilang, klaim mengikuti ketentuan kurir.\n\n' +
+                        'Penawaran Buyback di jajanemas:\n' +
+                        '• Kode PO: ' + d.kode + '\n' +
+                        '• Total Gram: ' + formatNumberID(d.totalGram) + ' g\n' +
+                        '• Harga Buyback per gram: ' + formatCurrencyID(perGram) + '\n' +
+                        '• Total Buyback: ' + formatCurrencyID(totalBuyback) + '\n\n' +
+                        'Estimasi Keuntungan:\n' +
+                        'Total Buyback - Total Pembelian (IDR) = ' + formatCurrencyID(profit) + '\n\n' +
+                        'Terima kasih 🙏\nTim jajanemas.com';
+                    var url = 'https://wa.me/' + d.waDigits + '?text=' + encodeURIComponent(msg);
+                    window.open(url, '_blank', 'noopener');
+                });
+            }
+
+            var currentOfferData = null;
+            function formatNumberID(n){ return (n||0).toLocaleString('id-ID'); }
+            function formatCurrencyID(n){ return 'Rp ' + formatNumberID(Math.round(n||0)); }
+            document.querySelectorAll('.penawaran-info-btn').forEach(function(btn){
+                if (btn.dataset.bound === '1') return; btn.dataset.bound = '1';
+                btn.addEventListener('click', function(){
+                    var kode = btn.getAttribute('data-kode') || '-';
+                    var nama = btn.getAttribute('data-nama') || '';
+                    var waRaw = btn.getAttribute('data-wa') || '';
+                    var totalGram = parseFloat(btn.getAttribute('data-total-gram') || '0') || 0;
+                    var totalIdr = parseFloat(btn.getAttribute('data-total-idr') || '0') || 0;
+                    currentOfferData = { kode: kode, nama: nama, waDigits: normalizeWaPhone(waRaw), totalGram: totalGram, totalIdr: totalIdr };
+                    var elKode = document.getElementById('offerKode');
+                    var elNama = document.getElementById('offerNama');
+                    var elTGram = document.getElementById('offerTotalGram');
+                    var elTIdr = document.getElementById('offerTotalIdr');
+                    var elTBuy = document.getElementById('offerTotalBuyback');
+                    var elProfit = document.getElementById('offerEstimatedProfit');
+                    var input = document.getElementById('buybackPriceInput');
+                    if (elKode) elKode.textContent = kode;
+                    if (elNama) elNama.textContent = (nama || '-');
+                    if (elTGram) elTGram.textContent = formatNumberID(totalGram) + ' g';
+                    if (elTIdr) elTIdr.textContent = formatCurrencyID(totalIdr);
+                    if (elTBuy) elTBuy.textContent = '-';
+                    if (elProfit) elProfit.textContent = '-';
+                    if (input) input.value = '';
+                    var modalEl = document.getElementById('penawaranInformasiModal');
+                    if (modalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                        new bootstrap.Modal(modalEl).show();
+                    }
+                });
+            });
+            var buyInput = document.getElementById('buybackPriceInput');
+            if (buyInput) {
+                buyInput.addEventListener('input', function(){
+                    var perGram = parseFloat(buyInput.value || '0') || 0;
+                    var tg = (currentOfferData && currentOfferData.totalGram) || 0;
+                    var ti = (currentOfferData && currentOfferData.totalIdr) || 0;
+                    var totalBuyback = perGram * tg;
+                    var profit = totalBuyback - ti;
+                    var elTBuy = document.getElementById('offerTotalBuyback');
+                    var elProfit = document.getElementById('offerEstimatedProfit');
+                    if (elTBuy) elTBuy.textContent = formatCurrencyID(totalBuyback);
+                    if (elProfit) elProfit.textContent = formatCurrencyID(profit);
+                });
+            }
+            var sendBtn = document.getElementById('sendWaOfferBtn');
+            if (sendBtn) {
+                sendBtn.addEventListener('click', function(){
+                    var d = currentOfferData;
+                    if (!d || !d.waDigits) {
+                        if (typeof Swal !== 'undefined') Swal.fire({ icon:'warning', title:'Nomor WA tidak tersedia', text:'Nomor WhatsApp customer tidak ditemukan.' });
+                        return;
+                    }
+                    var perGram = parseFloat(document.getElementById('buybackPriceInput')?.value || '0') || 0;
+                    var totalBuyback = perGram * (d.totalGram || 0);
+                    var profit = totalBuyback - (d.totalIdr || 0);
+                    var nama = d.nama || '';
+                    var sapaan = nama.trim() !== '' ? ('Kak ' + nama.trim()) : 'Kak';
+                    var msg = 'Assalamu’alaikum ' + sapaan + ' 🙏\n\n' +
+                        'Penawaran Buyback di jajanemas:\n' +
+                        '• Kode PO: ' + d.kode + '\n' +
+                        '• Total Gram: ' + formatNumberID(d.totalGram) + ' g\n' +
+                        '• Harga Buyback per gram: ' + formatCurrencyID(perGram) + '\n' +
+                        '• Total Buyback: ' + formatCurrencyID(totalBuyback) + '\n\n' +
+                        'Informasi Pengiriman:\n' +
+                        'Pengiriman adalah tanggung jawab ekspedisi (kurir). Apabila terjadi kendala/kerusakan/hilang, klaim mengikuti ketentuan kurir.\n\n' +
+                        'Estimasi Keuntungan:\n' +
+                        'Total Buyback - Total Pembelian (IDR) = ' + formatCurrencyID(profit) + '\n\n' +
+                        'Terima kasih 🙏\nTim jajanemas.com';
+                    var url = 'https://wa.me/' + d.waDigits + '?text=' + encodeURIComponent(msg);
+                    window.open(url, '_blank', 'noopener');
+                });
+            }
+
+            var currentOfferData = null;
+            function formatNumberID(n){ return (n||0).toLocaleString('id-ID'); }
+            function formatCurrencyID(n){ return 'Rp ' + formatNumberID(Math.round(n||0)); }
+            document.querySelectorAll('.penawaran-info-btn').forEach(function(btn){
+                if (btn.dataset.bound === '1') return; btn.dataset.bound = '1';
+                btn.addEventListener('click', function(){
+                    var kode = btn.getAttribute('data-kode') || '-';
+                    var nama = btn.getAttribute('data-nama') || '';
+                    var waRaw = btn.getAttribute('data-wa') || '';
+                    var totalGram = parseFloat(btn.getAttribute('data-total-gram') || '0') || 0;
+                    var totalIdr = parseFloat(btn.getAttribute('data-total-idr') || '0') || 0;
+                    currentOfferData = { kode: kode, nama: nama, waDigits: normalizeWaPhone(waRaw), totalGram: totalGram, totalIdr: totalIdr };
+                    var elKode = document.getElementById('offerKode');
+                    var elNama = document.getElementById('offerNama');
+                    var elTGram = document.getElementById('offerTotalGram');
+                    var elTIdr = document.getElementById('offerTotalIdr');
+                    var elTBuy = document.getElementById('offerTotalBuyback');
+                    var elProfit = document.getElementById('offerEstimatedProfit');
+                    var input = document.getElementById('buybackPriceInput');
+                    if (elKode) elKode.textContent = kode;
+                    if (elNama) elNama.textContent = (nama || '-');
+                    if (elTGram) elTGram.textContent = formatNumberID(totalGram) + ' g';
+                    if (elTIdr) elTIdr.textContent = formatCurrencyID(totalIdr);
+                    if (elTBuy) elTBuy.textContent = '-';
+                    if (elProfit) elProfit.textContent = '-';
+                    if (input) input.value = '';
+                    var modalEl = document.getElementById('penawaranInformasiModal');
+                    if (modalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                        new bootstrap.Modal(modalEl).show();
+                    }
+                });
+            });
+            var buyInput = document.getElementById('buybackPriceInput');
+            if (buyInput) {
+                buyInput.addEventListener('input', function(){
+                    var perGram = parseFloat(buyInput.value || '0') || 0;
+                    var tg = (currentOfferData && currentOfferData.totalGram) || 0;
+                    var ti = (currentOfferData && currentOfferData.totalIdr) || 0;
+                    var totalBuyback = perGram * tg;
+                    var profit = totalBuyback - ti;
+                    var elTBuy = document.getElementById('offerTotalBuyback');
+                    var elProfit = document.getElementById('offerEstimatedProfit');
+                    if (elTBuy) elTBuy.textContent = formatCurrencyID(totalBuyback);
+                    if (elProfit) elProfit.textContent = formatCurrencyID(profit);
+                });
+            }
+            var sendBtn = document.getElementById('sendWaOfferBtn');
+            if (sendBtn) {
+                sendBtn.addEventListener('click', function(){
+                    var d = currentOfferData;
+                    if (!d || !d.waDigits) {
+                        if (typeof Swal !== 'undefined') Swal.fire({ icon:'warning', title:'Nomor WA tidak tersedia', text:'Nomor WhatsApp customer tidak ditemukan.' });
+                        return;
+                    }
+                    var perGram = parseFloat(document.getElementById('buybackPriceInput')?.value || '0') || 0;
+                    var totalBuyback = perGram * (d.totalGram || 0);
+                    var profit = totalBuyback - (d.totalIdr || 0);
+                    var nama = d.nama || '';
+                    var sapaan = nama.trim() !== '' ? ('Kak ' + nama.trim()) : 'Kak';
+                    var msg = 'Assalamu’alaikum ' + sapaan + ' 🙏\n\n' +
+                        'Penawaran Buyback di jajanemas:\n' +
+                        '• Kode PO: ' + d.kode + '\n' +
+                        '• Total Gram: ' + formatNumberID(d.totalGram) + ' g\n' +
+                        '• Harga Buyback per gram: ' + formatCurrencyID(perGram) + '\n' +
+                        '• Total Buyback: ' + formatCurrencyID(totalBuyback) + '\n\n' +
+                        'Informasi Pengiriman:\n' +
+                        'Pengiriman adalah tanggung jawab ekspedisi (kurir). Apabila terjadi kendala/kerusakan/hilang, klaim mengikuti ketentuan kurir.\n\n' +
+                        'Estimasi Keuntungan:\n' +
+                        'Total Buyback - Total Pembelian (IDR) = ' + formatCurrencyID(profit) + '\n\n' +
+                        'Terima kasih 🙏\nTim jajanemas.com';
+                    var url = 'https://wa.me/' + d.waDigits + '?text=' + encodeURIComponent(msg);
+                    window.open(url, '_blank', 'noopener');
+                });
+            }
             function reloadPoTableSection(){
                 try{
                     var dt = $('#poTable').DataTable();
