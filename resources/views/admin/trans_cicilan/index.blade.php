@@ -7,6 +7,12 @@
 @section('subLink', route('admin.trans.cicilan.index'))
 
 @section('content')
+    <div class="d-flex justify-content-end mb-2">
+        <form id="cancelWaitingDpForm" action="{{ route('admin.trans.cicilan.cancel-waiting-dp') }}" method="POST" class="d-inline">
+            @csrf
+            <button type="button" id="cancelWaitingDpBtn" class="btn btn-outline-danger btn-sm">Batalkan Semua 'Menunggu DP'</button>
+        </form>
+    </div>
     <div class="card shadow-sm">
         <table id="cicilanTable" class="table table-hover align-middle table-nowrap w-100">
             <thead class="bg-light bg-opacity-30">
@@ -54,7 +60,7 @@
 @endsection
 
 @section('js')
-    <script>window._dpProofModalInit=function(){var m=document.getElementById('dpProofModal');if(!m){document.body.insertAdjacentHTML('beforeend','<div class="modal fade" id="dpProofModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content"><div class="modal-body p-0"><img id="dpProofImg" src="" class="w-100 d-none" alt="Bukti Transfer"><iframe id="dpProofPdf" src="" class="w-100 d-none" style="height:80vh;border:0;"></iframe></div></div></div></div>');}};document.addEventListener('DOMContentLoaded',function(){window._dpProofModalInit();document.addEventListener('click',function(e){var t=e.target.closest('.js-dp-proof');if(!t)return;var src=t.getAttribute('data-src');if(!src)return;var isPdf=/\.pdf($|\?)/i.test(src);var img=document.getElementById('dpProofImg');var pdf=document.getElementById('dpProofPdf');if(isPdf){img&&img.classList.add('d-none');pdf&&(pdf.classList.remove('d-none'),pdf.setAttribute('src',src));}else{pdf&&pdf.classList.add('d-none');img&&(img.classList.remove('d-none'),img.setAttribute('src',src));}var modal=new bootstrap.Modal(document.getElementById('dpProofModal'));modal.show();});});</script>
+    <script>window._dpProofModalInit=function(){var m=document.getElementById('dpProofModal');if(!m){document.body.insertAdjacentHTML('beforeend','<div class="modal fade" id="dpProofModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content"><div class="modal-body p-0"><img id="dpProofImg" src="" class="w-100 d-none" alt="Bukti Transfer"><iframe id="dpProofPdf" src="" class="w-100 d-none" style="height:80vh;border:0;"></iframe></div></div></div></div>');}};document.addEventListener('DOMContentLoaded',function(){window._dpProofModalInit();document.addEventListener('click',function(e){var t=e.target.closest('.js-dp-proof');if(!t)return;var src=t.getAttribute('data-src');if(!src)return;var isPdf=/\.pdf($|\?)/i.test(src);var img=document.getElementById('dpProofImg');var pdf=document.getElementById('dpProofPdf');if(isPdf){img&&img.classList.add('d-none');pdf&&(pdf.classList.remove('d-none'),pdf.setAttribute('src',src));}else{pdf&&pdf.classList.add('d-none');img&&(img.classList.remove('d-none'),img.setAttribute('src',src));}var modal=new bootstrap.Modal(document.getElementById('dpProofModal'));modal.show();});var btn=document.getElementById('cancelWaitingDpBtn');if(btn){btn.addEventListener('click',function(){var submit=function(){var f=document.getElementById('cancelWaitingDpForm');if(f)f.submit();};if(typeof Swal!=='undefined'){Swal.fire({title:'Konfirmasi',text:'Yakin ingin membatalkan semua kontrak status MENUNGGU DP?',icon:'warning',showCancelButton:true,confirmButtonText:'Ya, batalkan',cancelButtonText:'Batal'}).then(function(r){if(r.isConfirmed)submit();});}else{if(confirm('Yakin ingin membatalkan semua kontrak status MENUNGGU DP?'))submit();}});}});</script>
 
 
 @endsection

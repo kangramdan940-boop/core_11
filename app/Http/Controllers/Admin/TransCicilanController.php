@@ -60,4 +60,21 @@ class TransCicilanController extends Controller
 
         return redirect()->route('admin.trans.cicilan.show', $contract)->with('success', 'Status kontrak diperbarui.');
     }
+
+    public function cancelWaitingDpAll(\Illuminate\Http\Request $request)
+    {
+        $count = 0;
+        TransCicilan::where('status', 'menunggu DP')->chunkById(100, function ($items) use (&$count) {
+            foreach ($items as $contract) {
+                $contract->status = 'cancelled';
+                if (!$contract->cancelled_at) {
+                    $contract->cancelled_at = now();
+                }
+                $contract->save();
+                $count++;
+            }
+        });
+
+        return redirect()->route('admin.trans.cicilan.index')->with('success', 'Berhasil membatalkan ' . $count . ' kontrak menunggu DP.');
+    }
 }
