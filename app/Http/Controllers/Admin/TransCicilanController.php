@@ -66,7 +66,7 @@ class TransCicilanController extends Controller
         $count = 0;
         TransCicilan::where('status', 'menunggu DP')->chunkById(100, function ($items) use (&$count) {
             foreach ($items as $contract) {
-                $contract->status = 'cancelled';
+                $contract->status = 'canceled';
                 if (!$contract->cancelled_at) {
                     $contract->cancelled_at = now();
                 }
