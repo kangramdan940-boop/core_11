@@ -7,11 +7,24 @@ use App\Models\TransCicilan;
 
 class TransCicilanController extends Controller
 {
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        $contracts = TransCicilan::with(['customer', 'agen'])
-            ->orderByDesc('id')
-            ->get();
+        $statusParam = (string) ($request->query('status') ?? '');
+        $map = [
+            'active' => 'active',
+            'canceled' => 'canceled',
+            'cancelled' => 'canceled',
+            'menunggu dp' => 'menunggu DP',
+            'menunggu-dp' => 'menunggu DP',
+        ];
+        $key = strtolower($statusParam);
+        $statusFilter = $map[$key] ?? null;
+
+        $query = TransCicilan::with(['customer', 'agen'])->orderByDesc('id');
+        if ($statusFilter) {
+            $query->where('status', $statusFilter);
+        }
+        $contracts = $query->get();
 
         return view('admin.trans_cicilan.index', compact('contracts'));
     }
@@ -59,6 +72,24 @@ class TransCicilanController extends Controller
         $contract->save();
 
         return redirect()->route('admin.trans.cicilan.show', $contract)->with('success', 'Status kontrak diperbarui.');
+    }
+
+    public function uploadDpProof(\Illuminate\Http\Request $request, TransCicilan $contract)
+    {
+        $data = $request->validate([
+            'bukti_dp' => ['required','file','mimes:jpg,jpeg,png,webp,pdf','max:5120'],
+        ]);
+        $f = $request->file('bukti_dp');
+        $dir = public_path('bukti_dp');
+        if (!is_dir($dir)) { @mkdir($dir, 0755, true); }
+        $name = uniqid('dp_') . '.' . $f->getClientOriginalExtension();
+        $f->move($dir, $name);
+        $path = 'bukti_dp/' . $name;
+
+        $contract->file_bukti_bayar_dp = $path;
+        $contract->save();
+
+        return redirect()->route('admin.trans.cicilan.index')->with('success', 'Bukti DP berhasil diupload/diupdate.');
     }
 
     public function cancelWaitingDpAll(\Illuminate\Http\Request $request)
