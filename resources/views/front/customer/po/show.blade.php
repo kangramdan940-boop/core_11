@@ -124,6 +124,17 @@
                     }
                 @endphp
                 <div class="col-md-6"><strong>Estimasi Diterima</strong><br>{{ $estimasiDisplay }}</div>
+                <div class="col-md-6">
+                    <a href="https://www.jne.co.id/tracking-package" target="_blank" rel="noopener" title="Buka halaman tracking JNE"><strong>Nomor Resi JNE klik disini untuk masuk ke jne</strong></a>
+                    <div class="d-flex align-items-center">
+                        <span id="resiNumber" class="me-2">{{ $po->resi_number ?? '-' }}</span>
+                        <button type="button" class="btn btn-sm btn-outline-secondary ms-2" id="copyResiBtn" title="Salin" style="width:auto !important; display:inline-flex; align-items:center; justify-content:center;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v12h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                        </button>
+                        <span id="copyResiStatus" class="ms-2 text-success small" style="display:none;">Tersalin</span>
+                    </div>
+                </div>
+                <script>(function(){var btn=document.getElementById('copyResiBtn');var el=document.getElementById('resiNumber');var st=document.getElementById('copyResiStatus');function copy(){var txt=(el&&el.textContent||'').trim();if(!txt||txt==='-')return;if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){if(st){st.style.display='inline';setTimeout(function(){st.style.display='none';},1500);}});}else{var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);if(st){st.style.display='inline';setTimeout(function(){st.style.display='none';},1500);}}}if(btn){btn.addEventListener('click',copy);}})();</script>
                  
             </div>
         </div>
