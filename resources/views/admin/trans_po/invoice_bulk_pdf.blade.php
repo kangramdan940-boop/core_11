@@ -5,19 +5,20 @@
   <title>Invoice Bulk ({{ strtoupper($status ?? 'SHIPPED') }})</title>
   <style>
     * { box-sizing: border-box; }
-    body { font-family: Arial, Helvetica, sans-serif; color:#111827; margin: 24px; }
-    .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
-    .title { font-size:20px; font-weight:700; }
-    .muted { color:#6b7280; font-size:12px; }
-    .section { margin-bottom:16px; }
-    .box { border:1px solid #e5e7eb; border-radius:6px; padding:12px; }
-    table { width:100%; border-collapse: collapse; }
-    th, td { padding:8px; border-bottom:1px solid #e5e7eb; text-align:left; vertical-align:top; }
+    body { font-family: Arial, Helvetica, sans-serif; color:#111827; margin: 10px; font-size: 10px; }
+    .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+    .title { font-size:14px; font-weight:700; }
+    .muted { color:#6b7280; font-size:9px; }
+    .section { margin-bottom:8px; }
+    .box { border:1px solid #e5e7eb; border-radius:6px; padding:6px; }
+    table { width:100%; border-collapse: collapse; font-size: 10px; }
+    th, td { padding:4px; border-bottom:1px solid #e5e7eb; text-align:left; vertical-align:top; }
     thead th { background:#f8fafc; font-weight:600; }
     tfoot th { background:#f8fafc; }
     .text-end { text-align:right; }
-    .page-break { page-break-after: always; }
-  </style>
+    .sheet { page-break-after: always; }
+    .invoice-block { page-break-inside: avoid; break-inside: avoid; margin-bottom: 10px; }
+  </style>  
 </head>
 <body>
   @php
@@ -30,8 +31,11 @@
   @if(($pos ?? collect())->count() === 0)
     <div class="muted">Tidak ada data PO dengan status: {{ $status ?? 'shipped' }}.</div>
   @else
-    @foreach($pos as $index => $po)
-      <div class="header">
+    @foreach(($pos ?? collect())->chunk(2) as $pageIdx => $chunk)
+      <div class="sheet">
+        @foreach($chunk as $po)
+          <div class="invoice-block">
+          <div class="header">
         <div>
           <div class="title">Invoice Transaksi</div>
           <div class="muted">Kode Pesanan: {{ $po->kode_po ?? ('PO-' . $po->id) }}</div>
@@ -39,7 +43,7 @@
         </div>
         <div style="text-align:right;">
           @if($logoData)
-            <img src="{{ $logoData }}" alt="Jajanemas" style="height:30px;" />
+            <img src="{{ $logoData }}" alt="Jajanemas" style="height:22px;" />
           @else
             <div class="muted">Jajanemas.com</div>
           @endif
@@ -117,52 +121,24 @@
         </div>
       @endif
 
-      @if($logs->count() > 0)
-        <div class="section">
-          <div style="font-weight:600; margin-bottom:6px;">Riwayat Pembayaran</div>
-          <table>
-            <thead>
-              <tr>
-                <th>Kode</th>
-                <th>Status</th>
-                <th class="text-end">Jumlah</th>
-                <th>Metode</th>
-                <th>Dibayar</th>
-              </tr>
-            </thead>
-            <tbody>
-              @foreach($logs as $pl)
-                <tr>
-                  <td>{{ $pl->kode_payment }}</td>
-                  <td>{{ strtoupper($pl->status) }}</td>
-                  <td class="text-end">{{ number_format((float)$pl->amount, 2, ',', '.') }} {{ $pl->currency }}</td>
-                  <td>{{ $pl->payment_method ?? '-' }}</td>
-                  <td>{{ optional($pl->paid_at)->format('Y-m-d H:i') ?? '-' }}</td>
-                </tr>
-              @endforeach
-            </tbody>
-          </table>
-        </div>
-      @endif
-
-      <div class="section" style="margin-top:24px;">
+      <div class="section" style="margin-top:18px;">
         <div class="box">
           <div style="font-weight:600; margin-bottom:6px;">Tanda Tangan</div>
           <div>
             @if(isset($signData) && $signData)
-              <img src="{{ $signData }}" alt="Tanda Tangan" style="height:70px;" />
+              <img src="{{ $signData }}" alt="Tanda Tangan" style="height:40px;" />
             @else
-              <div style="height:70px; border-bottom:1px solid #e5e7eb; width:220px;"></div>
+              <div style="height:40px; border-bottom:1px solid #e5e7eb; width:160px;"></div>
             @endif
           </div>
-          <div class="muted" style="margin-top:6px;">Ditandatangani oleh: {{ auth()->user()->name ?? 'Admin' }}</div>
+          <div class="muted" style="margin-top:4px;">Ditandatangani oleh: {{ auth()->user()->name ?? 'Admin' }}</div>
           <div class="muted">Tanggal: {{ now()->format('d M Y H:i') }}</div>
         </div>
       </div>
+      </div>
 
-      @if($index < ($pos->count() - 1))
-        <div class="page-break"></div>
-      @endif
+        @endforeach
+      </div>
     @endforeach
   @endif
 </body>

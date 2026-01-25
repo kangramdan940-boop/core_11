@@ -425,7 +425,7 @@ class TransPoController extends Controller
             'status' => $status,
             'since' => $since,
             'until' => $until,
-        ])->setPaper('a4', 'landscape');
+        ])->setPaper('a4', 'portrait');
 
         $filename = 'Invoice-Bulk-' . $status . '-' . date('Ymd-His') . '.pdf';
         return $pdf->download($filename);
