@@ -402,6 +402,35 @@ class TransPoController extends Controller
         return $pdf->download($filename);
     }
 
+    public function invoiceBulkPdf(Request $request)
+    {
+        $status = (string) ($request->input('status') ?? 'shipped');
+        $since = $request->input('since');
+        $until = $request->input('until');
+
+        $query = TransPo::query()->where('status', $status);
+        if ($since) { $query->whereDate('shipped_at', '>=', $since); }
+        if ($until) { $query->whereDate('shipped_at', '<=', $until); }
+        $pos = $query->orderBy('shipped_at')->get();
+
+        $paymentsByPo = TransPaymentLog::where('ref_type', 'po')
+            ->whereIn('ref_id', $pos->pluck('id'))
+            ->orderByDesc('id')
+            ->get()
+            ->groupBy('ref_id');
+
+        $pdf = Pdf::loadView('admin.trans_po.invoice_bulk_pdf', [
+            'pos' => $pos,
+            'paymentsByPo' => $paymentsByPo,
+            'status' => $status,
+            'since' => $since,
+            'until' => $until,
+        ])->setPaper('a4', 'landscape');
+
+        $filename = 'Invoice-Bulk-' . $status . '-' . date('Ymd-His') . '.pdf';
+        return $pdf->download($filename);
+    }
+
     public function invoice(TransPo $po)
     {
         $paymentLogs = TransPaymentLog::where('ref_type', 'po')

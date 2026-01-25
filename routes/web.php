@@ -442,6 +442,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 Route::post('/{po}/send-shipping-email', [TransPoController::class, 'sendShippingEmail'])->name('send-shipping-email');
                 Route::get('/{po}/invoice/pdf', [TransPoController::class, 'invoicePdf'])->name('invoice.pdf');
                 Route::get('/{po}/invoice', [TransPoController::class, 'invoice'])->name('invoice');
+                Route::get('/invoice/bulk/pdf', [TransPoController::class, 'invoiceBulkPdf'])->name('invoice.bulk.pdf');
                 Route::get('/{po}/kwitansi/pdf', [TransPoController::class, 'kwitansiPdf'])->name('kwitansi.pdf');
 
                 Route::get('/{po}/delivery-note/pdf', [TransPoController::class, 'deliveryNotePdf'])->name('delivery-note.pdf');

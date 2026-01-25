@@ -12,6 +12,7 @@
         <button type="button" class="manual-order-btn btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#manualOrderModal" title="Buat Order Manual by User Customer"><i class="bi bi-cart-plus"></i> Buat Order Manual by User Customer</button>
         <button type="button" class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#fifoCalculatorModal">Kalkulator FIFO</button>
         <button type="button" class="btn btn-outline-secondary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#kepingCalculatorModal">Kalkulator Keping</button>
+        <a href="{{ route('admin.trans.po.invoice.bulk.pdf', ['status' => 'shipped']) }}" target="_blank" class="btn btn-outline-primary btn-sm me-2">Print Semua Invoice (Shipped)</a>
         <form id="cancelPendingForm" action="{{ route('admin.trans.po.cancel-pending-all') }}" method="POST">
             @csrf
             <button type="button" id="cancelPendingBtn" class="btn btn-outline-danger btn-sm">Batalkan Semua Pending</button>
