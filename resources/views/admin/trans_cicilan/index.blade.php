@@ -19,6 +19,12 @@
         <li class="nav-item"><a href="{{ route('admin.trans.cicilan.index', ['status' => 'canceled']) }}" class="nav-link {{ in_array(request('status'), ['canceled','cancelled'], true) ? 'active' : '' }}">Cancelled</a></li>
         <li class="nav-item"><a href="{{ route('admin.trans.cicilan.index', ['status' => 'menunggu-dp']) }}" class="nav-link {{ in_array(request('status'), ['menunggu-dp','menunggu dp'], true) ? 'active' : '' }}">Menunggu DP</a></li>
     </ul>
+    <form action="{{ route('admin.trans.cicilan.index') }}" method="GET" class="mb-2 d-flex gap-2">
+        <input type="hidden" name="status" value="{{ request('status') }}">
+        <input type="text" name="customer" class="form-control" placeholder="Filter Customer" value="{{ request('customer') }}">
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="{{ route('admin.trans.cicilan.index', request('status') ? ['status' => request('status')] : []) }}" class="btn btn-light">Reset</a>
+    </form>
     @if (request('status') === 'active')
         @php
             $totalGramasi = $contracts->sum(function($c){ return (float) ($c->gramasi ?? 0); });
@@ -31,6 +37,7 @@
             $totalGramasi = $contracts->sum(function($c){ return (float) ($c->gramasi ?? 0); });
             $totalPcs = $contracts->sum(function($c){ return (int) ($c->jumlah_keping_diambil ?? 0); });
             $totalNilaiKontrak = $contracts->sum(function($c){ return (float) ($c->harga_total_kontrak ?? 0); });
+            $totalDpActive = $contracts->sum(function($c){ return (float) ($c->dp_amount ?? 0); });
         @endphp
         <div class="row g-2 mb-2">
             <div class="col-md-4">
@@ -42,9 +49,12 @@
             <div class="col-md-4">
                 <div class="card shadow-sm"><div class="card-body py-2"><div class="text-muted small">Total Nilai Kontrak (IDR)</div><div class="h5 mb-0">{{ number_format((float)$totalNilaiKontrak, 2, ',', '.') }}</div></div></div>
             </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm"><div class="card-body py-2"><div class="text-muted small">Total DP (IDR)</div><div class="h5 mb-0">{{ number_format((float)$totalDpActive, 2, ',', '.') }}</div></div></div>
+            </div>
         </div>
     @endif
-    <div class="card shadow-sm">
+                <div class="card shadow-sm">
                     <div class="card-body py-2">
                         <div class="text-muted small">Total Gramasi</div>
                         <div class="h5 mb-0">{{ number_format((float)$totalGramasi, 3, ',', '.') }} gr</div>

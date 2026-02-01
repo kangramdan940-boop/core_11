@@ -20,9 +20,16 @@ class TransCicilanController extends Controller
         $key = strtolower($statusParam);
         $statusFilter = $map[$key] ?? null;
 
+        $customerParam = trim((string) ($request->query('customer') ?? ''));
+
         $query = TransCicilan::with(['customer', 'agen'])->orderByDesc('id');
         if ($statusFilter) {
             $query->where('status', $statusFilter);
+        }
+        if ($customerParam !== '') {
+            $query->whereHas('customer', function ($q) use ($customerParam) {
+                $q->where('full_name', 'like', '%'.$customerParam.'%');
+            });
         }
         $contracts = $query->get();
 
