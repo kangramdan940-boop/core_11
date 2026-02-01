@@ -7,7 +7,18 @@
 @section('subLink', route('admin.trans.cicilan-payments.index'))
 
 @section('content')
+
     <div class="card shadow-sm">
+        @php $totalPaidAll = $payments->where('status', 'paid')->sum('amount_due'); @endphp
+        <div class="card-body py-2">
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <div class="text-muted small">Total Terbayar (IDR)</div>
+                    <div class="h5 mb-0">{{ number_format((float)$totalPaidAll, 2, ',', '.') }}</div>
+                </div>
+            </div>
+        </div>
+         
         <table id="cicilanPaymentsTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
             <thead class="bg-light bg-opacity-30">
                 <tr>
