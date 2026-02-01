@@ -75,6 +75,7 @@
         <table id="cicilanTable" class="table table-hover align-middle table-nowrap w-100">
             <thead class="bg-light bg-opacity-30">
                 <tr>
+                    <th>NO</th>
                     <th>ID</th>
                     <th>Kode Kontrak</th>
                     <th>Customer</th>
@@ -89,6 +90,7 @@
             <tbody>
                 @forelse ($contracts as $c)
                     <tr>
+                        <td>{{ $loop->iteration }}</td>
                         <td>{{ $c->id }}</td>
                         <td>{{ $c->kode_kontrak }}</td>
                         <td>{{ optional($c->customer)->full_name ?? '-' }}</td>
