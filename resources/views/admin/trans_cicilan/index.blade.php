@@ -76,7 +76,7 @@
     </div>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script>jQuery(function($){var $cust=$('#customerSelect');if($cust.length){$cust.select2({theme:'bootstrap-5',width:'100%',placeholder:'-- Pilih Customer --',allowClear:true,minimumResultsForSearch:5});}});</script>
+    <script>jQuery(function($){var $cust=$('#customerSelect');var $modal=$('#createContractModal');if($cust.length){$cust.select2({theme:'bootstrap-5',width:'100%',placeholder:'-- Pilih Customer --',allowClear:true,minimumResultsForSearch:0,dropdownParent:$modal.length?$modal:$(document.body),language:'id'});}});</script>
     <ul class="nav nav-pills mb-2">
         <li class="nav-item"><a href="{{ route('admin.trans.cicilan.index') }}" class="nav-link {{ request('status') ? '' : 'active' }}">Semua</a></li>
         <li class="nav-item"><a href="{{ route('admin.trans.cicilan.index', ['status' => 'active']) }}" class="nav-link {{ request('status') === 'active' ? 'active' : '' }}">Active</a></li>
