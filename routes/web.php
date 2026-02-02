@@ -490,6 +490,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->name('cicilan.dp-proof');
             Route::get('/cicilan/{contract}/payments/data', [TransCicilanController::class, 'paymentsData'])
                 ->name('cicilan.payments.data');
+            Route::post('/cicilan/create-from-record', [TransCicilanController::class, 'storeFromRecord'])
+                ->name('cicilan.store-from-record');
             Route::post('/cicilan/cancel-waiting-dp', [TransCicilanController::class, 'cancelWaitingDpAll'])
                 ->name('cicilan.cancel-waiting-dp');
 
