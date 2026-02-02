@@ -12,7 +12,71 @@
             @csrf
             <button type="button" id="cancelWaitingDpBtn" class="btn btn-outline-danger btn-sm">Batalkan Semua 'Menunggu DP'</button>
         </form>
+        <button type="button" class="btn btn-primary btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#createContractModal">Buat Kontrak</button>
     </div>
+
+    <div class="modal fade" id="createContractModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="{{ route('admin.trans.cicilan.store-from-record') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-header">
+                        <h6 class="modal-title">Buat Kontrak Cicilan</h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-2">
+                            <label class="form-label">Customer</label>
+                            <select id="customerSelect" name="master_customer_id" class="form-select" required>
+                                <option value="">-- Pilih Customer --</option>
+                                @foreach(($customers ?? []) as $cust)
+                                    <option value="{{ $cust->id }}">{{ $cust->full_name }} — {{ $cust->phone_wa }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Cicilan Emas Dibuka</label>
+                            <select name="trans_cicilan_emas_id" class="form-select" required>
+                                <option value="">-- Pilih Cicilan Emas --</option>
+                                @foreach(($records ?? []) as $r)
+                                    <option value="{{ $r->id }}">#{{ $r->id }} — {{ optional($r->layanan)->nama_layanan }} — {{ optional($r->gramasi)->nama }} ({{ number_format((float)optional($r->gramasi)->gramasi,0,',','.') }} g) — Sisa: {{ max(0, (int)$r->jumlah_keping_dibuka - (int)($r->jumlah_keping_terpakai ?? 0)) }} keping</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <label class="form-label">Jumlah Keping Diambil</label>
+                                <input type="number" name="jumlah_keping_diambil" class="form-control" min="1" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Tenor (bulan)</label>
+                                <input type="number" name="tenor_bulan" class="form-control" min="3" max="24" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">DP (%)</label>
+                                <select name="dp_persen" class="form-select" required>
+                                    <option value="5">5%</option>
+                                    <option value="10" selected>10%</option>
+                                    <option value="20">20%</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <label class="form-label">Bukti DP (opsional)</label>
+                            <input type="file" name="file_bukti_bayar_dp" class="form-control" accept=".jpg,.jpeg,.png,.pdf">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Buat</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>jQuery(function($){var $cust=$('#customerSelect');if($cust.length){$cust.select2({theme:'bootstrap-5',width:'100%',placeholder:'-- Pilih Customer --',allowClear:true,minimumResultsForSearch:5});}});</script>
     <ul class="nav nav-pills mb-2">
         <li class="nav-item"><a href="{{ route('admin.trans.cicilan.index') }}" class="nav-link {{ request('status') ? '' : 'active' }}">Semua</a></li>
         <li class="nav-item"><a href="{{ route('admin.trans.cicilan.index', ['status' => 'active']) }}" class="nav-link {{ request('status') === 'active' ? 'active' : '' }}">Active</a></li>
@@ -120,6 +184,8 @@
 @endsection
 
 @section('css')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css">
 @endsection
 
 @section('js')
