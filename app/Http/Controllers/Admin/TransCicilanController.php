@@ -45,6 +45,15 @@ class TransCicilanController extends Controller
         return view('admin.trans_cicilan.show', compact('contract', 'payments'));
     }
 
+    public function paymentsData(TransCicilan $contract): \Illuminate\Http\JsonResponse
+    {
+        $items = $contract->cicilanPayments()
+            ->orderBy('cicilan_ke')
+            ->get(['id','cicilan_ke','due_date','amount_due','status']);
+
+        return response()->json(['status' => true, 'data' => $items]);
+    }
+
     public function updateStatus(\Illuminate\Http\Request $request, TransCicilan $contract)
     {
         $allowed = ['menunggu DP','active','pembayaran telat','sudah di bayar','selesai','canceled'];

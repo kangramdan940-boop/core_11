@@ -488,6 +488,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->name('cicilan.cancel-waiting-dp');
             Route::post('/cicilan/{contract}/dp-proof', [TransCicilanController::class, 'uploadDpProof'])
                 ->name('cicilan.dp-proof');
+            Route::get('/cicilan/{contract}/payments/data', [TransCicilanController::class, 'paymentsData'])
+                ->name('cicilan.payments.data');
             Route::post('/cicilan/cancel-waiting-dp', [TransCicilanController::class, 'cancelWaitingDpAll'])
                 ->name('cicilan.cancel-waiting-dp');
 
@@ -506,6 +508,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->name('cicilan-payments.index');
             Route::get('/cicilan-payments/{payment}', [TransCicilanPaymentController::class, 'show'])
                 ->name('cicilan-payments.show');
+            Route::post('/cicilan-payments/{payment}/confirm-payment', [TransCicilanPaymentController::class, 'confirmPayment'])
+                ->name('cicilan-payments.confirm-payment');
 
             // Akad Murabahah (Cicilan)
             Route::resource('cicilan-akad', TransCicilanAkadController::class)
