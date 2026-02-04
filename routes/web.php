@@ -504,6 +504,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->name('ready.update-status');
             Route::post('/ready/cancel-pending', [TransReadyController::class, 'cancelPendingAll'])
                 ->name('ready.cancel-pending-all');
+            Route::get('/ready/invoice/bulk/pdf', [TransReadyController::class, 'invoiceBulkPdf'])
+                ->name('ready.invoice.bulk.pdf');
 
             // Cicilan Payments
             Route::get('/cicilan-payments', [TransCicilanPaymentController::class, 'index'])
