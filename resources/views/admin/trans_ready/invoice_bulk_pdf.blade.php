@@ -120,34 +120,6 @@
               </div>
             @endif
 
-            @if(($logs ?? collect())->count() > 0)
-              <div class="section">
-                <div style="font-weight:600; margin-bottom:6px;">Riwayat Pembayaran</div>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Kode</th>
-                      <th>Status</th>
-                      <th class="text-end">Jumlah</th>
-                      <th>Metode</th>
-                      <th>Dibayar</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @foreach($logs as $pl)
-                      <tr>
-                        <td>{{ $pl->kode_payment }}</td>
-                        <td>{{ strtoupper($pl->status) }}</td>
-                        <td class="text-end">{{ number_format((float)$pl->amount, 2, ',', '.') }} {{ $pl->currency }}</td>
-                        <td>{{ $pl->payment_method ?? '-' }}</td>
-                        <td>{{ optional($pl->paid_at)->format('Y-m-d H:i') ?? '-' }}</td>
-                      </tr>
-                    @endforeach
-                  </tbody>
-                </table>
-              </div>
-            @endif
-
             <div class="section" style="margin-top:18px;">
               <div class="box">
                 <div style="font-weight:600; margin-bottom:6px;">Tanda Tangan</div>
