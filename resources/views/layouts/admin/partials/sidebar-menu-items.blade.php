@@ -22,6 +22,7 @@
                 [ 'type' => 'link', 'icon' => 'ri-file-list-3-line', 'text' => 'Kontrak Cicilan', 'url' => route('admin.trans.cicilan.index'), 'routeIs' => 'admin.trans.cicilan.*' ],
                 [ 'type' => 'link', 'icon' => 'ri-article-line', 'text' => 'Akad Murabahah', 'url' => route('admin.trans.cicilan-akad.index'), 'routeIs' => 'admin.trans.cicilan-akad.*' ],
                 [ 'type' => 'link', 'icon' => 'ri-bank-card-line', 'text' => 'Pembayaran Cicilan', 'url' => route('admin.trans.cicilan-payments.index'), 'routeIs' => 'admin.trans.cicilan-payments.*' ],
+                [ 'type' => 'link', 'icon' => 'ri-alarm-warning-line', 'text' => 'Tagihan Jatuh Tempo', 'url' => route('admin.trans.cicilan-payments.overdue'), 'routeIs' => 'admin.trans.cicilan-payments.overdue' ],
             ] ],
            
            

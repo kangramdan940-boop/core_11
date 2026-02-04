@@ -17,6 +17,17 @@ class TransCicilanPaymentController extends Controller
         return view('admin.trans_cicilan_payment.index', compact('payments'));
     }
 
+    public function overdue()
+    {
+        $payments = TransCicilanPayment::with(['kontrak.customer', 'kontrak.agen'])
+            ->where('status', 'pending')
+            ->whereDate('due_date', '<=', now()->toDateString())
+            ->orderBy('due_date')
+            ->get();
+
+        return view('admin.trans_cicilan_payment.overdue', compact('payments'));
+    }
+
     public function show(TransCicilanPayment $payment)
     {
         $paymentLogs = TransPaymentLog::where('ref_type', 'cicilan_payment')
@@ -63,5 +74,28 @@ class TransCicilanPaymentController extends Controller
         ]);
 
         return redirect()->route('admin.trans.cicilan-payments.show', $payment)->with('success', 'Konfirmasi pembayaran cicilan diunggah. Menunggu verifikasi.');
+    }
+
+    public function notifyOverdue(TransCicilanPayment $payment)
+    {
+        $contract = $payment->kontrak;
+        $customer = $contract ? $contract->customer : null;
+        $phone = $customer ? preg_replace('/\D+/', '', (string) $customer->phone_wa) : '';
+        if ($phone === '') {
+            return back()->with('error', 'Nomor WhatsApp customer tidak tersedia.');
+        }
+        if (strpos($phone, '+') === 0) { $phone = ltrim($phone, '+'); }
+        if (strpos($phone, '0') === 0) { $phone = '62' . substr($phone, 1); }
+        $due = $payment->due_date ? $payment->due_date->format('d M Y') : '-';
+        $amount = number_format((float) $payment->amount_due, 2, ',', '.');
+        $name = $customer ? ($customer->full_name ?? 'Customer') : 'Customer';
+        $kode = $contract ? ($contract->kode_kontrak ?? '-') : '-';
+        $message = 'Assalamu’alaikum ' . $name . ",\n" .
+            'Kami dari Jajan Emas ingin menginformasikan bahwa cicilan emas Anda untuk kontrak ' . $kode . ' (cicilan ke-' . (int) $payment->cicilan_ke . ') telah jatuh tempo pada ' . $due . ".\n" .
+            'Jumlah tagihan: Rp ' . $amount . ".\n\n" .
+            'Mohon konfirmasi pembayaran atau hubungi kami bila membutuhkan bantuan. Terima kasih.';
+        $text = rawurlencode($message);
+        $url = 'https://wa.me/' . $phone . '?text=' . $text;
+        return redirect()->away($url);
     }
 }

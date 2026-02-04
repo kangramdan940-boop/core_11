@@ -508,6 +508,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
             // Cicilan Payments
             Route::get('/cicilan-payments', [TransCicilanPaymentController::class, 'index'])
                 ->name('cicilan-payments.index');
+            Route::get('/cicilan-payments/overdue', [TransCicilanPaymentController::class, 'overdue'])
+                ->name('cicilan-payments.overdue');
+            Route::get('/cicilan-payments/{payment}/notify-overdue', [TransCicilanPaymentController::class, 'notifyOverdue'])
+                ->name('cicilan-payments.notify-overdue');
             Route::get('/cicilan-payments/{payment}', [TransCicilanPaymentController::class, 'show'])
                 ->name('cicilan-payments.show');
             Route::post('/cicilan-payments/{payment}/confirm-payment', [TransCicilanPaymentController::class, 'confirmPayment'])
