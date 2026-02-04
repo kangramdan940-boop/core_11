@@ -123,7 +123,7 @@
                         $estimasiDisplay = $computed->format('Y-m-d');
                     }
                 @endphp
-                <div class="col-md-6"><strong>Estimasi Diterima</strong><br>{{ $estimasiDisplay }}</div>
+                <div class="col-md-6"><strong>Estimasi Diterima</strong><br>1 Bulan setelah Status Process</div>
                 <div class="col-md-6">
                     <a href="https://www.jne.co.id/tracking-package" target="_blank" rel="noopener" title="Buka halaman tracking JNE"><strong>Nomor Resi JNE klik disini untuk masuk ke jne</strong></a>
                     <div class="d-flex align-items-center">
