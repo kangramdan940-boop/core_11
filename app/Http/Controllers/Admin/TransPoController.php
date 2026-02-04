@@ -28,7 +28,16 @@ class TransPoController extends Controller
             $query->where('id_keranjang', (int) $keranjangId);
         }
 
-        if ($status !== '') {
+        if ($status === 'shipped-with-resi') {
+            $query->where('status', 'shipped')
+                ->whereNotNull('resi_number')
+                ->where('resi_number', '<>', '');
+        } elseif ($status === 'shipped') {
+            $query->where('status', 'shipped')
+                ->where(function ($q) {
+                    $q->whereNull('resi_number')->orWhere('resi_number', '=','');
+                });
+        } elseif ($status !== '') {
             $allowed = ['pending_payment','paid','processing','ready_at_agen','shipped','completed','cancelled'];
             if (in_array($status, $allowed, true)) {
                 $query->where('status', $status);
@@ -100,7 +109,20 @@ class TransPoController extends Controller
             'cancelled' => (int) ($rawCounts['cancelled'] ?? 0),
         ];
 
-        return view('admin.trans_po.index', compact('pos', 'statusCounts', 'totalCount', 'todayCount'));
+        $shippedWithResiCount = (clone $countsBase)
+            ->where('status', 'shipped')
+            ->whereNotNull('resi_number')
+            ->where('resi_number', '<>', '')
+            ->count();
+
+        $shippedWithoutResiCount = (clone $countsBase)
+            ->where('status', 'shipped')
+            ->where(function ($q) {
+                $q->whereNull('resi_number')->orWhere('resi_number', '=','');
+            })
+            ->count();
+
+        return view('admin.trans_po.index', compact('pos', 'statusCounts', 'totalCount', 'todayCount', 'shippedWithResiCount', 'shippedWithoutResiCount'));
     }
 
     public function show(TransPo $po)
