@@ -257,7 +257,7 @@
     <div class="card shadow-sm">
         <ul class="nav nav-tabs mb-3" id="statusTabs" role="tablist">
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['date' => 'today']) }}" class="nav-link {{ request('date') === 'today' ? 'active' : '' }}">Hari Ini <span class="badge rounded-pill text-bg-secondary ms-2">{{ $todayCount ?? 0 }}</span></a></li>
-            <li class="nav-item"><a href="{{ route('admin.trans.po.index') }}" class="nav-link {{ (request()->missing('status') || request('status') === '') && (request()->missing('date') || request('date') === '') && (request()->missing('created_date') || request('created_date') === '') ? 'active' : '' }}">Semua <span class="badge rounded-pill text-bg-secondary ms-2">{{ $totalCount ?? 0 }}</span></a></li>
+            <li class="nav-item"><a href="{{ route('admin.trans.po.index') }}" class="nav-link js-all-status-link {{ (request()->missing('status') || request('status') === '') && (request()->missing('date') || request('date') === '') && (request()->missing('created_date') || request('created_date') === '') ? 'active' : '' }}">Semua <span class="badge rounded-pill text-bg-secondary ms-2">{{ $totalCount ?? 0 }}</span></a></li>
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'pending_payment']) }}" class="nav-link {{ request('status') === 'pending_payment' ? 'active' : '' }}">Pending <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['pending_payment'] ?? 0 }}</span></a></li>
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'paid']) }}" class="nav-link {{ request('status') === 'paid' ? 'active' : '' }}">Paid <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['paid'] ?? 0 }}</span></a></li>
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'processing']) }}" class="nav-link {{ request('status') === 'processing' ? 'active' : '' }}">Processing <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['processing'] ?? 0 }}</span></a></li>
@@ -454,6 +454,24 @@
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const allStatusLink = document.querySelector('a.js-all-status-link');
+            if (allStatusLink && typeof Swal !== 'undefined') {
+                allStatusLink.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Konfirmasi',
+                        text: 'Ini akan memuat banyak data dan bisa menyebabkan loading lama. Yakin ingin memilih semua status?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya',
+                        cancelButtonText: 'Tidak'
+                    }).then(function (result) {
+                        if (result.isConfirmed) {
+                            window.location.href = allStatusLink.getAttribute('href');
+                        }
+                    });
+                });
+            }
             const tableEl = document.getElementById('poTable');
             if (!tableEl) return;
             if (typeof $ === 'undefined' || !$.fn.DataTable) return;

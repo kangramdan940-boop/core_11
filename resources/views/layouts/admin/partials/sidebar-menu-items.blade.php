@@ -9,7 +9,7 @@
 
  [ 'type' => 'title', 'text' => 'Transaksi' ],
             [ 'type' => 'link', 'icon' => 'ri-file-text-line', 'text' => 'Faktur Emas', 'url' => route('admin.master.faktur.index'), 'routeIs' => 'admin.master.faktur.*' ],
-            [ 'type' => 'link', 'icon' => 'ri-file-list-3-line', 'text' => 'PO Emas', 'url' => route('admin.trans.po.index'), 'routeIs' => 'admin.trans.po.*' ],
+            [ 'type' => 'link', 'icon' => 'ri-file-list-3-line', 'text' => 'PO Emas', 'url' => route('admin.trans.po.index', ['date' => 'today']), 'routeIs' => 'admin.trans.po.*' ],
             [ 'type' => 'link', 'icon' => 'ri-shopping-cart-2-line', 'text' => 'Keranjang', 'url' => route('admin.trans.keranjang.index'), 'routeIs' => 'admin.trans.keranjang.*' ],
             [ 'type' => 'link', 'icon' => 'ri-archive-stack-line', 'text' => 'Stok Emas Ready', 'url' => route('admin.master.ready-stocks.index'), 'routeIs' => 'admin.master.ready-stocks.*' ],
             [ 'type' => 'link', 'icon' => 'ri-calculator-line', 'text' => 'Kalkulator FIFO', 'url' => route('admin.trans.fifo-calculator'), 'routeIs' => 'admin.trans.fifo-calculator' ],
