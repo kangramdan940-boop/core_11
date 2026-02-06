@@ -21,6 +21,10 @@ class TransPoController extends Controller
         $createdDate = (string) $request->query('created_date', '');
         $keranjangId = $request->query('keranjang_id');
 
+        if ($status === '' && $dateFilter === '' && $createdDate === '' && empty($keranjangId) && (string) $request->query('view', '') !== 'all') {
+            return redirect()->route('admin.trans.po.index', ['date' => 'today']);
+        }
+
         $query = TransPo::with(['customer', 'agen', 'keranjang'])
             ->orderByDesc('id');
 
