@@ -9,7 +9,7 @@
 
  [ 'type' => 'title', 'text' => 'Transaksi' ],
             [ 'type' => 'link', 'icon' => 'ri-file-text-line', 'text' => 'Faktur Emas', 'url' => route('admin.master.faktur.index'), 'routeIs' => 'admin.master.faktur.*' ],
-            [ 'type' => 'link', 'icon' => 'ri-file-list-3-line', 'text' => 'PO Emas', 'url' => route('admin.trans.po.index'), 'routeIs' => 'admin.trans.po.*' ],
+            [ 'type' => 'link', 'icon' => 'ri-file-list-3-line', 'text' => 'PO Emas', 'url' => route('admin.trans.po.index', ['date' => 'today']), 'routeIs' => 'admin.trans.po.*' ],
             [ 'type' => 'link', 'icon' => 'ri-shopping-cart-2-line', 'text' => 'Keranjang', 'url' => route('admin.trans.keranjang.index'), 'routeIs' => 'admin.trans.keranjang.*' ],
             [ 'type' => 'link', 'icon' => 'ri-archive-stack-line', 'text' => 'Stok Emas Ready', 'url' => route('admin.master.ready-stocks.index'), 'routeIs' => 'admin.master.ready-stocks.*' ],
             [ 'type' => 'link', 'icon' => 'ri-calculator-line', 'text' => 'Kalkulator FIFO', 'url' => route('admin.trans.fifo-calculator'), 'routeIs' => 'admin.trans.fifo-calculator' ],
@@ -22,6 +22,7 @@
                 [ 'type' => 'link', 'icon' => 'ri-file-list-3-line', 'text' => 'Kontrak Cicilan', 'url' => route('admin.trans.cicilan.index'), 'routeIs' => 'admin.trans.cicilan.*' ],
                 [ 'type' => 'link', 'icon' => 'ri-article-line', 'text' => 'Akad Murabahah', 'url' => route('admin.trans.cicilan-akad.index'), 'routeIs' => 'admin.trans.cicilan-akad.*' ],
                 [ 'type' => 'link', 'icon' => 'ri-bank-card-line', 'text' => 'Pembayaran Cicilan', 'url' => route('admin.trans.cicilan-payments.index'), 'routeIs' => 'admin.trans.cicilan-payments.*' ],
+                [ 'type' => 'link', 'icon' => 'ri-alarm-warning-line', 'text' => 'Tagihan Jatuh Tempo', 'url' => route('admin.trans.cicilan-payments.overdue'), 'routeIs' => 'admin.trans.cicilan-payments.overdue' ],
             ] ],
            
            

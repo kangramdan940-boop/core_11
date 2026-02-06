@@ -21,6 +21,10 @@ class TransPoController extends Controller
         $createdDate = (string) $request->query('created_date', '');
         $keranjangId = $request->query('keranjang_id');
 
+        if ($status === '' && $dateFilter === '' && $createdDate === '' && empty($keranjangId) && (string) $request->query('view', '') !== 'all') {
+            return redirect()->route('admin.trans.po.index', ['date' => 'today']);
+        }
+
         $query = TransPo::with(['customer', 'agen', 'keranjang'])
             ->orderByDesc('id');
 
@@ -28,7 +32,16 @@ class TransPoController extends Controller
             $query->where('id_keranjang', (int) $keranjangId);
         }
 
-        if ($status !== '') {
+        if ($status === 'shipped-with-resi') {
+            $query->where('status', 'shipped')
+                ->whereNotNull('resi_number')
+                ->where('resi_number', '<>', '');
+        } elseif ($status === 'shipped') {
+            $query->where('status', 'shipped')
+                ->where(function ($q) {
+                    $q->whereNull('resi_number')->orWhere('resi_number', '=','');
+                });
+        } elseif ($status !== '') {
             $allowed = ['pending_payment','paid','processing','ready_at_agen','shipped','completed','cancelled'];
             if (in_array($status, $allowed, true)) {
                 $query->where('status', $status);
@@ -100,7 +113,20 @@ class TransPoController extends Controller
             'cancelled' => (int) ($rawCounts['cancelled'] ?? 0),
         ];
 
-        return view('admin.trans_po.index', compact('pos', 'statusCounts', 'totalCount', 'todayCount'));
+        $shippedWithResiCount = (clone $countsBase)
+            ->where('status', 'shipped')
+            ->whereNotNull('resi_number')
+            ->where('resi_number', '<>', '')
+            ->count();
+
+        $shippedWithoutResiCount = (clone $countsBase)
+            ->where('status', 'shipped')
+            ->where(function ($q) {
+                $q->whereNull('resi_number')->orWhere('resi_number', '=','');
+            })
+            ->count();
+
+        return view('admin.trans_po.index', compact('pos', 'statusCounts', 'totalCount', 'todayCount', 'shippedWithResiCount', 'shippedWithoutResiCount'));
     }
 
     public function show(TransPo $po)
@@ -399,6 +425,35 @@ class TransPoController extends Controller
             ->setPaper('a4', 'landscape');
 
         $filename = 'Invoice-' . ($po->kode_po ?? ('PO-' . $po->id)) . '.pdf';
+        return $pdf->download($filename);
+    }
+
+    public function invoiceBulkPdf(Request $request)
+    {
+        $status = (string) ($request->input('status') ?? 'shipped');
+        $since = $request->input('since');
+        $until = $request->input('until');
+
+        $query = TransPo::query()->where('status', $status);
+        if ($since) { $query->whereDate('shipped_at', '>=', $since); }
+        if ($until) { $query->whereDate('shipped_at', '<=', $until); }
+        $pos = $query->orderBy('shipped_at')->get();
+
+        $paymentsByPo = TransPaymentLog::where('ref_type', 'po')
+            ->whereIn('ref_id', $pos->pluck('id'))
+            ->orderByDesc('id')
+            ->get()
+            ->groupBy('ref_id');
+
+        $pdf = Pdf::loadView('admin.trans_po.invoice_bulk_pdf', [
+            'pos' => $pos,
+            'paymentsByPo' => $paymentsByPo,
+            'status' => $status,
+            'since' => $since,
+            'until' => $until,
+        ])->setPaper('a4', 'portrait');
+
+        $filename = 'Invoice-Bulk-' . $status . '-' . date('Ymd-His') . '.pdf';
         return $pdf->download($filename);
     }
 

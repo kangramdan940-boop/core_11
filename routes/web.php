@@ -442,6 +442,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 Route::post('/{po}/send-shipping-email', [TransPoController::class, 'sendShippingEmail'])->name('send-shipping-email');
                 Route::get('/{po}/invoice/pdf', [TransPoController::class, 'invoicePdf'])->name('invoice.pdf');
                 Route::get('/{po}/invoice', [TransPoController::class, 'invoice'])->name('invoice');
+                Route::get('/invoice/bulk/pdf', [TransPoController::class, 'invoiceBulkPdf'])->name('invoice.bulk.pdf');
                 Route::get('/{po}/kwitansi/pdf', [TransPoController::class, 'kwitansiPdf'])->name('kwitansi.pdf');
 
                 Route::get('/{po}/delivery-note/pdf', [TransPoController::class, 'deliveryNotePdf'])->name('delivery-note.pdf');
@@ -485,6 +486,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->name('cicilan.update-status');
             Route::post('/cicilan/cancel-waiting-dp', [TransCicilanController::class, 'cancelWaitingDpAll'])
                 ->name('cicilan.cancel-waiting-dp');
+            Route::post('/cicilan/{contract}/dp-proof', [TransCicilanController::class, 'uploadDpProof'])
+                ->name('cicilan.dp-proof');
+            Route::get('/cicilan/{contract}/payments/data', [TransCicilanController::class, 'paymentsData'])
+                ->name('cicilan.payments.data');
+            Route::post('/cicilan/create-from-record', [TransCicilanController::class, 'storeFromRecord'])
+                ->name('cicilan.store-from-record');
+            Route::post('/cicilan/cancel-waiting-dp', [TransCicilanController::class, 'cancelWaitingDpAll'])
+                ->name('cicilan.cancel-waiting-dp');
 
             // Ready
             Route::get('/ready', [TransReadyController::class, 'index'])
@@ -495,12 +504,20 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->name('ready.update-status');
             Route::post('/ready/cancel-pending', [TransReadyController::class, 'cancelPendingAll'])
                 ->name('ready.cancel-pending-all');
+            Route::get('/ready/invoice/bulk/pdf', [TransReadyController::class, 'invoiceBulkPdf'])
+                ->name('ready.invoice.bulk.pdf');
 
             // Cicilan Payments
             Route::get('/cicilan-payments', [TransCicilanPaymentController::class, 'index'])
                 ->name('cicilan-payments.index');
+            Route::get('/cicilan-payments/overdue', [TransCicilanPaymentController::class, 'overdue'])
+                ->name('cicilan-payments.overdue');
+            Route::get('/cicilan-payments/{payment}/notify-overdue', [TransCicilanPaymentController::class, 'notifyOverdue'])
+                ->name('cicilan-payments.notify-overdue');
             Route::get('/cicilan-payments/{payment}', [TransCicilanPaymentController::class, 'show'])
                 ->name('cicilan-payments.show');
+            Route::post('/cicilan-payments/{payment}/confirm-payment', [TransCicilanPaymentController::class, 'confirmPayment'])
+                ->name('cicilan-payments.confirm-payment');
 
             // Akad Murabahah (Cicilan)
             Route::resource('cicilan-akad', TransCicilanAkadController::class)

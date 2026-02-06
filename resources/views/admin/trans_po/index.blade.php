@@ -12,6 +12,7 @@
         <button type="button" class="manual-order-btn btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#manualOrderModal" title="Buat Order Manual by User Customer"><i class="bi bi-cart-plus"></i> Buat Order Manual by User Customer</button>
         <button type="button" class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#fifoCalculatorModal">Kalkulator FIFO</button>
         <button type="button" class="btn btn-outline-secondary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#kepingCalculatorModal">Kalkulator Keping</button>
+        <a href="{{ route('admin.trans.po.invoice.bulk.pdf', ['status' => 'shipped']) }}" target="_blank" class="btn btn-outline-primary btn-sm me-2">Print Semua Invoice (Shipped)</a>
         <form id="cancelPendingForm" action="{{ route('admin.trans.po.cancel-pending-all') }}" method="POST">
             @csrf
             <button type="button" id="cancelPendingBtn" class="btn btn-outline-danger btn-sm">Batalkan Semua Pending</button>
@@ -256,12 +257,13 @@
     <div class="card shadow-sm">
         <ul class="nav nav-tabs mb-3" id="statusTabs" role="tablist">
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['date' => 'today']) }}" class="nav-link {{ request('date') === 'today' ? 'active' : '' }}">Hari Ini <span class="badge rounded-pill text-bg-secondary ms-2">{{ $todayCount ?? 0 }}</span></a></li>
-            <li class="nav-item"><a href="{{ route('admin.trans.po.index') }}" class="nav-link {{ (request()->missing('status') || request('status') === '') && (request()->missing('date') || request('date') === '') && (request()->missing('created_date') || request('created_date') === '') ? 'active' : '' }}">Semua <span class="badge rounded-pill text-bg-secondary ms-2">{{ $totalCount ?? 0 }}</span></a></li>
+            <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['view' => 'all']) }}" class="nav-link js-all-status-link {{ (request()->missing('status') || request('status') === '') && (request()->missing('date') || request('date') === '') && (request()->missing('created_date') || request('created_date') === '') ? 'active' : '' }}">Semua <span class="badge rounded-pill text-bg-secondary ms-2">{{ $totalCount ?? 0 }}</span></a></li>
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'pending_payment']) }}" class="nav-link {{ request('status') === 'pending_payment' ? 'active' : '' }}">Pending <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['pending_payment'] ?? 0 }}</span></a></li>
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'paid']) }}" class="nav-link {{ request('status') === 'paid' ? 'active' : '' }}">Paid <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['paid'] ?? 0 }}</span></a></li>
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'processing']) }}" class="nav-link {{ request('status') === 'processing' ? 'active' : '' }}">Processing <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['processing'] ?? 0 }}</span></a></li>
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'ready_at_agen']) }}" class="nav-link {{ request('status') === 'ready_at_agen' ? 'active' : '' }}">Ready @Agen <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['ready_at_agen'] ?? 0 }}</span></a></li>
-            <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'shipped']) }}" class="nav-link {{ request('status') === 'shipped' ? 'active' : '' }}">Shipped <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['shipped'] ?? 0 }}</span></a></li>
+            <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'shipped']) }}" class="nav-link {{ request('status') === 'shipped' ? 'active' : '' }}">Shipped <span class="badge rounded-pill text-bg-secondary ms-2">{{ $shippedWithoutResiCount ?? 0 }}</span></a></li>
+            <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'shipped-with-resi']) }}" class="nav-link {{ request('status') === 'shipped-with-resi' ? 'active' : '' }}">Shipped + Resi <span class="badge rounded-pill text-bg-secondary ms-2">{{ $shippedWithResiCount ?? 0 }}</span></a></li>
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'completed']) }}" class="nav-link {{ request('status') === 'completed' ? 'active' : '' }}">Completed <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['completed'] ?? 0 }}</span></a></li>
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'cancelled']) }}" class="nav-link {{ request('status') === 'cancelled' ? 'active' : '' }}">Cancelled <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['cancelled'] ?? 0 }}</span></a></li>
         </ul>
@@ -452,6 +454,24 @@
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const allStatusLink = document.querySelector('a.js-all-status-link');
+            if (allStatusLink && typeof Swal !== 'undefined') {
+                allStatusLink.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Konfirmasi',
+                        text: 'Ini akan memuat banyak data dan bisa menyebabkan loading lama. Yakin ingin memilih semua status?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya',
+                        cancelButtonText: 'Tidak'
+                    }).then(function (result) {
+                        if (result.isConfirmed) {
+                            window.location.href = allStatusLink.getAttribute('href');
+                        }
+                    });
+                });
+            }
             const tableEl = document.getElementById('poTable');
             if (!tableEl) return;
             if (typeof $ === 'undefined' || !$.fn.DataTable) return;

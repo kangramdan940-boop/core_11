@@ -8,12 +8,23 @@
 
 @section('content')
     <div class="d-flex justify-content-end mb-2">
+        <a href="{{ route('admin.trans.ready.invoice.bulk.pdf', ['status' => 'shipped']) }}" target="_blank" class="btn btn-outline-primary btn-sm me-2">Print Semua Invoice (Shipped)</a>
         <form id="cancelPendingReadyForm" action="{{ route('admin.trans.ready.cancel-pending-all') }}" method="POST" class="d-inline">
             @csrf
             <button type="button" id="cancelPendingReadyBtn" class="btn btn-outline-danger btn-sm">Batalkan Semua Pending</button>
         </form>
     </div>
     <div class="card shadow-sm">
+        <ul class="nav nav-tabs mb-3" id="readyStatusTabs" role="tablist">
+            <li class="nav-item"><a href="{{ route('admin.trans.ready.index', ['date' => 'today']) }}" class="nav-link {{ request('date') === 'today' ? 'active' : '' }}">Hari Ini <span class="badge rounded-pill text-bg-secondary ms-2">{{ $todayCount ?? 0 }}</span></a></li>
+            <li class="nav-item"><a href="{{ route('admin.trans.ready.index') }}" class="nav-link {{ (request()->missing('status') || request('status') === '') && (request()->missing('date') || request('date') === '') && (request()->missing('created_date') || request('created_date') === '') ? 'active' : '' }}">Semua <span class="badge rounded-pill text-bg-secondary ms-2">{{ $totalCount ?? 0 }}</span></a></li>
+            <li class="nav-item"><a href="{{ route('admin.trans.ready.index', ['status' => 'pending_payment']) }}" class="nav-link {{ request('status') === 'pending_payment' ? 'active' : '' }}">Pending <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['pending_payment'] ?? 0 }}</span></a></li>
+            <li class="nav-item"><a href="{{ route('admin.trans.ready.index', ['status' => 'paid']) }}" class="nav-link {{ request('status') === 'paid' ? 'active' : '' }}">Paid <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['paid'] ?? 0 }}</span></a></li>
+            <li class="nav-item"><a href="{{ route('admin.trans.ready.index', ['status' => 'waiting_shipment']) }}" class="nav-link {{ request('status') === 'waiting_shipment' ? 'active' : '' }}">Waiting Shipment <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['waiting_shipment'] ?? 0 }}</span></a></li>
+            <li class="nav-item"><a href="{{ route('admin.trans.ready.index', ['status' => 'shipped']) }}" class="nav-link {{ request('status') === 'shipped' ? 'active' : '' }}">Shipped <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['shipped'] ?? 0 }}</span></a></li>
+            <li class="nav-item"><a href="{{ route('admin.trans.ready.index', ['status' => 'completed']) }}" class="nav-link {{ request('status') === 'completed' ? 'active' : '' }}">Completed <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['completed'] ?? 0 }}</span></a></li>
+            <li class="nav-item"><a href="{{ route('admin.trans.ready.index', ['status' => 'cancelled']) }}" class="nav-link {{ request('status') === 'cancelled' ? 'active' : '' }}">Cancelled <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['cancelled'] ?? 0 }}</span></a></li>
+        </ul>
         <table id="readyTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
             <thead class="bg-light bg-opacity-30">
                 <tr>
