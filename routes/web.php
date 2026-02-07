@@ -34,6 +34,7 @@ use App\Http\Controllers\Admin\LoginManagementController;
 use App\Http\Controllers\Admin\SysUserManagementController;
 use App\Http\Controllers\Admin\MasterAssetController;
 use App\Http\Controllers\Admin\MasterPaymentSettingController;
+use App\Http\Controllers\Admin\SysNotificationController;
 
 use App\Http\Controllers\Front\CustomerAuthController;
 use App\Http\Controllers\Front\MitraAuthController;
@@ -168,6 +169,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard/stats', [DashboardController::class, 'stats'])->name('dashboard.stats');
         Route::get('/email-logs', [\App\Http\Controllers\Admin\EmailLogController::class, 'index'])->name('email-logs.index');
+        Route::get('/notifications', [SysNotificationController::class, 'index'])->name('notifications.index');
 
         Route::prefix('reports')->name('reports.')->group(function () {
             Route::get('/', [\App\Http\Controllers\Admin\FinancialReportController::class, 'index'])->name('index');

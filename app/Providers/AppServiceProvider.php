@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Models\TransPo;
 use App\Models\TransReady;
+use App\Models\TransKeranjang;
 use App\Observers\TransPoObserver;
 use App\Observers\TransReadyObserver;
+use App\Observers\TransKeranjangObserver;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -28,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
     {
         TransPo::observe(TransPoObserver::class);
         TransReady::observe(TransReadyObserver::class);
+        TransKeranjang::observe(TransKeranjangObserver::class);
 
         RateLimiter::for('forgot-password', function (Request $request) {
             $email = strtolower((string) $request->input('email'));

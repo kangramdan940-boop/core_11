@@ -14,6 +14,8 @@ class SysNotification extends Model
     protected $fillable = [
         'sys_user_id',
         'channel',
+        'ref_type',
+        'ref_id',
         'title',
         'message',
         'data_json',

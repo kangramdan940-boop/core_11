@@ -34,5 +34,6 @@ Route::prefix('v1')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\V
     Route::post('/customers/cicilan/payments/{payment}/confirm-payment', [\App\Http\Controllers\Api\CicilanApiController::class, 'confirmPayment'])->whereNumber('payment')->name('customer.cicilan.payments.confirm-payment');
 
     Route::get('/customers/portfolio/summary', [\App\Http\Controllers\Api\PortfolioApiController::class, 'summary'])->name('customer.portfolio.summary');
+    Route::get('/customers/notifications', [\App\Http\Controllers\Api\NotificationApiController::class, 'index'])->name('customer.notifications');
     Route::post('/customers/auth/logout', [\App\Http\Controllers\Api\CustomerAuthApiController::class, 'logout'])->name('customer.auth.logout');
 });

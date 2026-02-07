@@ -50,7 +50,7 @@
             [ 'type' => 'link', 'icon' => 'ri-smartphone-line', 'text' => 'Management Mobile Apps', 'url' => route('admin.master.mobile-app-configs.index'), 'routeIs' => 'admin.master.mobile-app-configs.*' ],
             [ 'type' => 'link', 'icon' => 'ri-bank-card-line', 'text' => 'Management Payment', 'url' => route('admin.master.payment-settings.index'), 'routeIs' => 'admin.master.payment-settings.*' ],
             [ 'type' => 'link', 'icon' => 'ri-user-settings-line', 'text' => 'Role', 'url' => '#!' ],
-            [ 'type' => 'link', 'icon' => 'ri-notification-3-line', 'text' => 'Notifikasi', 'url' => '#!' ],
+            [ 'type' => 'link', 'icon' => 'ri-notification-3-line', 'text' => 'Notifikasi', 'url' => route('admin.notifications.index'), 'routeIs' => 'admin.notifications.*' ],
         ];
 
         $renderMenuItem = function ($item) use (&$renderMenuItem) {
