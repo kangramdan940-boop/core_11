@@ -434,6 +434,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             // PO
             Route::prefix('po')->name('po.')->group(function () {
                 Route::get('/', [TransPoController::class, 'index'])->name('index');
+                Route::get('/export', [TransPoController::class, 'export'])->name('export');
                 Route::post('/manual', [TransPoController::class, 'manualStore'])->name('manual.store');
                 Route::get('/{po}', [TransPoController::class, 'show'])->name('show');
                 Route::post('/{po}/approve-payment', [TransPoController::class, 'approvePayment'])->name('approve-payment');

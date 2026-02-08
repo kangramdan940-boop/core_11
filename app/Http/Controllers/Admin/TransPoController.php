@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Mail;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\TransPoExport;
 
 class TransPoController extends Controller
 {
@@ -455,6 +457,48 @@ class TransPoController extends Controller
 
         $filename = 'Invoice-Bulk-' . $status . '-' . date('Ymd-His') . '.pdf';
         return $pdf->download($filename);
+    }
+
+    public function export(Request $request)
+    {
+        $status = (string) $request->query('status', '');
+        $dateFilter = (string) $request->query('date', '');
+        $createdDate = (string) $request->query('created_date', '');
+        $keranjangId = $request->query('keranjang_id');
+
+        $query = TransPo::with(['customer', 'agen', 'keranjang'])
+            ->orderByDesc('id');
+
+        if (!empty($keranjangId) && is_numeric($keranjangId)) {
+            $query->where('id_keranjang', (int) $keranjangId);
+        }
+
+        if ($status === 'shipped-with-resi') {
+            $query->where('status', 'shipped')
+                ->whereNotNull('resi_number')
+                ->where('resi_number', '<>', '');
+        } elseif ($status === 'shipped') {
+            $query->where('status', 'shipped')
+                ->where(function ($q) {
+                    $q->whereNull('resi_number')->orWhere('resi_number', '=','');
+                });
+        } elseif ($status !== '') {
+            $allowed = ['pending_payment','paid','processing','ready_at_agen','shipped','completed','cancelled'];
+            if (in_array($status, $allowed, true)) {
+                $query->where('status', $status);
+            }
+        }
+
+        if ($dateFilter === 'today') {
+            $query->whereDate('created_at', now()->toDateString());
+        }
+        if ($createdDate !== '') {
+            $query->whereDate('created_at', $createdDate);
+        }
+
+        $pos = $query->get();
+        $filename = 'PO-Export-' . ($status !== '' ? $status : 'all') . '-' . date('Ymd-His') . '.xlsx';
+        return Excel::download(new TransPoExport($pos), $filename);
     }
 
     public function invoice(TransPo $po)
