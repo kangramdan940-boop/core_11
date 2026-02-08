@@ -58,14 +58,21 @@ class TransFifoCalculatorController extends Controller
 
         $viewMode = (string) $request->query('viewMode', '');
         $fakturs = array_values(array_filter(array_map('strval', (array) $request->query('fakturs', []))));
-        $fakturOptions = MasterFaktur::query()
+
+        $docs = MasterFaktur::query()
             ->orderByDesc('id')
             ->limit(200)
-            ->pluck('invoice_number')
-            ->filter(function ($v) { return (string) $v !== ''; })
-            ->unique()
-            ->values()
+            ->get(['invoice_number','is_distributed']);
+
+        $fakturOptionsRows = $docs->filter(function ($d) { return (string) ($d->invoice_number ?? '') !== ''; })
+            ->unique('invoice_number')
+            ->sortBy(function ($d) { return (bool) ($d->is_distributed ?? false) ? 1 : 0; })
+            ->values();
+
+        $fakturDistributedMap = $fakturOptionsRows->pluck('is_distributed','invoice_number')
+            ->map(function ($v) { return (bool) $v; })
             ->all();
+        $fakturOptions = $fakturOptionsRows->pluck('invoice_number')->values()->all();
 
         $pricesByFaktur = [];
         if (!empty($fakturs)) {
@@ -235,6 +242,13 @@ class TransFifoCalculatorController extends Controller
                     $pricesExpandedCountByGram[$key]++;
                 }
             }
+
+            if ($viewMode === 'faktur') {
+                $stockGram = (float) number_format($pricesExpandedTotalGram, 3, '.', '');
+                $calc = self::computeFifoAllocation($items, $stockGram);
+                $stockUsed = self::sumTake($calc['allocations']);
+                $remainingStock = (float) $calc['remaining_stock'];
+            }
         } else {
             $fakturResume = [];
             $stocksByFaktur = [];
@@ -252,9 +266,37 @@ class TransFifoCalculatorController extends Controller
             ];
         }
 
+        // Sumber antrian: ambil semua PAID & PROCESSING tanpa batas 3 minggu
+        $poQueuePos = TransPo::query()
+            ->whereIn('status', ['paid','processing'])
+            ->orderByRaw('COALESCE(paid_at, processed_at, ordered_at, created_at) ASC')
+            ->with(['customer:id,full_name,phone_wa', 'produk.gramasi'])
+            ->get(['id','kode_po','qty','total_gram','total_amount','status','ordered_at','paid_at','processed_at','created_at','master_customer_id','id_master_produk_dan_layanan']);
+
+        $poQueueItems = [];
+        foreach ($poQueuePos as $po) {
+            $poQueueItems[] = [
+                'id' => (int) $po->id,
+                'kode_po' => (string) $po->kode_po,
+                'qty' => (int) $po->qty,
+                'total_gram' => (float) ($po->total_gram ?? 0.0),
+                'total_amount' => (float) ($po->total_amount ?? 0.0),
+                'status' => (string) $po->status,
+                'ordered_at' => $po->ordered_at,
+                'paid_at' => $po->paid_at,
+                'processed_at' => $po->processed_at,
+                'created_at' => $po->created_at,
+                'customer_name' => optional($po->customer)->full_name,
+                'customer_wa' => optional($po->customer)->phone_wa,
+                'gramasi' => (float) (optional(optional($po->produk)->gramasi)->gramasi ?? 0.0),
+            ];
+        }
+
+        // Ringkasan antrian per gramasi (PAID & PROCESSING)
         $groupByGramasi = [];
-        foreach ($items as $it) {
-            if ((string)($it['status'] ?? '') !== 'processing') { continue; }
+        foreach ($poQueueItems as $it) {
+            $st = (string)($it['status'] ?? '');
+            if ($st !== 'paid' && $st !== 'processing') { continue; }
             $g = (float) ($it['gramasi'] ?? 0.0);
             $q = (int) ($it['qty'] ?? 0);
             if ($g <= 0 || $q <= 0) { continue; }
@@ -283,17 +325,18 @@ class TransFifoCalculatorController extends Controller
             'total_berat' => (float) number_format($poQueueTotalBerat, 3, '.', ''),
         ];
 
+        // Detail antrian: ekspansi per keping (tanpa filter 3 minggu)
         $poQueueList = [];
-        $thresholdDate = now()->subWeeks(3);
-        foreach ($items as $it) {
-            if ((string)($it['status'] ?? '') !== 'processing') { continue; }
-            $refDate = $it['paid_at'] ?? $it['ordered_at'] ?? $it['created_at'];
-            if (!$refDate || $refDate > $thresholdDate) { continue; }
+        foreach ($poQueueItems as $it) {
+            $st = (string)($it['status'] ?? '');
+            if ($st !== 'paid' && $st !== 'processing') { continue; }
             $qty = max(0, (int) ($it['qty'] ?? 0));
             for ($i = 0; $i < $qty; $i++) {
                 $poQueueList[] = [
                     'po_id' => (int) ($it['id'] ?? 0),
                     'created_at' => $it['created_at']  ?? '',
+                    'paid_at' => $it['paid_at'] ?? null,
+                    'processed_at' => $it['processed_at'] ?? null,
                     'kode_po' => (string) ($it['kode_po'] ?? ''),
                     'status' => (string) ($it['status'] ?? ''),
                     'customer_name' => (string) ($it['customer_name'] ?? ''),
@@ -332,6 +375,7 @@ class TransFifoCalculatorController extends Controller
             'totalRequired' => $totalRequired,
             'fakturs' => $fakturs,
             'fakturOptions' => $fakturOptions,
+            'fakturDistributedMap' => $fakturDistributedMap,
             'pricesByFaktur' => $pricesByFaktur,
             'stocksByFaktur' => $stocksByFaktur,
             'pricesExpanded' => $pricesExpanded,

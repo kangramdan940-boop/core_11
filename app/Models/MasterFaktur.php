@@ -57,6 +57,7 @@ class MasterFaktur extends Model
         'ppn_rate' => 'integer',
         'ppn_idr' => 'integer',
         'notes' => 'array',
+        'is_distributed' => 'boolean',
     ];
 
     public function items()

@@ -15,16 +15,31 @@
                     @php
                         $currentFakturs = (array) ($fakturs ?? [])
                     @endphp
-                    <input type="text" id="fakturSearchInput" class="form-control form-control-sm mb-2" placeholder="Cari nomor faktur...">
-                    <div class="border rounded p-2" style="height:300px; overflow:auto; column-count:7; column-gap:0.75rem;">
+                    <div class="row g-2 align-items-center mb-2">
+                        <div class="col-12 col-md">
+                            <input type="text" id="fakturSearchInput" class="form-control form-control-sm" placeholder="Cari nomor faktur...">
+                        </div>
+                        <div class="col-12 col-md-auto">
+                            <select id="fakturDistribFilter" class="form-select form-select-sm">
+                                <option value="">Semua</option>
+                                <option value="ya">Sudah Didistribusi</option>
+                                <option value="belum">Belum Didistribusi</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-auto">
+                            <button type="button" id="resetFaktursBtn" class="btn btn-sm btn-outline-secondary" onclick="Array.from(document.querySelectorAll('input[name=\'fakturs[]\']')).forEach(function(cb){cb.checked=false;});">Reset Pilihan</button>
+                        </div>
+                    </div>
+                    <div class="border rounded p-2" style="height:400px; overflow:auto; column-count:7; column-gap:0.75rem;">
                         @foreach(($fakturOptions ?? []) as $fk)
-                            <div class="form-check faktur-item" data-text="{{ $fk }}" style="break-inside: avoid;">
+                            <div class="form-check faktur-item" data-text="{{ $fk }}" data-distributed="{{ (isset($fakturDistributedMap[$fk]) && $fakturDistributedMap[$fk]) ? 'ya' : 'belum' }}" style="break-inside: avoid;">
                                 <input type="checkbox" class="form-check-input" id="faktur-{{ $loop->index }}" name="fakturs[]" value="{{ $fk }}" @if(in_array($fk, $currentFakturs, true)) checked @endif>
                                 <label class="form-check-label" for="faktur-{{ $loop->index }}">{{ $fk }}</label>
                             </div>
                         @endforeach
                     </div>
                     <small class="text-muted">Pilih satu atau beberapa nomor faktur.</small>
+
                 </div>
                 <div class="col-12 col-md-9">
                     <div class="row g-3">
@@ -327,7 +342,14 @@
         <div class="col-12 col-md-8">
             <div id="antrianTransPoSection" class="card shadow-sm">
                 <div class="card-body">
-                    <div class="h6 mb-2">Antrian Trans PO (Status: PAID & PROCESSING)</div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <div class="h6 mb-0">Antrian Trans PO (Status: PAID & PROCESSING)</div>
+                        <select id="antrianStatusFilter" class="form-select form-select-sm" style="width:auto;">
+                            <option value="">Semua</option>
+                            <option value="paid">PAID</option>
+                            <option value="processing">PROCESSING</option>
+                        </select>
+                    </div>
                     &nbsp;
                     @if(!empty($poQueueResume))
                         <div class="mb-2 d-flex flex-wrap gap-3">
@@ -350,6 +372,7 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th class="text-center" style="width:48px;"><input type="checkbox" id="antrianCheckAll"></th>
+                                        <th class="text-center" style="width:60px;">No.</th>
                                         <th style="width:260px;">Kode PO</th>
                                         <th style="width:150px;">Nama Customer</th>
                                         <th style="width:120px;">Status</th>
@@ -366,6 +389,7 @@
                                         @php $acc += (float)($r['total_gram'] ?? 0.0); @endphp
                                         <tr>
                                             <td class="text-center"><input type="checkbox" class="antrianCheck" name="antrianSelected[]" value="{{ $r['kode_po'] ?? '' }}" data-totalgram="{{ number_format((float)($r['total_gram'] ?? 0), 3, '.', '') }}" data-customer="{{ $r['customer_name'] ?? '' }}" data-wa="{{ $r['customer_wa'] ?? '' }}" data-kode="{{ $r['kode_po'] ?? '' }}" data-id="{{ (int)($r['po_id'] ?? 0) }}"></td>
+                                            <td class="text-end">{{ $loop->iteration }}</td>
                                             <td>{{ $r['kode_po'] ?? '-' }}</td>
                                             <td class="text-truncate" style="max-width:80px;">{{ $r['customer_name'] ?? '-' }}</td>
                                             <td>{{ $r['status'] ?? '-' }}</td>
@@ -422,7 +446,6 @@
 @section('js')
 <script>
 window.PRICES_BY_FAKTUR = @json($pricesByFaktur ?? []);
-window.STOCKS_BY_FAKTUR = @json($stocksByFaktur ?? []);
 document.addEventListener('DOMContentLoaded', function () {
     var gramasiInput = document.getElementById('calcGramasiInput');
     var qtyInput = document.getElementById('calcQtyInput');
@@ -469,17 +492,21 @@ document.addEventListener('DOMContentLoaded', function () {
             if (viewModeInput) { viewModeInput.value = 'faktur'; }
         });
     }
+    var distribEl = document.getElementById('fakturDistribFilter');
     var searchEl = document.getElementById('fakturSearchInput');
-    if (searchEl) {
-        var doFilter = function () {
-            var term = (searchEl.value || '').toLowerCase().trim();
-            document.querySelectorAll('.faktur-item').forEach(function (item) {
-                var text = (item.getAttribute('data-text') || '').toLowerCase();
-                item.style.display = (term === '' || text.indexOf(term) !== -1) ? '' : 'none';
-            });
-        };
-        searchEl.addEventListener('input', doFilter);
-    }
+    var doFilter = function () {
+        var term = (searchEl && searchEl.value || '').toLowerCase().trim();
+        var dist = (distribEl && distribEl.value || '').trim();
+        document.querySelectorAll('.faktur-item').forEach(function (item) {
+            var text = (item.getAttribute('data-text') || '').toLowerCase();
+            var status = (item.getAttribute('data-distributed') || 'belum').trim();
+            var okText = (term === '' || text.indexOf(term) !== -1);
+            var okDist = (dist === '' || status === dist);
+            item.style.display = (okText && okDist) ? '' : 'none';
+        });
+    };
+    if (searchEl) { searchEl.addEventListener('input', doFilter); }
+    if (distribEl) { distribEl.addEventListener('change', doFilter); }
 });
 </script>
 <script>
@@ -713,7 +740,8 @@ document.addEventListener('DOMContentLoaded', function () {
             var target = antrianChecks.find(function (cb) {
                 if (cb.checked) return false;
                 var ag = parseFloat(cb.getAttribute('data-totalgram') || '0');
-                return !isNaN(ag) && ag === g;
+                if (isNaN(ag)) return false;
+                return ag.toFixed(3) === g.toFixed(3);
             });
             if (target) { target.checked = true; }
         });
@@ -745,6 +773,19 @@ document.addEventListener('DOMContentLoaded', function () {
             updateSyncButton();
         });
     });
+    var antrianStatusFilter = document.getElementById('antrianStatusFilter');
+    var applyAntrianStatusFilter = function () {
+        var v = (antrianStatusFilter && antrianStatusFilter.value || '').trim().toLowerCase();
+        document.querySelectorAll('#antrianTransPoSection tbody tr').forEach(function (tr) {
+            var cell = tr.querySelector('td:nth-child(5)');
+            var s = (cell ? cell.textContent : '').trim().toLowerCase();
+            tr.style.display = (v === '' || s === v) ? '' : 'none';
+        });
+    };
+    if (antrianStatusFilter) {
+        antrianStatusFilter.addEventListener('change', function () { applyAntrianStatusFilter(); });
+        applyAntrianStatusFilter();
+    }
     document.querySelectorAll('.pricesExpandedCheck').forEach(function (cb) {
         cb.addEventListener('change', function(){
             updateSelectedTurunan();

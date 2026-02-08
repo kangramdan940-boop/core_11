@@ -12,8 +12,13 @@
             <span>Daftar Faktur Emas</span>
             <div class="d-flex gap-2">
                 <form method="GET" class="d-flex gap-2">
+                    <select name="distribusi" class="form-select form-select-sm" title="Filter Distribusi">
+                        <option value="" {{ request('distribusi') === '' ? 'selected' : '' }}>Semua Distribusi</option>
+                        <option value="ya" {{ request('distribusi') === 'ya' ? 'selected' : '' }}>Sudah Didistribusi</option>
+                        <option value="belum" {{ request('distribusi') === 'belum' ? 'selected' : '' }}>Belum Didistribusi</option>
+                    </select>
                     <input type="text" name="q" value="{{ $q }}" class="form-control form-control-sm" placeholder="Cari invoice, customer, payment no">
-                    <button class="btn btn-sm btn-outline-primary" type="submit">Cari</button>
+                    <button class="btn btn-sm btn-outline-primary" type="submit">Filter</button>
                 </form>
                 <a href="{{ route('admin.master.faktur.create') }}" class="btn btn-sm btn-primary">+ Tambah</a>
             </div>
@@ -29,6 +34,7 @@
                         <th>Total Komisi</th>
                         <th>No Pembayaran</th>
                         <th>Grand Total</th>
+                        <th>Distribusi</th>
                         <th>Items</th>
                         <th style="width:160px;">Aksi</th>
                     </tr>
@@ -145,6 +151,13 @@
                                 </div>
                             </td>
                             <td>Rp {{ number_format((int)($d->grand_total_idr ?? 0), 0, ',', '.') }}</td>
+                            <td>
+                                @if ((bool)($d->is_distributed ?? false))
+                                    <span class="badge bg-success">Ya</span>
+                                @else
+                                    <span class="badge bg-secondary">Belum</span>
+                                @endif
+                            </td>
                             <td><span class="badge bg-secondary">{{ $d->items_count }}</span></td>
                             <td>
                                 <a href="{{ route('admin.master.faktur.show', $d) }}" class="btn btn-sm btn-outline-primary">Detail</a>
@@ -158,7 +171,7 @@
             </table>
         </div>
         <div class="card-footer">
-            {{ $documents->links() }}
+            {{ $documents->onEachSide(1)->links('pagination::bootstrap-5') }}
         </div>
     </div>
 @endsection

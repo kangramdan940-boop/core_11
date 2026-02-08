@@ -17,11 +17,21 @@ class MasterFakturController extends Controller
     public function index(Request $request)
     {
         $q = (string) $request->get('q', '');
+        $distribusi = (string) $request->get('distribusi', '');
         $documents = MasterFaktur::query()
             ->when($q !== '', function ($query) use ($q) {
                 $query->where('invoice_number', 'like', "%{$q}%")
                       ->orWhere('customer_name', 'like', "%{$q}%")
                       ->orWhere('payment_no', 'like', "%{$q}%");
+            })
+            ->when($distribusi === 'ya', function ($query) {
+                $query->where('is_distributed', true);
+            })
+            ->when($distribusi === 'belum', function ($query) {
+                $query->where(function ($q) {
+                    $q->where('is_distributed', false)
+                      ->orWhereNull('is_distributed');
+                });
             })
             ->withCount('items')
             ->orderByDesc('id')
