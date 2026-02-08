@@ -10,16 +10,20 @@
     <div class="card shadow-sm mb-3">
         <div class="card-body">
             <form method="GET" action="{{ route('admin.trans.fifo-calculator') }}" class="row g-3">
-                <div class="col-12 col-md-3">
+                <div class="col-12 col-md-12">
                     <label class="form-label mb-1">Pilih Faktur</label>
                     @php
                         $currentFakturs = (array) ($fakturs ?? [])
                     @endphp
-                    <select name="fakturs[]" class="form-select" multiple style="height:150px;">
+                    <input type="text" id="fakturSearchInput" class="form-control form-control-sm mb-2" placeholder="Cari nomor faktur...">
+                    <div class="border rounded p-2" style="height:300px; overflow:auto; column-count:7; column-gap:0.75rem;">
                         @foreach(($fakturOptions ?? []) as $fk)
-                            <option value="{{ $fk }}" @if(in_array($fk, $currentFakturs, true)) selected @endif>{{ $fk }}</option>
+                            <div class="form-check faktur-item" data-text="{{ $fk }}" style="break-inside: avoid;">
+                                <input type="checkbox" class="form-check-input" id="faktur-{{ $loop->index }}" name="fakturs[]" value="{{ $fk }}" @if(in_array($fk, $currentFakturs, true)) checked @endif>
+                                <label class="form-check-label" for="faktur-{{ $loop->index }}">{{ $fk }}</label>
+                            </div>
                         @endforeach
-                    </select>
+                    </div>
                     <small class="text-muted">Pilih satu atau beberapa nomor faktur.</small>
                 </div>
                 <div class="col-12 col-md-9">
@@ -439,8 +443,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var viewModeInput = document.getElementById('viewModeInput');
     if (submitBtn) {
         submitBtn.addEventListener('click', function () {
-            var select = document.querySelector('select[name="fakturs[]"]');
-            var chosen = Array.from((select && select.selectedOptions) || []).map(function(o){ return o.value; });
+            var chosen = Array.from(document.querySelectorAll('input[name="fakturs[]"]:checked')).map(function(cb){ return cb.value; });
             var itemsMap = window.STOCKS_BY_FAKTUR || {};
             var pricesMap = window.PRICES_BY_FAKTUR || {};
             var total = 0;
@@ -465,6 +468,17 @@ document.addEventListener('DOMContentLoaded', function () {
             if (stockEl) { stockEl.value = Math.max(0, total).toFixed(3); }
             if (viewModeInput) { viewModeInput.value = 'faktur'; }
         });
+    }
+    var searchEl = document.getElementById('fakturSearchInput');
+    if (searchEl) {
+        var doFilter = function () {
+            var term = (searchEl.value || '').toLowerCase().trim();
+            document.querySelectorAll('.faktur-item').forEach(function (item) {
+                var text = (item.getAttribute('data-text') || '').toLowerCase();
+                item.style.display = (term === '' || text.indexOf(term) !== -1) ? '' : 'none';
+            });
+        };
+        searchEl.addEventListener('input', doFilter);
     }
 });
 </script>
