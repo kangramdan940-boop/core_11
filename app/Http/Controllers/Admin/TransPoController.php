@@ -495,6 +495,14 @@ class TransPoController extends Controller
         if ($createdDate !== '') {
             $query->whereDate('created_at', $createdDate);
         }
+        $since = (string) $request->query('created_since', '');
+        $until = (string) $request->query('created_until', '');
+        if ($since !== '') {
+            $query->whereDate('created_at', '>=', $since);
+        }
+        if ($until !== '') {
+            $query->whereDate('created_at', '<=', $until);
+        }
 
         $pos = $query->get();
         $filename = 'PO-Export-' . ($status !== '' ? $status : 'all') . '-' . date('Ymd-His') . '.xlsx';

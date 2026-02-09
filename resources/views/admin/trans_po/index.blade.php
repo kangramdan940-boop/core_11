@@ -13,7 +13,7 @@
         <button type="button" class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#fifoCalculatorModal">Kalkulator FIFO</button>
         <button type="button" class="btn btn-outline-secondary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#kepingCalculatorModal">Kalkulator Keping</button>
         <a href="{{ route('admin.trans.po.invoice.bulk.pdf', ['status' => 'shipped']) }}" target="_blank" class="btn btn-outline-primary btn-sm me-2">Print Semua Invoice (Shipped)</a>
-        <a href="{{ route('admin.trans.po.export', request()->query()) }}" class="btn btn-outline-success btn-sm me-2">Export Excel</a>
+        <button type="button" class="btn btn-outline-success btn-sm me-2" data-bs-toggle="modal" data-bs-target="#exportExcelModal">Export Excel</button>
         <form id="cancelPendingForm" action="{{ route('admin.trans.po.cancel-pending-all') }}" method="POST">
             @csrf
             <button type="button" id="cancelPendingBtn" class="btn btn-outline-danger btn-sm">Batalkan Semua Pending</button>
@@ -435,6 +435,45 @@
             </tbody>
         </table>
     </div>
+    <div class="modal fade" id="exportExcelModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-md modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Export Excel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label mb-1">Status</label>
+                            <select id="exportStatusSelect" class="form-select">
+                                <option value="">Semua</option>
+                                <option value="pending_payment">Pending</option>
+                                <option value="paid">Paid</option>
+                                <option value="processing">Processing</option>
+                                <option value="ready_at_agen">Ready @Agen</option>
+                                <option value="shipped">Shipped</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label mb-1">Tanggal Mulai</label>
+                            <input type="date" id="exportDateStart" class="form-control">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label mb-1">Tanggal Akhir</label>
+                            <input type="date" id="exportDateEnd" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" id="exportModalExportBtn" class="btn btn-success btn-sm">Export</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('css')
@@ -563,6 +602,25 @@
                             if (form) form.submit();
                         }
                     });
+                });
+            }
+
+            const exportConfirmBtn = document.getElementById('exportModalExportBtn');
+            if (exportConfirmBtn) {
+                exportConfirmBtn.addEventListener('click', function () {
+                    var statusEl = document.getElementById('exportStatusSelect');
+                    var startEl = document.getElementById('exportDateStart');
+                    var endEl = document.getElementById('exportDateEnd');
+                    var status = (statusEl && statusEl.value) || '';
+                    var since = (startEl && startEl.value) || '';
+                    var until = (endEl && endEl.value) || '';
+                    var params = new URLSearchParams();
+                    if (status !== '') params.set('status', status);
+                    if (since !== '') params.set('created_since', since);
+                    if (until !== '') params.set('created_until', until);
+                    var base = "{{ route('admin.trans.po.export') }}";
+                    var url = base + (params.toString() ? ('?' + params.toString()) : '');
+                    window.location.href = url;
                 });
             }
 
