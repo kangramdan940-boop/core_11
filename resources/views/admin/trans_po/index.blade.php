@@ -13,6 +13,10 @@
         <button type="button" class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#fifoCalculatorModal">Kalkulator FIFO</button>
         <button type="button" class="btn btn-outline-secondary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#kepingCalculatorModal">Kalkulator Keping</button>
         <a href="{{ route('admin.trans.po.invoice.bulk.pdf', ['status' => 'shipped']) }}" target="_blank" class="btn btn-outline-primary btn-sm me-2">Print Semua Invoice (Shipped)</a>
+        @if(request('status') === 'shipped-with-resi')
+            <button type="button" id="printSelectedInvoicesBtn" class="btn btn-outline-primary btn-sm me-2">Print Invoice Terpilih (Shipped + Resi)</button>
+            <button type="button" id="exportSelectedExcelBtn" class="btn btn-outline-success btn-sm me-2">Export Excel Terpilih (Shipped + Resi)</button>
+        @endif
         <button type="button" class="btn btn-outline-success btn-sm me-2" data-bs-toggle="modal" data-bs-target="#exportExcelModal">Export Excel</button>
         <form id="cancelPendingForm" action="{{ route('admin.trans.po.cancel-pending-all') }}" method="POST">
             @csrf
@@ -271,7 +275,7 @@
         <table id="poTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
             <thead class="bg-light bg-opacity-30">
                 <tr>
-                    <th width="10px;">No</th>
+                    <th width="10px;">No @if(request('status') === 'shipped-with-resi')<input type="checkbox" id="selectAllPosCheckbox" class="form-check-input ms-2">@endif</th>
                     <th>Kode PO</th>
                     <th>Nama / Telepon</th>
                     @if(request('status') !== 'shipped')
@@ -292,6 +296,11 @@
                     <tr>
                         <td>
                             <div>{{ $loop->iteration }}</div>
+                            @if(request('status') === 'shipped-with-resi')
+                                <div class="form-check mt-1">
+                                    <input type="checkbox" class="form-check-input po-select-checkbox" value="{{ $p->id }}">
+                                </div>
+                            @endif
                             @if($p->status === 'shipped')
                                 <button type="button" class="btn btn-outline-info btn-sm w-100 mt-1 penawaran-info-btn" title="Penawaran & Informasi"
                                     data-kode="{{ $p->kode_po }}"
@@ -453,6 +462,7 @@
                                 <option value="processing">Processing</option>
                                 <option value="ready_at_agen">Ready @Agen</option>
                                 <option value="shipped">Shipped</option>
+                                <option value="shipped-with-resi">Shipped + Resi</option>
                                 <option value="completed">Completed</option>
                                 <option value="cancelled">Cancelled</option>
                             </select>
@@ -558,6 +568,58 @@
             const headLabel = document.querySelector('div.head-label');
             if (headLabel) {
                 headLabel.innerHTML = '<div class="d-flex w-100 align-items-center justify-content-between"><h5 class="card-title text-nowrap mb-0">Daftar PO Emas</h5></div>';
+            }
+
+            const printSelectedBtn = document.getElementById('printSelectedInvoicesBtn');
+            if (printSelectedBtn) {
+                printSelectedBtn.addEventListener('click', function () {
+                    var dt = $('#poTable').DataTable();
+                    var nodes = dt.rows().nodes().toArray();
+                    var ids = [];
+                    nodes.forEach(function (r) {
+                        var cb = r.querySelector('input.po-select-checkbox');
+                        if (cb && cb.checked) ids.push(cb.value);
+                    });
+                    if (ids.length === 0) {
+                        if (typeof Swal !== 'undefined') Swal.fire({ icon:'warning', title:'Pilih data', text:'Checklist minimal satu PO untuk dicetak.' });
+                        return;
+                    }
+                    var base = "{{ route('admin.trans.po.invoice.bulk.pdf') }}";
+                    var params = new URLSearchParams();
+                    ids.forEach(function (id) { params.append('ids[]', id); });
+                    window.open(base + '?' + params.toString(), '_blank', 'noopener');
+                });
+            }
+            const exportSelectedBtn = document.getElementById('exportSelectedExcelBtn');
+            if (exportSelectedBtn) {
+                exportSelectedBtn.addEventListener('click', function () {
+                    var dt = $('#poTable').DataTable();
+                    var nodes = dt.rows().nodes().toArray();
+                    var ids = [];
+                    nodes.forEach(function (r) {
+                        var cb = r.querySelector('input.po-select-checkbox');
+                        if (cb && cb.checked) ids.push(cb.value);
+                    });
+                    if (ids.length === 0) {
+                        if (typeof Swal !== 'undefined') Swal.fire({ icon:'warning', title:'Pilih data', text:'Checklist minimal satu PO untuk diexport.' });
+                        return;
+                    }
+                    var base = "{{ route('admin.trans.po.export') }}";
+                    var params = new URLSearchParams();
+                    ids.forEach(function (id) { params.append('ids[]', id); });
+                    window.location.href = base + '?' + params.toString();
+                });
+            }
+            const selectAllCb = document.getElementById('selectAllPosCheckbox');
+            if (selectAllCb) {
+                selectAllCb.addEventListener('change', function () {
+                    var dt = $('#poTable').DataTable();
+                    var nodes = dt.rows().nodes().toArray();
+                    nodes.forEach(function (r) {
+                        var cb = r.querySelector('input.po-select-checkbox');
+                        if (cb) cb.checked = selectAllCb.checked;
+                    });
+                });
             }
 
             setTimeout(function () {
@@ -860,7 +922,7 @@
                 });
             });
 
-            var isShippedView = {{ request('status') === 'shipped' ? 'true' : 'false' }};
+            var isShippedView = {{ in_array(request('status'), ['shipped','shipped-with-resi']) ? 'true' : 'false' }};
             document.querySelectorAll('.set-delivered-btn').forEach(function (btn) {
                 btn.addEventListener('click', async function () {
                     var url = btn.getAttribute('data-action');

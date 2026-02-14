@@ -435,11 +435,18 @@ class TransPoController extends Controller
         $status = (string) ($request->input('status') ?? 'shipped');
         $since = $request->input('since');
         $until = $request->input('until');
+        $idsInput = $request->input('ids', []);
 
-        $query = TransPo::query()->where('status', $status);
-        if ($since) { $query->whereDate('shipped_at', '>=', $since); }
-        if ($until) { $query->whereDate('shipped_at', '<=', $until); }
-        $pos = $query->orderBy('shipped_at')->get();
+        $ids = is_array($idsInput) ? array_filter(array_map('intval', $idsInput)) : array_filter(array_map('intval', explode(',', (string) $idsInput)));
+
+        if (!empty($ids)) {
+            $pos = TransPo::whereIn('id', $ids)->orderBy('shipped_at')->get();
+        } else {
+            $query = TransPo::query()->where('status', $status);
+            if ($since) { $query->whereDate('shipped_at', '>=', $since); }
+            if ($until) { $query->whereDate('shipped_at', '<=', $until); }
+            $pos = $query->orderBy('shipped_at')->get();
+        }
 
         $paymentsByPo = TransPaymentLog::where('ref_type', 'po')
             ->whereIn('ref_id', $pos->pluck('id'))
@@ -455,7 +462,7 @@ class TransPoController extends Controller
             'until' => $until,
         ])->setPaper('a4', 'portrait');
 
-        $filename = 'Invoice-Bulk-' . $status . '-' . date('Ymd-His') . '.pdf';
+        $filename = 'Invoice-Bulk-' . (!empty($ids) ? 'selected' : $status) . '-' . date('Ymd-His') . '.pdf';
         return $pdf->download($filename);
     }
 
@@ -465,6 +472,18 @@ class TransPoController extends Controller
         $dateFilter = (string) $request->query('date', '');
         $createdDate = (string) $request->query('created_date', '');
         $keranjangId = $request->query('keranjang_id');
+        $idsInput = $request->query('ids', []);
+
+        $ids = is_array($idsInput) ? array_filter(array_map('intval', $idsInput)) : array_filter(array_map('intval', explode(',', (string) $idsInput)));
+
+        if (!empty($ids)) {
+            $pos = TransPo::with(['customer', 'agen', 'keranjang'])
+                ->whereIn('id', $ids)
+                ->orderByDesc('id')
+                ->get();
+            $filename = 'PO-Export-selected-' . date('Ymd-His') . '.xlsx';
+            return Excel::download(new TransPoExport($pos), $filename);
+        }
 
         $query = TransPo::with(['customer', 'agen', 'keranjang'])
             ->orderByDesc('id');
