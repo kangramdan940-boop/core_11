@@ -13,9 +13,10 @@
         <button type="button" class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#fifoCalculatorModal">Kalkulator FIFO</button>
         <button type="button" class="btn btn-outline-secondary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#kepingCalculatorModal">Kalkulator Keping</button>
         <a href="{{ route('admin.trans.po.invoice.bulk.pdf', ['status' => 'shipped']) }}" target="_blank" class="btn btn-outline-primary btn-sm me-2">Print Semua Invoice (Shipped)</a>
-        @if(request('status') === 'shipped-with-resi')
-            <button type="button" id="printSelectedInvoicesBtn" class="btn btn-outline-primary btn-sm me-2">Print Invoice Terpilih (Shipped + Resi)</button>
-            <button type="button" id="exportSelectedExcelBtn" class="btn btn-outline-success btn-sm me-2">Export Excel Terpilih (Shipped + Resi)</button>
+        @if(in_array(request('status'), ['shipped','shipped-with-resi']))
+            @php $bulkLabel = request('status') === 'shipped' ? 'Pengemasan' : 'Pengiriman'; @endphp
+            <button type="button" id="printSelectedInvoicesBtn" class="btn btn-outline-primary btn-sm me-2">Print Invoice Terpilih ({{ $bulkLabel }})</button>
+            <button type="button" id="exportSelectedExcelBtn" class="btn btn-outline-success btn-sm me-2">Export Excel Terpilih ({{ $bulkLabel }})</button>
         @endif
         <button type="button" class="btn btn-outline-success btn-sm me-2" data-bs-toggle="modal" data-bs-target="#exportExcelModal">Export Excel</button>
         <form id="cancelPendingForm" action="{{ route('admin.trans.po.cancel-pending-all') }}" method="POST">
@@ -247,7 +248,7 @@
                         <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Paid</option>
                         <option value="processing" {{ request('status') === 'processing' ? 'selected' : '' }}>Processing</option>
                         <option value="ready_at_agen" {{ request('status') === 'ready_at_agen' ? 'selected' : '' }}>Ready @Agen</option>
-                        <option value="shipped" {{ request('status') === 'shipped' ? 'selected' : '' }}>Shipped</option>
+                        <option value="shipped" {{ request('status') === 'shipped' ? 'selected' : '' }}>Pengemasan</option>
                         <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Completed</option>
                         <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                     </select>
@@ -267,15 +268,15 @@
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'paid']) }}" class="nav-link {{ request('status') === 'paid' ? 'active' : '' }}">Paid <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['paid'] ?? 0 }}</span></a></li>
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'processing']) }}" class="nav-link {{ request('status') === 'processing' ? 'active' : '' }}">Processing <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['processing'] ?? 0 }}</span></a></li>
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'ready_at_agen']) }}" class="nav-link {{ request('status') === 'ready_at_agen' ? 'active' : '' }}">Ready @Agen <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['ready_at_agen'] ?? 0 }}</span></a></li>
-            <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'shipped']) }}" class="nav-link {{ request('status') === 'shipped' ? 'active' : '' }}">Shipped <span class="badge rounded-pill text-bg-secondary ms-2">{{ $shippedWithoutResiCount ?? 0 }}</span></a></li>
-            <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'shipped-with-resi']) }}" class="nav-link {{ request('status') === 'shipped-with-resi' ? 'active' : '' }}">Shipped + Resi <span class="badge rounded-pill text-bg-secondary ms-2">{{ $shippedWithResiCount ?? 0 }}</span></a></li>
+            <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'shipped']) }}" class="nav-link {{ request('status') === 'shipped' ? 'active' : '' }}">Pengemasan <span class="badge rounded-pill text-bg-secondary ms-2">{{ $shippedWithoutResiCount ?? 0 }}</span></a></li>
+            <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'shipped-with-resi']) }}" class="nav-link {{ request('status') === 'shipped-with-resi' ? 'active' : '' }}">Pengiriman <span class="badge rounded-pill text-bg-secondary ms-2">{{ $shippedWithResiCount ?? 0 }}</span></a></li>
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'completed']) }}" class="nav-link {{ request('status') === 'completed' ? 'active' : '' }}">Completed <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['completed'] ?? 0 }}</span></a></li>
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'cancelled']) }}" class="nav-link {{ request('status') === 'cancelled' ? 'active' : '' }}">Cancelled <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['cancelled'] ?? 0 }}</span></a></li>
         </ul>
         <table id="poTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
             <thead class="bg-light bg-opacity-30">
                 <tr>
-                    <th width="10px;">No @if(request('status') === 'shipped-with-resi')<input type="checkbox" id="selectAllPosCheckbox" class="form-check-input ms-2">@endif</th>
+                    <th width="10px;">No @if(in_array(request('status'), ['shipped','shipped-with-resi']))<input type="checkbox" id="selectAllPosCheckbox" class="form-check-input ms-2">@endif</th>
                     <th>Kode PO</th>
                     <th>Nama / Telepon</th>
                     @if(request('status') !== 'shipped')
@@ -296,7 +297,7 @@
                     <tr>
                         <td>
                             <div>{{ $loop->iteration }}</div>
-                            @if(request('status') === 'shipped-with-resi')
+                            @if(in_array(request('status'), ['shipped','shipped-with-resi']))
                                 <div class="form-check mt-1">
                                     <input type="checkbox" class="form-check-input po-select-checkbox" value="{{ $p->id }}">
                                 </div>
@@ -358,7 +359,11 @@
                             @elseif($st === 'ready_at_agen')
                                 <span class="badge bg-primary">READY @AGEN</span>
                             @elseif($st === 'shipped')
-                                <span class="badge bg-primary">SHIPPED</span>
+                                @if(!empty($p->resi_number))
+                                    <span class="badge bg-primary">PENGIRIMAN</span>
+                                @else
+                                    <span class="badge bg-primary">PENGEMASAN</span>
+                                @endif
                             @elseif($st === 'completed')
                                 <span class="badge bg-success">COMPLETED</span>
                             @else

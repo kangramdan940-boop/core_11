@@ -44,7 +44,7 @@
                     elseif ($s === 'processing') { $badge = 'text-bg-info'; }
                     elseif ($s === 'ready_at_agen' || $s === 'shipped') { $badge = 'text-bg-primary'; }
                 @endphp
-                <div class="col-md-6"><strong>Status</strong><br><span class="badge rounded-pill {{ $badge }}">{{ strtoupper($s) }}</span></div>
+                <div class="col-md-6"><strong>Status</strong><br><span class="badge rounded-pill {{ $badge }}">@if($s === 'shipped'){{ !empty($po->resi_number) ? 'PENGIRIMAN' : 'PENGEMASAN' }}@else{{ strtoupper($s) }}@endif</span></div>
                 @php
                     $rawWa = optional($po->agen)->phone_wa;
                     $waPhone = preg_replace('/\D+/', '', (string)$rawWa);
@@ -52,7 +52,7 @@
                         $waPhone = '62' . substr($waPhone, 1);
                     }
                     $userName = optional(Auth::user())->name;
-                    $waText = 'KODE PO: ' . $po->kode_po . ', Halo saya ' . ($userName ?? '-') . ', yang memiliki order, dan saya ingin bicara.';
+                    $waText = 'KODE PO: ' . ($po->kode_po ?? '') . ', Halo saya ' . ($userName ?? '-') . ', yang memiliki order, dan saya ingin bicara.';
                     $waUrl = ($waPhone && $po->status !== 'pending_payment') ? ('https://wa.me/' . $waPhone . '?text=' . rawurlencode($waText)) : null;
                 @endphp
                 <div class="col-12 alert alert-warning light">
@@ -264,7 +264,7 @@
                     'paid'            => ['label' => 'Dibayar',              'box' => 'bg-rgba-green-2','text' => 'text-secondary-green'],
                     'processing'      => ['label' => 'Diproses',             'box' => 'bg-rgba-violet', 'text' => 'text-secondary-violet'],
                     'ready_at_agen'   => ['label' => 'Siap di Agen',         'box' => 'bg-rgba-violet', 'text' => 'text-secondary-violet'],
-                    'shipped'         => ['label' => 'Dikirim',              'box' => 'bg-rgba-violet', 'text' => 'text-secondary-violet'],
+                    'shipped'         => ['label' => 'Pengiriman',           'box' => 'bg-rgba-violet', 'text' => 'text-secondary-violet'],
                     'completed'       => ['label' => 'Selesai',              'box' => 'bg-rgba-green-2','text' => 'text-secondary-green'],
                     'cancelled'       => ['label' => 'Dibatalkan',           'box' => 'bg-rgba-pink',   'text' => 'text-secondary-pink'],
                 ];
@@ -305,7 +305,11 @@
             @elseif ($po->status === 'ready_at_agen')
                 <p class="mb-0">Emas sudah siap di agen. Menunggu pengiriman atau pengambilan sesuai pilihan Anda.</p>
             @elseif ($po->status === 'shipped')
-                <p class="mb-0">Emas telah dikirim. Mohon tunggu sampai diterima.</p>
+                @if(!empty($po->resi_number))
+                    <p class="mb-0">Pengiriman.</p>
+                @else
+                    <p class="mb-0">Pengemasan.</p>
+                @endif
             @elseif ($po->status === 'completed')
                 <p class="mb-0">Transaksi selesai. Terima kasih.</p>
             @elseif ($po->status === 'cancelled')

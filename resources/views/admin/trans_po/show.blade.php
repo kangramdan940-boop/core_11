@@ -82,7 +82,7 @@
                 @endphp
                 <div class="col-md-3">
                     <strong>Status</strong>
-                    <div class="mt-1"><span class="badge rounded-pill {{ $badge }}">{{ strtoupper($s) }}</span></div>
+                    <div class="mt-1"><span class="badge rounded-pill {{ $badge }}">@if($s === 'shipped'){{ !empty($po->resi_number) ? 'PENGIRIMAN' : 'PENGEMASAN' }}@else{{ strtoupper($s) }}@endif</span></div>
                 </div>
                 <div class="col-md-3">
                     <strong>Total Gram</strong>
@@ -294,7 +294,7 @@
                 <div class="col-md-3"><strong>Total Gram PO</strong><br>{{ number_format((float)$po->total_gram, 3, ',', '.') }} g</div>
                 <div class="col-md-3"><strong>Sudah Dialokasikan</strong><br>{{ number_format($allocated, 3, ',', '.') }} g</div>
                 <div class="col-md-3"><strong>Sisa Gram PO</strong><br>{{ number_format($remainingPo, 3, ',', '.') }} g</div>
-                <div class="col-md-3"><strong>Status</strong><br>{{ strtoupper($po->status) }}</div>
+                <div class="col-md-3"><strong>Status</strong><br>{{ $po->status === 'shipped' ? (!empty($po->resi_number) ? 'PENGIRIMAN' : 'PENGEMASAN') : strtoupper($po->status) }}</div>
                 <div class="col-md-12">
                     <strong>Mitra (Assigned)</strong>
                     @if(($assignedSummary ?? collect())->count() > 0)

@@ -79,7 +79,7 @@
                                         </div>
                                         <div class="check-icon">
                                             @php $s = $o->status; $cls = 'bg-info'; if ($s === 'pending_payment') { $cls = 'bg-warning text-dark'; } elseif ($s === 'completed') { $cls = 'bg-success'; } elseif ($s === 'cancelled') { $cls = 'bg-danger'; } @endphp
-                                            <span class="badge {{ $cls }}" style="font-size:.75rem;">{{ strtoupper($s) }}</span>
+                                            <span class="badge {{ $cls }}" style="font-size:.75rem;">@if($s === 'shipped'){{ empty($o->resi_number) ? 'PENGEMASAN' : 'PENGIRIMAN' }}@else{{ strtoupper($s) }}@endif</span>
                                         </div>
                                     </div>
                                 </div>
