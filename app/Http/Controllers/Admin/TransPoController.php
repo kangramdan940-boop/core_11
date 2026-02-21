@@ -38,6 +38,13 @@ class TransPoController extends Controller
             $query->where('status', 'shipped')
                 ->whereNotNull('resi_number')
                 ->where('resi_number', '<>', '');
+        } elseif ($status === 'shipped-with-address') {
+            $query->where('status', 'shipped')
+                ->whereNotNull('shipping_name')->where('shipping_name', '<>', '')
+                ->whereNotNull('shipping_address')->where('shipping_address', '<>', '')
+                ->whereNotNull('shipping_city')->where('shipping_city', '<>', '')
+                ->whereNotNull('shipping_province')->where('shipping_province', '<>', '')
+                ->whereNotNull('shipping_postal_code')->where('shipping_postal_code', '<>', '');
         } elseif ($status === 'shipped') {
             $query->where('status', 'shipped')
                 ->where(function ($q) {
@@ -128,7 +135,16 @@ class TransPoController extends Controller
             })
             ->count();
 
-        return view('admin.trans_po.index', compact('pos', 'statusCounts', 'totalCount', 'todayCount', 'shippedWithResiCount', 'shippedWithoutResiCount'));
+        $shippedWithAddressCount = (clone $countsBase)
+            ->where('status', 'shipped')
+            ->whereNotNull('shipping_name')->where('shipping_name', '<>', '')
+            ->whereNotNull('shipping_address')->where('shipping_address', '<>', '')
+            ->whereNotNull('shipping_city')->where('shipping_city', '<>', '')
+            ->whereNotNull('shipping_province')->where('shipping_province', '<>', '')
+            ->whereNotNull('shipping_postal_code')->where('shipping_postal_code', '<>', '')
+            ->count();
+
+        return view('admin.trans_po.index', compact('pos', 'statusCounts', 'totalCount', 'todayCount', 'shippedWithResiCount', 'shippedWithoutResiCount', 'shippedWithAddressCount'));
     }
 
     public function show(TransPo $po)
@@ -496,6 +512,13 @@ class TransPoController extends Controller
             $query->where('status', 'shipped')
                 ->whereNotNull('resi_number')
                 ->where('resi_number', '<>', '');
+        } elseif ($status === 'shipped-with-address') {
+            $query->where('status', 'shipped')
+                ->whereNotNull('shipping_name')->where('shipping_name', '<>', '')
+                ->whereNotNull('shipping_address')->where('shipping_address', '<>', '')
+                ->whereNotNull('shipping_city')->where('shipping_city', '<>', '')
+                ->whereNotNull('shipping_province')->where('shipping_province', '<>', '')
+                ->whereNotNull('shipping_postal_code')->where('shipping_postal_code', '<>', '');
         } elseif ($status === 'shipped') {
             $query->where('status', 'shipped')
                 ->where(function ($q) {
