@@ -104,20 +104,6 @@
       </div>
 
 
-      <div class="section" style="margin-top:18px;">
-        <div class="box">
-          <div style="font-weight:600; margin-bottom:6px;">Tanda Tangan</div>
-          <div>
-            @if(isset($signData) && $signData)
-              <img src="{{ $signData }}" alt="Tanda Tangan" style="height:40px;" />
-            @else
-              <div style="height:40px; border-bottom:1px solid #e5e7eb; width:160px;"></div>
-            @endif
-          </div>
-          <div class="muted" style="margin-top:4px;">Ditandatangani oleh: {{ auth()->user()->name ?? 'Admin' }}</div>
-          <div class="muted">Tanggal: {{ now()->format('d M Y H:i') }}</div>
-        </div>
-      </div>
 
       @if((($po->delivery_type ?? '') === 'shipping') || (($po->delivery_type ?? '') === 'ship') || (($po->shipping_name ?? '') !== '' || ($po->shipping_address ?? '') !== '' || ($po->shipping_city ?? '') !== '' || ($po->shipping_province ?? '') !== '' || ($po->shipping_postal_code ?? '') !== ''))
       <div class="section" style="margin-top:8px;">
