@@ -252,5 +252,39 @@ class CustomerPoController extends Controller
             ->route('customer.po.show', encrypt($po->id))
             ->with('success', 'Terima kasih, barang dinyatakan sudah diterima. Transaksi ditandai selesai.');
     }
+
+    public function updateShipping(Request $request, TransPo $po)
+    {
+        $customer = MasterCustomer::where('sys_user_id', Auth::id())->firstOrFail();
+        if ((int) $po->master_customer_id !== (int) $customer->id) {
+            abort(404);
+        }
+        if ($po->status !== 'shipped') {
+            return back()->withErrors(['status' => 'Pengisian alamat hanya tersedia untuk transaksi berstatus shipped.']);
+        }
+        $data = $request->validate([
+            'shipping_name' => ['required', 'string', 'max:150'],
+            'shipping_phone' => ['nullable', 'string', 'max:50'],
+            'shipping_address' => ['required', 'string', 'max:255'],
+            'shipping_city' => ['nullable', 'string', 'max:100'],
+            'shipping_province' => ['nullable', 'string', 'max:100'],
+            'shipping_postal_code' => ['nullable', 'string', 'max:10'],
+        ]);
+        $po->fill([
+            'shipping_name' => $data['shipping_name'],
+            'shipping_phone' => $data['shipping_phone'] ?? null,
+            'shipping_address' => $data['shipping_address'],
+            'shipping_city' => $data['shipping_city'] ?? null,
+            'shipping_province' => $data['shipping_province'] ?? null,
+            'shipping_postal_code' => $data['shipping_postal_code'] ?? null,
+        ]);
+        $po->save();
+        TransPoLog::create([
+            'trans_po_id' => $po->id,
+            'status' => $po->status,
+            'description' => 'Customer memperbarui data pengiriman pada ' . now(),
+        ]);
+        return redirect()->route('customer.po.show', encrypt($po->id))->with('success', 'Data pengiriman berhasil diperbarui.');
+    }
 }
 

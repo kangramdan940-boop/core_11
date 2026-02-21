@@ -95,6 +95,7 @@ Route::prefix('customer')->name('customer.')->group(function () {
         Route::get('/po/{po}/invoice', [CustomerPoController::class, 'invoice'])->name('po.invoice');
         Route::post('/po/{po}/confirm-payment', [CustomerPoController::class, 'confirmPayment'])->name('po.confirm-payment');
         Route::post('/po/{po}/notify-transfer', [CustomerPoController::class, 'notifyTransfer'])->name('po.notify-transfer');
+        Route::post('/po/{po}/shipping', [CustomerPoController::class, 'updateShipping'])->name('po.update-shipping');
         Route::post('/po/{po}/confirm-received', [CustomerPoController::class, 'confirmReceived'])->name('po.confirm-received');
 
         // Ready

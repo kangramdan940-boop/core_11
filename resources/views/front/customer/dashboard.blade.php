@@ -200,7 +200,7 @@
             </div>
         </div>
     </div>
-@include('front.customer.partials.menubar-footer', ['active' => 'dashboard'])>
+@include('front.customer.partials.menubar-footer', ['active' => 'dashboard'])
     <!-- notification  -->
     <div class="offcanvas offcanvas-end full" id="notification">
         <div class="header fixed-top">
@@ -260,6 +260,100 @@
     <script type="text/javascript" src="{{ asset('front/js/rangle-slider.js') }}"></script>
     <script type="text/javascript" src="{{ asset('front/js/init.js') }}"></script>
     <script type="text/javascript" src="{{ asset('front/js/main.js') }}"></script>
+
+    @php
+        $poNeedShip = ($orders ?? collect())->first(function($o){
+            return ($o->status === 'shipped') && ((($o->shipping_name ?? '') === '') || (($o->shipping_address ?? '') === '') || (($o->shipping_city ?? '') === '') || (($o->shipping_province ?? '') === '') || (($o->shipping_postal_code ?? '') === ''));
+        });
+        $prevShip = ($orders ?? collect())->first(function($o){
+            return ($o->status === 'shipped') && (($o->shipping_name ?? '') !== '') && (($o->shipping_address ?? '') !== '') && (($o->shipping_city ?? '') !== '') && (($o->shipping_province ?? '') !== '') && (($o->shipping_postal_code ?? '') !== '');
+        });
+        $prevShipData = $prevShip ? [
+            'shipping_name' => $prevShip->shipping_name,
+            'shipping_phone' => $prevShip->shipping_phone,
+            'shipping_address' => $prevShip->shipping_address,
+            'shipping_city' => $prevShip->shipping_city,
+            'shipping_province' => $prevShip->shipping_province,
+            'shipping_postal_code' => $prevShip->shipping_postal_code,
+        ] : null;
+    @endphp
+
+    @if($poNeedShip)
+    <div class="modal fade" id="shippingModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content" method="POST" action="{{ route('customer.po.update-shipping', $poNeedShip) }}">
+          @csrf
+          <div class="modal-header">
+            <h5 class="modal-title">Lengkapi Alamat Pengiriman</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-2">
+              <label class="form-label">Nama Penerima</label>
+              <input type="text" name="shipping_name" class="form-control" value="{{ $poNeedShip->shipping_name ?? ($customer->full_name ?? '') }}" required>
+            </div>
+            <div class="mb-2">
+              <label class="form-label">WhatsApp</label>
+              <input type="text" name="shipping_phone" class="form-control" value="{{ $poNeedShip->shipping_phone ?? ($customer->phone_wa ?? '') }}">
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Alamat tujuan pengiriman (Harus benar)</label>
+              <textarea name="shipping_address" class="form-control" rows="2" required>{{ $poNeedShip->shipping_address ?? ($customer->address_line ?? '') }}</textarea>
+            </div>
+            <div class="row g-2">
+              <div class="col-4">
+                <label class="form-label">Kota</label>
+                <input type="text" name="shipping_city" class="form-control" value="{{ $poNeedShip->shipping_city ?? ($customer->kota ?? '') }}">
+              </div>
+              <div class="col-4">
+                <label class="form-label">Provinsi</label>
+                <input type="text" name="shipping_province" class="form-control" value="{{ $poNeedShip->shipping_province ?? ($customer->provinsi ?? '') }}">
+              </div>
+              <div class="col-4">
+                <label class="form-label">Kode Pos</label>
+                <input type="text" name="shipping_postal_code" class="form-control" value="{{ $poNeedShip->shipping_postal_code ?? ($customer->kode_pos ?? '') }}">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn-app button-1">Simpan</button>
+            @if($prevShip)
+              <button type="button" id="copyPrevAddressBtn" class="btn-app button-1">Samakan dengan alamat sebelumnya</button>
+            @endif
+            <a href="{{ route('customer.po.show', encrypt($poNeedShip->id)) }}" class="btn btn-link">Lihat PO</a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function(){
+        var el = document.getElementById('shippingModal');
+        if (el) {
+            var m = new bootstrap.Modal(el);
+            m.show();
+        }
+        var prevShipData = @json($prevShipData);
+        var copyBtn = document.getElementById('copyPrevAddressBtn');
+        if (copyBtn && prevShipData) {
+            copyBtn.addEventListener('click', function(){
+                var root = document.getElementById('shippingModal');
+                if (!root) return;
+                var setVal = function(name, val){
+                    var input = root.querySelector('[name="'+name+'"]');
+                    if (input) input.value = val || '';
+                };
+                setVal('shipping_name', prevShipData.shipping_name);
+                setVal('shipping_phone', prevShipData.shipping_phone);
+                setVal('shipping_address', prevShipData.shipping_address);
+                setVal('shipping_city', prevShipData.shipping_city);
+                setVal('shipping_province', prevShipData.shipping_province);
+                setVal('shipping_postal_code', prevShipData.shipping_postal_code);
+            });
+        }
+    });
+    </script>
+    @endif
 
 </body>
 
