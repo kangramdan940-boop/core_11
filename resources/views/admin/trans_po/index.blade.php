@@ -14,6 +14,7 @@
         <button type="button" class="btn btn-outline-secondary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#kepingCalculatorModal">Kalkulator Keping</button>
         <a href="{{ route('admin.trans.po.invoice.bulk.pdf', ['status' => 'shipped']) }}" target="_blank" class="btn btn-outline-primary btn-sm me-2">Print Semua Invoice (Shipped)</a>
         <a href="{{ route('admin.trans.po.invoice.bulk.pdf', ['status' => 'shipped-with-address']) }}" target="_blank" class="btn btn-outline-primary btn-sm me-2">Print Semua Invoice (Shipped + Alamat)</a>
+        <button type="button" id="printSelectedInvoicesAddressBtn" class="btn btn-outline-primary btn-sm me-2">Print Terpilih (Shipped + Alamat)</button>
         @if(in_array(request('status'), ['shipped','shipped-with-resi','shipped-with-address']))
             @php $bulkLabel = request('status') === 'shipped-with-resi' ? 'Pengiriman' : 'Pengemasan'; @endphp
             <button type="button" id="printSelectedInvoicesBtn" class="btn btn-outline-primary btn-sm me-2">Print Invoice Terpilih ({{ $bulkLabel }})</button>
@@ -591,6 +592,26 @@
             const printSelectedBtn = document.getElementById('printSelectedInvoicesBtn');
             if (printSelectedBtn) {
                 printSelectedBtn.addEventListener('click', function () {
+                    var dt = $('#poTable').DataTable();
+                    var nodes = dt.rows().nodes().toArray();
+                    var ids = [];
+                    nodes.forEach(function (r) {
+                        var cb = r.querySelector('input.po-select-checkbox');
+                        if (cb && cb.checked) ids.push(cb.value);
+                    });
+                    if (ids.length === 0) {
+                        if (typeof Swal !== 'undefined') Swal.fire({ icon:'warning', title:'Pilih data', text:'Checklist minimal satu PO untuk dicetak.' });
+                        return;
+                    }
+                    var base = "{{ route('admin.trans.po.invoice.bulk.pdf') }}";
+                    var params = new URLSearchParams();
+                    ids.forEach(function (id) { params.append('ids[]', id); });
+                    window.open(base + '?' + params.toString(), '_blank', 'noopener');
+                });
+            }
+            const printSelectedAddrBtn = document.getElementById('printSelectedInvoicesAddressBtn');
+            if (printSelectedAddrBtn) {
+                printSelectedAddrBtn.addEventListener('click', function () {
                     var dt = $('#poTable').DataTable();
                     var nodes = dt.rows().nodes().toArray();
                     var ids = [];
