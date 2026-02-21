@@ -13,8 +13,8 @@
         <button type="button" class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#fifoCalculatorModal">Kalkulator FIFO</button>
         <button type="button" class="btn btn-outline-secondary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#kepingCalculatorModal">Kalkulator Keping</button>
         <a href="{{ route('admin.trans.po.invoice.bulk.pdf', ['status' => 'shipped']) }}" target="_blank" class="btn btn-outline-primary btn-sm me-2">Print Semua Invoice (Shipped)</a>
-        @if(in_array(request('status'), ['shipped','shipped-with-resi']))
-            @php $bulkLabel = request('status') === 'shipped' ? 'Pengemasan' : 'Pengiriman'; @endphp
+        @if(in_array(request('status'), ['shipped','shipped-with-resi','shipped-with-address']))
+            @php $bulkLabel = request('status') === 'shipped-with-resi' ? 'Pengiriman' : 'Pengemasan'; @endphp
             <button type="button" id="printSelectedInvoicesBtn" class="btn btn-outline-primary btn-sm me-2">Print Invoice Terpilih ({{ $bulkLabel }})</button>
             <button type="button" id="exportSelectedExcelBtn" class="btn btn-outline-success btn-sm me-2">Export Excel Terpilih ({{ $bulkLabel }})</button>
         @endif
@@ -269,6 +269,7 @@
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'processing']) }}" class="nav-link {{ request('status') === 'processing' ? 'active' : '' }}">Processing <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['processing'] ?? 0 }}</span></a></li>
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'ready_at_agen']) }}" class="nav-link {{ request('status') === 'ready_at_agen' ? 'active' : '' }}">Ready @Agen <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['ready_at_agen'] ?? 0 }}</span></a></li>
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'shipped']) }}" class="nav-link {{ request('status') === 'shipped' ? 'active' : '' }}">Pengemasan <span class="badge rounded-pill text-bg-secondary ms-2">{{ $shippedWithoutResiCount ?? 0 }}</span></a></li>
+            <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'shipped-with-address']) }}" class="nav-link {{ request('status') === 'shipped-with-address' ? 'active' : '' }}">Pengemasan + Alamat <span class="badge rounded-pill text-bg-secondary ms-2">{{ $shippedWithAddressCount ?? 0 }}</span></a></li>
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'shipped-with-resi']) }}" class="nav-link {{ request('status') === 'shipped-with-resi' ? 'active' : '' }}">Pengiriman <span class="badge rounded-pill text-bg-secondary ms-2">{{ $shippedWithResiCount ?? 0 }}</span></a></li>
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'completed']) }}" class="nav-link {{ request('status') === 'completed' ? 'active' : '' }}">Completed <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['completed'] ?? 0 }}</span></a></li>
             <li class="nav-item"><a href="{{ route('admin.trans.po.index', ['status' => 'cancelled']) }}" class="nav-link {{ request('status') === 'cancelled' ? 'active' : '' }}">Cancelled <span class="badge rounded-pill text-bg-secondary ms-2">{{ ($statusCounts ?? [])['cancelled'] ?? 0 }}</span></a></li>
@@ -276,9 +277,12 @@
         <table id="poTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
             <thead class="bg-light bg-opacity-30">
                 <tr>
-                    <th width="10px;">No @if(in_array(request('status'), ['shipped','shipped-with-resi']))<input type="checkbox" id="selectAllPosCheckbox" class="form-check-input ms-2">@endif</th>
+                    <th width="10px;">No @if(in_array(request('status'), ['shipped','shipped-with-resi','shipped-with-address']))<input type="checkbox" id="selectAllPosCheckbox" class="form-check-input ms-2">@endif</th>
                     <th>Kode PO</th>
                     <th>Nama / Telepon</th>
+                    @if(request('status') === 'shipped-with-address')
+                        <th>Alamat Pengiriman</th>
+                    @endif
                     @if(request('status') !== 'shipped')
                         <th>Gramasi (Qty)</th>
                         <th>Keranjang</th>
@@ -297,7 +301,7 @@
                     <tr>
                         <td>
                             <div>{{ $loop->iteration }}</div>
-                            @if(in_array(request('status'), ['shipped','shipped-with-resi']))
+                            @if(in_array(request('status'), ['shipped','shipped-with-resi','shipped-with-address']))
                                 <div class="form-check mt-1">
                                     <input type="checkbox" class="form-check-input po-select-checkbox" value="{{ $p->id }}">
                                 </div>
@@ -318,6 +322,13 @@
                             {{ optional($p->customer)->full_name ?? '-' }}
                             <div class="text-muted small">{{ optional($p->customer)->phone_wa ?? '-' }}</div>
                         </td>
+                        @if(request('status') === 'shipped-with-address')
+                        <td>
+                            <div><strong>{{ $p->shipping_name ?? '-' }}</strong> · <span class="text-muted">{{ $p->shipping_phone ?? '-' }}</span></div>
+                            <div>{{ $p->shipping_address ?? '-' }}</div>
+                            <div>{{ $p->shipping_city ?? '-' }}, {{ $p->shipping_province ?? '-' }} {{ $p->shipping_postal_code ?? '' }}</div>
+                        </td>
+                        @endif
                         @if(request('status') !== 'shipped')
                             <td>{{ number_format((float)(optional(optional($p->produk)->gramasi)->gramasi ?? 0), 0, ',', '.') }} Gram x ({{ (int)($p->qty ?? 0) }} Keping)</td>
                         @endif
@@ -468,6 +479,7 @@
                                 <option value="ready_at_agen">Ready @Agen</option>
                                 <option value="shipped">Shipped</option>
                                 <option value="shipped-with-resi">Shipped + Resi</option>
+                                <option value="shipped-with-address">Shipped + Alamat</option>
                                 <option value="completed">Completed</option>
                                 <option value="cancelled">Cancelled</option>
                             </select>
