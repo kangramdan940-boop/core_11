@@ -59,15 +59,6 @@
             <div class="muted">Email: {{ optional($po->customer)->email ?? '-' }}</div>
           </div>
         </div>
-        <div style="flex:1;">
-          <div class="box">
-            <div style="font-weight:600; margin-bottom:6px;">Status & Pembayaran</div>
-            <div>Status: {{ strtoupper($po->status) }}</div>
-            <div>Metode Bayar: {{ $po->payment_method ?? '-' }}</div>
-            <div>Referensi: {{ $po->payment_reference ?? '-' }}</div>
-            <div>Dibayar: {{ optional($po->paid_at)->format('Y-m-d H:i') ?? '-' }}</div>
-          </div>
-        </div>
       </div>
 
       @php
@@ -112,14 +103,6 @@
         </table>
       </div>
 
-      @if(($po->delivery_type ?? '') === 'shipping')
-        <div class="section box">
-          <div style="font-weight:600; margin-bottom:6px;">Data Pengiriman</div>
-          <div>{{ $po->shipping_name ?? '-' }} · {{ $po->shipping_phone ?? '-' }}</div>
-          <div>{{ $po->shipping_address ?? '-' }}</div>
-          <div>{{ $po->shipping_city ?? '-' }}, {{ $po->shipping_province ?? '-' }} {{ $po->shipping_postal_code ?? '' }}</div>
-        </div>
-      @endif
 
       <div class="section" style="margin-top:18px;">
         <div class="box">
@@ -135,6 +118,17 @@
           <div class="muted">Tanggal: {{ now()->format('d M Y H:i') }}</div>
         </div>
       </div>
+
+      @if((($po->delivery_type ?? '') === 'shipping') || (($po->delivery_type ?? '') === 'ship') || (($po->shipping_name ?? '') !== '' || ($po->shipping_address ?? '') !== '' || ($po->shipping_city ?? '') !== '' || ($po->shipping_province ?? '') !== '' || ($po->shipping_postal_code ?? '') !== ''))
+      <div class="section" style="margin-top:8px;">
+        <div class="box" style="font-size:18px; line-height:1.4;">
+          <div style="font-weight:700; margin-bottom:6px; font-size:15px;">Alamat Pengiriman</div>
+          <div>{{ $po->shipping_name ?? '-' }} · {{ $po->shipping_phone ?? '-' }}</div>
+          <div>{{ $po->shipping_address ?? '-' }}</div>
+          <div>{{ $po->shipping_city ?? '-' }}, {{ $po->shipping_province ?? '-' }} {{ $po->shipping_postal_code ?? '' }}</div>
+        </div>
+      </div>
+      @endif
       </div>
 
         @endforeach

@@ -458,7 +458,21 @@ class TransPoController extends Controller
         if (!empty($ids)) {
             $pos = TransPo::whereIn('id', $ids)->orderBy('shipped_at')->get();
         } else {
-            $query = TransPo::query()->where('status', $status);
+            $query = TransPo::query();
+            if ($status === 'shipped-with-resi') {
+                $query->where('status', 'shipped')
+                    ->whereNotNull('resi_number')
+                    ->where('resi_number', '<>', '');
+            } elseif ($status === 'shipped-with-address') {
+                $query->where('status', 'shipped')
+                    ->whereNotNull('shipping_name')->where('shipping_name', '<>', '')
+                    ->whereNotNull('shipping_address')->where('shipping_address', '<>', '')
+                    ->whereNotNull('shipping_city')->where('shipping_city', '<>', '')
+                    ->whereNotNull('shipping_province')->where('shipping_province', '<>', '')
+                    ->whereNotNull('shipping_postal_code')->where('shipping_postal_code', '<>', '');
+            } else {
+                $query->where('status', $status);
+            }
             if ($since) { $query->whereDate('shipped_at', '>=', $since); }
             if ($until) { $query->whereDate('shipped_at', '<=', $until); }
             $pos = $query->orderBy('shipped_at')->get();

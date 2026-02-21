@@ -13,6 +13,7 @@
         <button type="button" class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#fifoCalculatorModal">Kalkulator FIFO</button>
         <button type="button" class="btn btn-outline-secondary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#kepingCalculatorModal">Kalkulator Keping</button>
         <a href="{{ route('admin.trans.po.invoice.bulk.pdf', ['status' => 'shipped']) }}" target="_blank" class="btn btn-outline-primary btn-sm me-2">Print Semua Invoice (Shipped)</a>
+        <a href="{{ route('admin.trans.po.invoice.bulk.pdf', ['status' => 'shipped-with-address']) }}" target="_blank" class="btn btn-outline-primary btn-sm me-2">Print Semua Invoice (Shipped + Alamat)</a>
         @if(in_array(request('status'), ['shipped','shipped-with-resi','shipped-with-address']))
             @php $bulkLabel = request('status') === 'shipped-with-resi' ? 'Pengiriman' : 'Pengemasan'; @endphp
             <button type="button" id="printSelectedInvoicesBtn" class="btn btn-outline-primary btn-sm me-2">Print Invoice Terpilih ({{ $bulkLabel }})</button>
