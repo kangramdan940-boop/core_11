@@ -545,11 +545,13 @@
             if (!tableEl) return;
             if (typeof $ === 'undefined' || !$.fn.DataTable) return;
 
+            const noPaging = @json(request('status') === 'shipped-with-resi');
             const dt = $('#poTable').DataTable({
                     responsive: false,
                     scrollX: true,
-                    lengthMenu: [10, 20, 50],
-                    pageLength: 50,
+                    paging: !noPaging,
+                    lengthMenu: noPaging ? [[-1],[ 'All' ]] : [10, 20, 50],
+                    pageLength: noPaging ? -1 : 50,
                     ordering: true,
                 order: [[0, 'asc']],
                 columnDefs: [{ targets: -1, orderable: false }],
@@ -573,6 +575,11 @@
                     }
                 }
             });
+
+            if (noPaging) {
+                const footer = document.querySelector('.card-footer');
+                if (footer) footer.style.display = 'none';
+            }
 
             const manualSelectEl = document.getElementById('manualCustomerSelect');
             if (manualSelectEl && typeof Choices !== 'undefined') {
