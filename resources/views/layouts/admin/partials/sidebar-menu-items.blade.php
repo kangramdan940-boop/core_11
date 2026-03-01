@@ -15,6 +15,7 @@
             [ 'type' => 'link', 'icon' => 'ri-calculator-line', 'text' => 'Kalkulator FIFO', 'url' => route('admin.trans.fifo-calculator'), 'routeIs' => 'admin.trans.fifo-calculator' ],
             [ 'type' => 'link', 'icon' => 'ri-shopping-bag-3-line', 'text' => 'Produk & Layanan', 'url' => route('admin.master.produk-layanan.index'), 'routeIs' => 'admin.master.produk-layanan.*' ],
             [ 'type' => 'link', 'icon' => 'ri-flashlight-line', 'text' => 'Emas Ready', 'url' => route('admin.trans.ready.index'), 'routeIs' => 'admin.trans.ready.*' ],
+            [ 'type' => 'link', 'icon' => 'ri-flashlight-fill', 'text' => 'Flash Sale Order', 'url' => route('admin.trans.flash-sale-orders.index'), 'routeIs' => 'admin.trans.flash-sale-orders.*' ],
             [ 'type' => 'title', 'text' => 'Cicilan' ],
             [ 'type' => 'group', 'icon' => 'ri-hand-coin-line', 'text' => 'Cicilan', 'children' => [
                 [ 'type' => 'link', 'icon' => 'ri-hand-heart-line', 'text' => 'Layanan Emas Cicilan', 'url' => route('admin.master.layanan-emas-cicilan.index'), 'routeIs' => 'admin.master.layanan-emas-cicilan.*' ],
@@ -38,6 +39,7 @@
             [ 'type' => 'link', 'icon' => 'ri-bank-line', 'text' => 'Mitra Brankas', 'url' => route('admin.master.mitra-brankas.index'), 'routeIs' => 'admin.master.mitra-brankas.*' ],
             [ 'type' => 'link', 'icon' => 'ri-shield-user-line', 'text' => 'Admin', 'url' => route('admin.master.admins.index'), 'routeIs' => 'admin.master.admins.*' ],
             [ 'type' => 'link', 'icon' => 'ri-folder-line', 'text' => 'Master Asset', 'url' => route('admin.master.assets.index'), 'routeIs' => 'admin.master.assets.*' ],
+            [ 'type' => 'link', 'icon' => 'ri-flashlight-fill', 'text' => 'Flash Sale', 'url' => route('admin.master.flash-sales.index'), 'routeIs' => 'admin.master.flash-sales.*' ],
             // [ 'type' => 'link', 'icon' => 'ri-archive-stack-line', 'text' => 'Stok Emas Antam', 'url' => route('admin.master.gold-stocks.index'), 'routeIs' => 'admin.master.gold-stocks.*', 'roles' => ['agen', 'admin', 'super_admin'] ],
             [ 'type' => 'title', 'text' => 'Emas' ],
             [ 'type' => 'link', 'icon' => 'ri-bar-chart-2-line', 'text' => 'Harga Emas', 'url' => route('admin.master.gold-prices.index'), 'routeIs' => 'admin.master.gold-prices.*' ],

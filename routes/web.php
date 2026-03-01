@@ -34,7 +34,9 @@ use App\Http\Controllers\Admin\LoginManagementController;
 use App\Http\Controllers\Admin\SysUserManagementController;
 use App\Http\Controllers\Admin\MasterAssetController;
 use App\Http\Controllers\Admin\MasterPaymentSettingController;
+use App\Http\Controllers\Admin\MasterFlashSaleController;
 use App\Http\Controllers\Admin\SysNotificationController;
+use App\Http\Controllers\Admin\TransFlashSaleOrderController;
 
 use App\Http\Controllers\Front\CustomerAuthController;
 use App\Http\Controllers\Front\MitraAuthController;
@@ -45,6 +47,8 @@ use App\Http\Controllers\Front\FrontController;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 
 
@@ -55,6 +59,24 @@ Route::get('/', [FrontController::class, 'home']);
 Route::get('/pemesanan-emas-belum-tersedia', function () {
     return view('front.order-unavailable');
 })->name('order.unavailable');
+
+Route::get('/flash-sale/select/{phone}/{eenc}/{qenc}/{benc}', [\App\Http\Controllers\Front\FlashSalePublicController::class, 'showSelect'])
+    ->name('public.flash-sale.select');
+Route::post('/flash-sale/select/{phone}/{eenc}/{qenc}/{benc}', [\App\Http\Controllers\Front\FlashSalePublicController::class, 'storeSelect'])
+    ->name('public.flash-sale.select.store');
+
+Route::get('/flash-sale/success', [\App\Http\Controllers\Front\FlashSalePublicController::class, 'success'])
+    ->name('public.flash-sale.success');
+
+Route::get('/flash-sale/{flashSale}/{enc}/{phone}/{eenc}/{qenc}', [\App\Http\Controllers\Front\FlashSalePublicController::class, 'showForm'])
+    ->name('public.flash-sale.show');
+Route::post('/flash-sale/{flashSale}/{enc}/{phone}/{eenc}/{qenc}', [\App\Http\Controllers\Front\FlashSalePublicController::class, 'store'])
+    ->name('public.flash-sale.store');
+
+Route::get('/admin/utils/encrypt', function (Request $request) {
+    $val = (string) $request->query('val', '');
+    return response()->json(['token' => Crypt::encryptString($val)]);
+})->middleware(['auth','admin_or_agen'])->name('admin.utils.encrypt');
 
 // ====================================
 // CUSTOMER AREA
@@ -406,6 +428,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::delete('customer-addresses/{address}', [\App\Http\Controllers\Admin\MasterCustomerAddressController::class, 'destroy'])
                 ->name('customer-addresses.destroy')
                 ->middleware('admin');
+
+            Route::resource('flash-sales', MasterFlashSaleController::class)
+                ->except(['show'])
+                ->names('flash-sales')
+                ->parameters(['flash-sales' => 'flashSale'])
+                ->middleware('admin');
         });
 
         /*
@@ -510,6 +538,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->name('ready.cancel-pending-all');
             Route::get('/ready/invoice/bulk/pdf', [TransReadyController::class, 'invoiceBulkPdf'])
                 ->name('ready.invoice.bulk.pdf');
+
+            // Flash Sale Orders
+            Route::resource('flash-sale-orders', TransFlashSaleOrderController::class)
+                ->names('flash-sale-orders')
+                ->parameters(['flash-sale-orders' => 'order']);
 
             // Cicilan Payments
             Route::get('/cicilan-payments', [TransCicilanPaymentController::class, 'index'])
