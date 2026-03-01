@@ -109,7 +109,8 @@
             var price = parseFloat(opt?.getAttribute('data-price') || '0');
             var qty = parseInt('{{ (int)($qtyLimit ?? 0) }}', 10) || 0;
             var payCode = parseInt('{{ (int)($payCode ?? 0) }}', 10) || 0;
-            var total = (price * qty) + payCode;
+            var base = Math.round(price * qty);
+            var total = Math.floor(base / 1000) * 1000 + payCode;
             var fmt = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 });
             document.getElementById('grandTotalInfo').textContent = isNaN(total) ? 'Rp -' : fmt.format(total);
         });
@@ -146,11 +147,13 @@
     if (navigator.clipboard && navigator.clipboard.writeText) { return navigator.clipboard.writeText(txt); }
     var ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(e){} document.body.removeChild(ta); return Promise.resolve();
   }
-  function showAlert(id){ var el=document.getElementById(id); if(!el) return; el.classList.remove('d-none'); setTimeout(function(){ el.classList.add('d-none'); }, 1500); }
   var copyBtn=document.getElementById('copyRekBtn');
   if(copyBtn){ copyBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); var raw=document.getElementById('bankInfoText')?.textContent||''; var only=(raw.match(/\d+/) || [''])[0]; copyText(only).then(function(){ alert('Copy berhasil'); }); }); }
   var copyTotal=document.getElementById('copyTotalBtn');
   if(copyTotal){ copyTotal.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); var txt=document.getElementById('grandTotalInfo')?.textContent||''; copyText(txt).then(function(){ alert('Copy berhasil'); }); }); }
+  var form=document.getElementById('fsSelectForm');
+  if(form){ form.addEventListener('submit', function(e){ var proof=form.querySelector('input[name="payment_proof"]'); var endEl=document.getElementById('expiryTs'); var end=parseInt(endEl?.value||'0',10)||0; var now=Math.floor(Date.now()/1000); var rem=Math.max(0,end-now); function fmt(t){ if(t<=0) return '00:00'; var s=t%60; var m=Math.floor(t/60)%60; var h=Math.floor(t/3600); return (h>0? (String(h).padStart(2,'0')+':') : '') + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0'); } if(!proof || !proof.files || !proof.files.length){ e.preventDefault(); e.stopPropagation(); if(window.Swal && Swal.fire){ Swal.fire({ icon:'warning', title:'Lengkapi Bukti TF', text:'Waktu kadaluarsa tersisa: '+fmt(rem) }); } else { alert('Bukti TF wajib diunggah. Waktu kadaluarsa tersisa: '+fmt(rem)); } return; } var payCodeEl=form.querySelector('input[name="pay_code"]'); var payCode=parseInt(payCodeEl?.value||'0',10)||0; var sel=document.getElementById('flashSaleSelect'); var opt=sel? sel.options[sel.selectedIndex] : null; var price=parseFloat(opt?.getAttribute('data-price')||'0'); var qty=parseInt('{{ (int)($qtyLimit ?? 0) }}',10)||0; var base=Math.round(price*qty); var total=Math.floor(base/1000)*1000 + payCode; var fmtId=new Intl.NumberFormat('id-ID',{ style:'currency', currency:'IDR', maximumFractionDigits:0 }); var el=document.getElementById('grandTotalInfo'); if(el) el.textContent=fmtId.format(total); e.preventDefault(); e.stopPropagation(); if(window.Swal && Swal.fire){ Swal.fire({ icon:'question', title:'Apakah Anda yakin akan submit?', showCancelButton:true, confirmButtonText:'Yes', cancelButtonText:'No' }).then(function(r){ if(r.isConfirmed){ form.submit(); } }); } else { if(confirm('Apakah Anda yakin akan submit?')){ form.submit(); } }
+  }); }
 })();
 </script>
 </body>

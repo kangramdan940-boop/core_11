@@ -12,51 +12,49 @@
     <script>if (localStorage.toggled === "dark-theme") { document.documentElement.classList.add('dark-theme'); }</script>
 </head>
 <body>
-<div class="container py-4">
+<section class="boarding-sec">
+    <div class="tf-container py-4">
     @if(session('success'))
         <div class="alert alert-success mb-3">{{ session('success') }}</div>
     @endif
 
-    <div class="mb-3">
-        <h5 class="mb-0">Flash Sale: {{ $flashSale->item_name }}</h5>
-        <div class="text-muted">Harga Jual: {{ number_format((float)$flashSale->harga_jual, 2) }}</div>
+    <div class="mb-3 text-left">
+        <h3 class="title mb-1">Flash Sale</h3>
+        <div class="text-muted">{{ $flashSale->item_name }} ({{ number_format((float)$flashSale->harga_jual, 2) }})</div>
         @if($flashSale->tahun || $flashSale->periode)
             <div class="text-muted">Period: {{ $flashSale->tahun ?? '-' }} {{ $flashSale->periode ?? '' }}</div>
         @endif
         @if(isset($qtyLimit))
             <div class="h5">Batas Banyak: {{ $qtyLimit ?? '-' }}</div>
-            @php $grand = (((float)$flashSale->harga_jual) * (int)($qtyLimit ?? 0)) + (int)($payCode ?? 0); @endphp
-            <div class="alert alert-info">
+            <div class="h4">
                 <div class="row align-items-center">
-                    <div class="col-10">Grand Total: <span id="grandTotalInfo">Rp {{ number_format($grand, 0, ',', '.') }}</span></div>
+                    <div class="col-10">Grand Total: <span id="grandTotalInfo">Rp {{ number_format((((float)$flashSale->harga_jual) * (int)($qtyLimit ?? 0)) + (int)($payCode ?? 0), 0, ',', '.') }}</span></div>
                     <div class="col-2 text-end">
                         <button type="button" class="btn btn-outline-secondary btn-sm w-100 d-flex justify-content-center align-items-center" id="copyTotalBtn" title="Copy nominal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M16 1H4C2.895 1 2 1.895 2 3V15" stroke="#121927" stroke-width="1.5"/><rect x="8" y="5" width="14" height="16" rx="2" stroke="#121927" stroke-width="1.5"/></svg></button>
                     </div>
                 </div>
-                <div id="copyTotalAlert" class="alert alert-success py-1 px-2 mt-2 d-none">Nominal berhasil disalin</div>
             </div>
         @endif
         @if(isset($expiresAt) && $expiresAt)
-            <div class="h6" id="countdownWrap">Berakhir dalam: <span id="countdownText">-</span></div>
+            <div class="h6 text-muted" id="countdownWrap">Berakhir dalam: <span id="countdownText">-</span></div>
             <input type="hidden" id="expiryTs" value="{{ (int) $expiresAt->timestamp }}">
         @endif
     </div>
 
     <div class="mt-2">
-        <div class="alert alert-info">
+        <div class="card card-body bg-light border-0 rounded">
             <div class="row align-items-center">
-                <div class="col-10">No. Rekening: <strong id="bankNumber">1277883403</strong> — <strong>BNI</strong> — <strong>M RAMDAN GUMELAR</strong></div>
+                <div class="col-10 fw-semibold" id="bankInfoText">No. Rekening: <span id="bankNumber">1277883403</span> — BNI — M RAMDAN GUMELAR</div>
                 <div class="col-2 text-end">
                     <button type="button" class="btn btn-outline-secondary btn-sm w-100 d-flex justify-content-center align-items-center" id="copyRekBtn" title="Copy rekening"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M16 1H4C2.895 1 2 1.895 2 3V15" stroke="#121927" stroke-width="1.5"/><rect x="8" y="5" width="14" height="16" rx="2" stroke="#121927" stroke-width="1.5"/></svg></button>
                 </div>
             </div>
-            <div id="copyRekAlert" class="alert alert-success py-1 px-2 mt-2 d-none">Nomor rekening berhasil disalin</div>
         </div>
     </div>
 
     <div class="card">
         <div class="card-body">
-            <form action="{{ route('public.flash-sale.store', [$flashSale->id, $enc, $phone, $eenc, $qenc]) }}" method="POST" enctype="multipart/form-data">
+            <form id="fsSingleForm" action="{{ route('public.flash-sale.store', [$flashSale->id, $enc, $phone, $eenc, $qenc]) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="pay_code" value="{{ (int)($payCode ?? 0) }}">
 
@@ -79,7 +77,7 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">Bukti TF (opsional)</label>
+                        <label class="form-label">Bukti TF (wajib)</label>
                         <input type="file" name="payment_proof" class="form-control @error('payment_proof') is-invalid @enderror" accept=".jpg,.jpeg,.png,.pdf">
                         @error('payment_proof')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
@@ -88,12 +86,13 @@
                 </div>
 
                 <div class="mt-3">
-                    <button type="submit" class="btn btn-primary">Kirim</button>
+                    <button type="submit" class="tf-btn primary d-block w-100">Kirim</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+</section>
 <script type="text/javascript" src="{{ asset('front/js/bootstrap.min.js')}}"></script>
 <script type="text/javascript" src="{{ asset('front/js/jquery.min.js')}}"></script>
 <script type="text/javascript" src="{{ asset('front/js/main.js')}}"></script>
@@ -113,9 +112,12 @@
   }
   function showAlert(id){ var el=document.getElementById(id); if(!el) return; el.classList.remove('d-none'); setTimeout(function(){ el.classList.add('d-none'); }, 1500); }
   var copyBtn=document.getElementById('copyRekBtn');
-  if(copyBtn){ copyBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); var raw=document.getElementById('bankNumber')?.textContent||''; var only=raw.replace(/\D+/g,''); copyText(only).then(function(){ showAlert('copyRekAlert'); }); }); }
+  if(copyBtn){ copyBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); var raw=document.getElementById('bankNumber')?.textContent||''; var only=raw.replace(/\\D+/g,''); copyText(only).then(function(){ showAlert('copyRekAlert'); }); }); }
   var copyTotal=document.getElementById('copyTotalBtn');
   if(copyTotal){ copyTotal.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); var txt=document.getElementById('grandTotalInfo')?.textContent||''; copyText(txt).then(function(){ showAlert('copyTotalAlert'); }); }); }
+  var form=document.getElementById('fsSingleForm');
+  if(form){ form.addEventListener('submit', function(e){ var proof=form.querySelector('input[name=\"payment_proof\"]'); var endEl=document.getElementById('expiryTs'); var end=parseInt(endEl?.value||'0',10)||0; var now=Math.floor(Date.now()/1000); var rem=Math.max(0,end-now); if(!proof || !proof.files || !proof.files.length){ e.preventDefault(); e.stopPropagation(); if(window.Swal && Swal.fire){ Swal.fire({ icon:'warning', title:'Lengkapi Bukti TF', text:'Waktu kadaluarsa tersisa: '+fmt(rem) }); } else { alert('Bukti TF wajib diunggah. Waktu kadaluarsa tersisa: '+fmt(rem)); } return; } var payCodeEl=form.querySelector('input[name=\"pay_code\"]'); var payCode=parseInt(payCodeEl?.value||'0',10)||0; var price=parseFloat('{{ (float)($flashSale->harga_jual ?? 0) }}'); var qty=parseInt('{{ (int)($qtyLimit ?? 0) }}',10)||0; var base=Math.round(price*qty); var total=Math.floor(base/1000)*1000 + payCode; var fmtId=new Intl.NumberFormat('id-ID',{ style:'currency', currency:'IDR', maximumFractionDigits:0 }); var el=document.getElementById('grandTotalInfo'); if(el) el.textContent=fmtId.format(total); e.preventDefault(); e.stopPropagation(); if(window.Swal && Swal.fire){ Swal.fire({ icon:'question', title:'Apakah Anda yakin akan submit?', showCancelButton:true, confirmButtonText:'Yes', cancelButtonText:'No' }).then(function(r){ if(r.isConfirmed){ form.submit(); } }); } else { if(confirm('Apakah Anda yakin akan submit?')){ form.submit(); } }
+  }); }
 })();
 </script>
 </body>
