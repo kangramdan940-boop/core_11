@@ -123,7 +123,7 @@
                         $estimasiDisplay = $computed->format('Y-m-d');
                     }
                 @endphp
-                <div class="col-md-6"><strong>Estimasi Diterima</strong><br>{{ $po->processed_at ? $po->processed_at->copy()->addMonth()->format('Y-m-d') : $estimasiDisplay }}</div>
+                <div class="col-md-6"><strong>Estimasi Diterima</strong><br>30 - 45 hari dari status Paid (terbayar)</div>
                 <div class="col-md-6">
                     <a href="https://www.jne.co.id/tracking-package" target="_blank" rel="noopener" title="Buka halaman tracking JNE"><strong>Nomor Resi JNE klik disini untuk masuk ke jne</strong></a>
                     <div class="d-flex align-items-center">
