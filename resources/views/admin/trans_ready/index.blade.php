@@ -9,6 +9,7 @@
 @section('content')
     <div class="d-flex justify-content-end mb-2">
         <a href="{{ route('admin.trans.ready.invoice.bulk.pdf', ['status' => 'shipped']) }}" target="_blank" class="btn btn-outline-primary btn-sm me-2">Print Semua Invoice (Shipped)</a>
+        <button type="button" id="printSelectedReadyInvoicesBtn" class="btn btn-outline-primary btn-sm me-2">Print Invoice Terpilih</button>
         <form id="cancelPendingReadyForm" action="{{ route('admin.trans.ready.cancel-pending-all') }}" method="POST" class="d-inline">
             @csrf
             <button type="button" id="cancelPendingReadyBtn" class="btn btn-outline-danger btn-sm">Batalkan Semua Pending</button>
@@ -28,7 +29,7 @@
         <table id="readyTable" class="data-table-added table-hover align-middle table table-nowrap w-100">
             <thead class="bg-light bg-opacity-30">
                 <tr>
-                    <th class="text-center" style="width:64px;">ID</th>
+                    <th class="text-center" style="width:64px;">ID <input type="checkbox" id="selectAllReadyCheckbox" class="form-check-input ms-2"></th>
                     <th class="text-center" style="width:160px;">Kode Trans</th>
                     <th class="text-center" style="width:120px;">ID Keranjang</th>
                     <th style="min-width:200px;">Customer</th>
@@ -44,7 +45,12 @@
             <tbody>
                 @forelse ($readyTrans as $t)
                     <tr>
-                        <td>{{ $t->id }}</td>
+                        <td>
+                            <div>{{ $t->id }}</div>
+                            <div class="form-check mt-1">
+                                <input type="checkbox" class="form-check-input ready-select-checkbox" value="{{ $t->id }}">
+                            </div>
+                        </td>
                         <td>{{ $t->kode_trans }}</td>
                         <td>
                             @if($t->id_keranjang)
@@ -163,6 +169,41 @@
                     } else {
                         if (confirm('Yakin ingin membatalkan semua transaksi PENDING?')) confirmAction();
                     }
+                });
+            }
+
+            const printSelectedBtn = document.getElementById('printSelectedReadyInvoicesBtn');
+            if (printSelectedBtn) {
+                printSelectedBtn.addEventListener('click', function () {
+                    var dt = $('#readyTable').DataTable();
+                    var nodes = dt.rows().nodes().toArray();
+                    var ids = [];
+                    nodes.forEach(function (r) {
+                        var cb = r.querySelector('input.ready-select-checkbox');
+                        if (cb && cb.checked) ids.push(cb.value);
+                    });
+                    if (ids.length === 0) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({ icon:'warning', title:'Pilih data', text:'Checklist minimal satu transaksi untuk dicetak.' });
+                        }
+                        return;
+                    }
+                    var base = "{{ route('admin.trans.ready.invoice.bulk.pdf') }}";
+                    var params = new URLSearchParams();
+                    ids.forEach(function (id) { params.append('ids[]', id); });
+                    window.open(base + '?' + params.toString(), '_blank', 'noopener');
+                });
+            }
+
+            const selectAllCb = document.getElementById('selectAllReadyCheckbox');
+            if (selectAllCb) {
+                selectAllCb.addEventListener('change', function () {
+                    var dt = $('#readyTable').DataTable();
+                    var nodes = dt.rows().nodes().toArray();
+                    nodes.forEach(function (r) {
+                        var cb = r.querySelector('input.ready-select-checkbox');
+                        if (cb) cb.checked = selectAllCb.checked;
+                    });
                 });
             }
         });
