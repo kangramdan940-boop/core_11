@@ -33,6 +33,7 @@
                     <th class="text-center" style="width:160px;">Kode Trans</th>
                     <th class="text-center" style="width:120px;">ID Keranjang</th>
                     <th style="min-width:200px;">Customer</th>
+                    <th style="min-width:140px;">WA/Tlp</th>
                     <th style="min-width:160px;">Agen</th>
                     <th style="min-width:160px;">Item</th>
                     <th class="text-end" style="width:80px;">Qty</th>
@@ -60,6 +61,24 @@
                             @endif
                         </td>
                         <td>{{ optional($t->customer)->full_name ?? '-' }}</td>
+                        <td>
+                            @php
+                                $waRaw = optional($t->customer)->phone_wa;
+                                $waDigits = $waRaw ? preg_replace('/\D+/', '', $waRaw) : null;
+                                if ($waDigits && substr($waDigits, 0, 1) === '0') {
+                                    $waDigits = '62' . substr($waDigits, 1);
+                                }
+                                $custName = optional($t->customer)->full_name ?? '';
+                                $msg = "Assalamu’alaikum Kak {$custName}\n\nEmas untuk investasi nya sedang di kemas nih ka.\n\nMohon konfirmasi alamat pengiriman berikut:\nKode Transaksi : {$t->kode_trans}\nNama Penerima: -\nNo. HP: -\nAlamat Lengkap: -\nKota: -\nProvinsi: -\nKode Pos: -\ncek ongkos kirim disini : https://jne.co.id/shipping-fee?origin=BKI10000&destination=SUB10000&weight=1\n(pilih tujuan adalah kecamatan nya kamu)\nMohon bantuannya untuk pembayaran ongkir. Terima kasih\nTim jajanemas.com";
+                                $waUrl = $waDigits ? ('https://wa.me/' . $waDigits . '?text=' . rawurlencode($msg)) : null;
+                            @endphp
+                            @if(!empty($waDigits))
+                                <a href="{{ $waUrl }}" target="_blank" class="btn btn-sm btn-success">WA</a>
+                                <div class="small text-muted mt-1">{{ $waDigits }}</div>
+                            @else
+                                -
+                            @endif
+                        </td>
                         <td>{{ optional($t->agen)->name ?? '-' }}</td>
                         <td>{{ optional($t->readyStock)->kode_item ?? '-' }}</td>
                         <td>{{ $t->qty }}</td>
