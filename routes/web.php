@@ -60,6 +60,9 @@ Route::get('/pemesanan-emas-belum-tersedia', function () {
     return view('front.order-unavailable');
 })->name('order.unavailable');
 
+Route::get('/po/detail/{kodePo}', [FrontController::class, 'publicPoDetail'])
+    ->name('public.po.detail');
+
 Route::get('/flash-sale/select/{phone}/{eenc}/{qenc}/{benc}', [\App\Http\Controllers\Front\FlashSalePublicController::class, 'showSelect'])
     ->name('public.flash-sale.select');
 Route::post('/flash-sale/select/{phone}/{eenc}/{qenc}/{benc}', [\App\Http\Controllers\Front\FlashSalePublicController::class, 'storeSelect'])

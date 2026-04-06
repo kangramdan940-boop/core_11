@@ -65,36 +65,74 @@ class TransPoController extends Controller
             $query->whereDate('created_at', $createdDate);
         }
 
-        $pos = $query->get()->map(function ($p) {
-            $waRaw = optional($p->customer)->phone_wa;
-            $waDigits = $waRaw ? preg_replace('/\D+/', '', $waRaw) : null;
-            if ($waDigits && substr($waDigits, 0, 1) === '0') {
-                $waDigits = '62' . substr($waDigits, 1);
+        $posRaw = $query->get();
+
+        $normalizeWaDigits = function (?string $waRaw): string {
+            $digits = $waRaw ? preg_replace('/\D+/', '', $waRaw) : '';
+            if ($digits !== '' && substr($digits, 0, 1) === '0') {
+                $digits = '62' . substr($digits, 1);
             }
+            return $digits;
+        };
+
+        $makeGroupKey = function (TransPo $p) use ($normalizeWaDigits): string {
+            $customerName = trim((string) (optional($p->customer)->full_name ?? ''));
+            $waDigits = $normalizeWaDigits(optional($p->customer)->phone_wa);
+            return mb_strtolower($customerName) . '|' . $waDigits;
+        };
+
+        $shippedKodePoByKey = $posRaw
+            ->filter(function ($p) {
+                return $p->status === 'shipped';
+            })
+            ->groupBy(function ($p) use ($makeGroupKey) {
+                return $makeGroupKey($p);
+            })
+            ->map(function ($items) {
+                return $items->pluck('kode_po')->filter()->unique()->values()->all();
+            })
+            ->toArray();
+
+        $pos = $posRaw->map(function ($p) use ($normalizeWaDigits, $makeGroupKey, $shippedKodePoByKey) {
+            $waRaw = optional($p->customer)->phone_wa;
+            $waDigits = $normalizeWaDigits($waRaw);
             $gramText = number_format((float) ($p->total_gram ?? 0), 3, ',', '.');
             $amountText = number_format((float) ($p->total_amount ?? 0), 2, ',', '.');
             $qtyText = number_format((int) ($p->qty ?? 0), 0, ',', '.');
             $customerName = trim((string) (optional($p->customer)->full_name ?? ''));
             $sapaan = $customerName !== '' ? ('Kak ' . $customerName) : 'Kak';
             $waText = "Assalamu’alaikum " . $sapaan . " 🙏\n\nKami dari jajanemas.com ingin follow up transaksi emas berikut:\n\n📄 Kode Pesanan : " . ($p->kode_po ?? '-') . "\n⚖️ Emas        : " . $gramText . " gram\n📦 Qty         : " . $qtyText . "\n💰 Nominal TF  : Rp " . $amountText . "\n\nApakah transaksi akan dilanjutkan, dibatalkan,\natau ada kendala yang bisa kami bantu?\n\nTerima kasih 🙏\nTim jajanemas.com";
-            $p->wa_url = ($p->status === 'pending_payment' && $waDigits)
+            $p->wa_url = ($p->status === 'pending_payment' && $waDigits !== '')
                 ? ('https://wa.me/' . $waDigits . '?text=' . rawurlencode($waText))
                 : null;
 
             $waShipText = "Assalamu’alaikum " . $sapaan . " 🙏\n\nPemberitahuan: Pesanan emas Anda (Kode PO: " . ($p->kode_po ?? '-') . ") telah dikirim.\n\nKurir: " . ($p->resi_courier ?? 'JNE') . " " . ($p->resi_service ?? '') . "\nNomor Resi: " . ($p->resi_number ?? '-') . "\n\nTerima kasih 🙏\nTim jajanemas.com";
-            $p->wa_ship_url = ($p->status === 'shipped' && $waDigits && !empty($p->resi_number))
+            $p->wa_ship_url = ($p->status === 'shipped' && $waDigits !== '' && !empty($p->resi_number))
                 ? ('https://wa.me/' . $waDigits . '?text=' . rawurlencode($waShipText))
                 : null;
 
-            $shipCost = (float) ($p->shipping_cost ?? 0);
-            $alamatFormat = "Nama Penerima: " . ($p->shipping_name ?? '-') . "\nNo. HP: " . ($p->shipping_phone ?? '-') . "\nAlamat Lengkap: " . ($p->shipping_address ?? '-') . "\nKota: " . ($p->shipping_city ?? '-') . "\nProvinsi: " . ($p->shipping_province ?? '-') . "\nKode Pos: " . ($p->shipping_postal_code ?? '-');
-            if ($shipCost > 0) {
-                $shipCostText = number_format($shipCost, 2, ',', '.');
-                $waOngkirText = "Assalamu’alaikum " . $sapaan . " 🙏\n\nMohon konfirmasi alamat pengiriman berikut:\n\n" . $alamatFormat . "\n\nTagihan ongkos kirim: Rp " . $shipCostText . ".\nMohon bantuannya untuk pembayaran ongkir. Terima kasih 🙏\nTim jajanemas.com";
-            } else {
-                $waOngkirText = "Assalamu’alaikum " . $sapaan . " 🙏\n\nMohon kirimkan alamat lengkap pengiriman dengan format berikut:\n\nNama Penerima:\nNo. HP:\nAlamat Lengkap:\nKota:\nProvinsi:\nKode Pos:\n\nSetelah menerima data, kami akan menginformasikan tagihan ongkos kirim. Terima kasih 🙏\nTim jajanemas.com";
+            $kodeList = [];
+            if ($p->status === 'shipped') {
+                $key = $makeGroupKey($p);
+                $kodeList = $shippedKodePoByKey[$key] ?? [];
             }
-            $p->wa_ongkir_url = $waDigits ? ('https://wa.me/' . $waDigits . '?text=' . rawurlencode($waOngkirText)) : null;
+            if (count($kodeList) === 0) {
+                $kodeList = [($p->kode_po ?? '-')];
+            }
+
+            $kodeParts = [];
+            foreach ($kodeList as $kode) {
+                $kodeParts[] = '[' . $kode . ']';
+            }
+            $kodeLine = implode(', ', $kodeParts);
+
+            $waOngkirTargetDigits = '6281290004073';
+            $poToken = implode('%2B', array_map('rawurlencode', $kodeList));
+            $publicDetailUrl = url('/po/detail/' . $poToken);
+            $waOngkirText = "Assalamu’alaikum Kak Yulianti 🙏\n\nMohon kirimkan alamat lengkap pengiriman dengan format berikut:\n\nkode PO : " . $kodeLine . "\nLink Detail Pesanan : " . $publicDetailUrl . "\nNama Penerima:\nNo. HP:\nAlamat Lengkap:\nKota:\nProvinsi:\nKode Pos:\n\nSetelah menerima data, kami akan menginformasikan tagihan ongkos kirim. Terima kasih 🙏\nTim jajanemas.com";
+            $p->wa_ongkir_url = ($p->status === 'shipped')
+                ? ('https://wa.me/' . $waOngkirTargetDigits . '?text=' . rawurlencode($waOngkirText))
+                : null;
 
             return $p;
         });

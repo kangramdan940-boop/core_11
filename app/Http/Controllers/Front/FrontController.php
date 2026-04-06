@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\MasterHomeSlider;
 use App\Models\MasterMenuHomeCustomer;
 use App\Models\MasterProdukDanLayanan;
+use App\Models\TransPo;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -41,6 +42,40 @@ class FrontController extends Controller
     {
         return view('front.mitra.jajanemas');
     }
+
+    public function publicPoDetail(string $kodePo): View
+    {
+        $token = trim(urldecode($kodePo));
+        if ($token === '') {
+            abort(404);
+        }
+
+        $requestedKodePos = preg_split('/[+\s,]+/', $token, -1, PREG_SPLIT_NO_EMPTY);
+        $requestedKodePos = array_values(array_unique(array_map('trim', $requestedKodePos)));
+        if (count($requestedKodePos) === 0) {
+            abort(404);
+        }
+
+        $seedPo = TransPo::query()
+            ->whereIn('kode_po', $requestedKodePos)
+            ->orderByDesc('id')
+            ->firstOrFail();
+
+        $customerId = (int) ($seedPo->master_customer_id ?? 0);
+        if ($customerId <= 0) {
+            abort(404);
+        }
+
+        $pos = TransPo::with(['customer', 'produk.gramasi', 'agen'])
+            ->where('master_customer_id', $customerId)
+            ->where('status', 'shipped')
+            ->orderByDesc('id')
+            ->get();
+
+        return view('front.public.po_detail', compact('pos', 'requestedKodePos'));
+    }
+
+
 
     private function resolveImageUrl(?string $imageUrl): string
     {
