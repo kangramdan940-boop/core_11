@@ -126,13 +126,11 @@ class TransPoController extends Controller
             }
             $kodeLine = implode(', ', $kodeParts);
 
-            $waOngkirTargetDigits = '6281290004073';
+            $waOngkirTargetDigits = $waDigits;
             $poToken = implode('%2B', array_map('rawurlencode', $kodeList));
             $publicDetailUrl = url('/po/detail/' . $poToken);
-            $customerName = trim((string) (optional($p->customer)->full_name ?? ''));
-            $sapaan = $customerName !== '' ? ('Kak ' . $customerName) : 'Kak';
             $waOngkirText = "Assalamu’alaikum " . $sapaan . " 🙏\n\nMohon kirimkan alamat lengkap pengiriman dengan format berikut:\n\nkode PO : " . $kodeLine . "\nLink Detail Pesanan : " . $publicDetailUrl . "\nNama Penerima:\nNo. HP:\nAlamat Lengkap:\nKota:\nProvinsi:\nKode Pos:\n\nSetelah menerima data, kami akan menginformasikan tagihan ongkos kirim. Terima kasih 🙏\nTim jajanemas.com";
-            $p->wa_ongkir_url = ($p->status === 'shipped')
+            $p->wa_ongkir_url = ($p->status === 'shipped' && $waOngkirTargetDigits !== '')
                 ? ('https://wa.me/' . $waOngkirTargetDigits . '?text=' . rawurlencode($waOngkirText))
                 : null;
 
