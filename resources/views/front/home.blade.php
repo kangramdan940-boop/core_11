@@ -99,7 +99,7 @@
                 <div class="row">
                     <div class="left-text col-lg-6 col-md-12 col-sm-12 col-xs-12"
                         data-scroll-reveal="enter left move 30px over 0.6s after 0.4s">
-                        <h1>Welcome<br> di <em>Jajan Emas</em></h1>
+                        <h1>Selamat datang<br> di <em>Jajan Emas</em></h1>
                         <p>Solusi mudah dan terpercaya untuk membeli emas berkualitas dengan harga terbaik</p>
 
                         <div class="hero-price-card">
