@@ -35,7 +35,44 @@ class FrontController extends Controller
             ];
         });
 
-        return view('front.home', ['slides' => $slides]);
+        $goldPrice = DB::table('gold_prices')
+            ->orderByDesc('id')
+            ->first([
+                'buy_price',
+                'buyback_price',
+                'source',
+                'price_date',
+                'last_updated',
+            ]);
+
+        $floatingPrices = DB::table('floating_price_and_buyback')
+            ->orderBy('id')
+            ->limit(4)
+            ->get(['id', 'icon', 'brand', 'harga', 'buyback']);
+
+        $etalaseReady = DB::table('wp_etalase_emas')
+            ->where('code', 'emas_ready')
+            ->orderBy('id')
+            ->get(['id', 'brand', 'berat', 'harga', 'stok', 'status']);
+
+        $etalasePreorder = DB::table('wp_etalase_emas')
+            ->where('code', 'emas_preorder')
+            ->orderBy('id')
+            ->get(['id', 'brand', 'berat', 'harga', 'stok', 'status']);
+
+        $etalaseBuyback = DB::table('wp_etalase_emas')
+            ->where('code', 'buyback')
+            ->orderBy('id')
+            ->get(['id', 'brand', 'berat', 'buyback', 'stok', 'status']);
+
+        return view('front.home', [
+            'slides' => $slides,
+            'goldPrice' => $goldPrice,
+            'floatingPrices' => $floatingPrices,
+            'etalaseReady' => $etalaseReady,
+            'etalasePreorder' => $etalasePreorder,
+            'etalaseBuyback' => $etalaseBuyback,
+        ]);
     }
 
     public function mitraJajanEmasTerms(): View
@@ -239,6 +276,135 @@ class FrontController extends Controller
             : 0.0;
 
         return view('front.customer.dashboard', compact('customer', 'orders', 'readyOrders', 'contracts', 'menus', 'produk', 'poGramTotal', 'readyGramTotal', 'cicilanGramTotal'));
+    }
+
+    /**
+     * Mengambil data harga emas dari hrtagold.id menggunakan cURL.
+     *
+     * @return array
+     */
+    private function getGoldPrice(): array
+    {
+        $url = 'https://hrtagold.id/en/gold-price?_rsc=1a28h';
+        $ch = curl_init();
+
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => [
+                'accept: */*',
+                'accept-language: en-US,en;q=0.9',
+                'next-router-prefetch: 1',
+                'next-router-state-tree: %5B%22%22%2C%7B%7D%2Cnull%2C%22metadata-only%22%5D',
+                'next-url: /en',
+                'priority: i',
+                'referer: https://hrtagold.id/en',
+                'rsc: 1',
+                'sec-ch-ua: "Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"',
+                'sec-ch-ua-mobile: ?0',
+                'sec-ch-ua-platform: "macOS"',
+                'sec-fetch-dest: empty',
+                'sec-fetch-mode: cors',
+                'sec-fetch-site: same-origin',
+                'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36',
+                'Cookie: __Host-authjs.csrf-token=2f198e32fa6e8a2a14a16ca34e1a529e4e29e82e018773368b919911bf028e88%7C2b21b2af04a01c2389df268c3fe605c4790d6f70f36375eccd82011c8505e1ef; __Secure-authjs.callback-url=https%3A%2F%2Fhrtagold.id; _ga=GA1.1.911068210.1776437943; _fbp=fb.1.1776437943034.134225000396289974; _ga_QKR33TE506=GS2.1.s1776450742$o2$g1$t1776450817$j56$l0$h0; _ga_XKB4Z0VWHK=GS2.1.s1776450742$o2$g1$t1776450817$j56$l0$h0',
+            ],
+        ]);
+
+        $response = curl_exec($ch);
+        $error = curl_error($ch);
+        curl_close($ch);
+
+        if ($error || !$response) {
+            // Fallback jika terjadi error
+            return [
+                'buy_price' => '-',
+                'sell_price' => null,
+                'last_update' => '-',
+            ];
+        }
+
+        // Mengurai respons untuk mendapatkan data harga emas
+        $buyPrice = null;
+        $sellPrice = null;
+        $buybackPrice = null;
+        $lastUpdate = null;
+
+        // Mencari harga beli dari "price.amount"
+        if (preg_match('/"price\.amount","content":"([^"]+)"/', $response, $matches)) {
+            $buyPrice = $matches[1];
+        }
+
+        // Mencari harga jual (buyback) dan beli dari "og:description"
+        if (preg_match('/"og:description","content":"Update harga emas terkini - Jual ([^|]+) \| Beli ([^"]+)"/', $response, $matches)) {
+            $buybackPrice = trim($matches[1]); // Harga jual/buyback
+            $buyPrice = trim($matches[2]); // Harga beli
+        }
+
+        // Mencari harga buyback dari "description" meta tag
+        if (preg_match('/"description","content":"Cek harga emas terbaru hari ini - Beli: ([^|]+)\| Jual ([^.]+\.) Update terakhir ([^"]+)"/', $response, $matches)) {
+            $buyPrice = trim($matches[1]);
+            $buybackPrice = trim(str_replace('.', '', $matches[2])); // Hapus titik di akhir
+        }
+
+        // Mencari tanggal update dari "description" meta tag
+        // Regex yang lebih fleksibel untuk menangkap berbagai format tanggal
+        if (preg_match('/"description","content":"[^"]*Update terakhir ([^"]+)"/', $response, $matches)) {
+            $lastUpdate = $matches[1];
+        }
+        
+        // Alternatif: mencari di berbagai meta tag yang mungkin mengandung tanggal
+        if (!$lastUpdate && preg_match('/"lastUpdate","content":"([^"]+)"/', $response, $matches)) {
+            $lastUpdate = $matches[1];
+        }
+        if (!$lastUpdate && preg_match('/"date","content":"([^"]+)"/', $response, $matches)) {
+            $lastUpdate = $matches[1];
+        }
+
+        // Fallback: jika tidak ada data yang ditemukan, gunakan nilai default
+        if (!$buyPrice) {
+            $buyPrice = '-';
+        }
+        if (!$buybackPrice) {
+            $buybackPrice = '-';
+        }
+        if (!$lastUpdate) {
+            $lastUpdate = '-';
+        }
+
+        // Menambahkan 30 ribu ke harga beli dan 20 ribu ke harga buyback
+        $buyPrice = $this->addToPrice($buyPrice, 30000);
+        $buybackPrice = $this->addToPrice($buybackPrice, 20000);
+
+        return [
+            'buy_price' => $buyPrice,
+            'sell_price' => $buybackPrice, // Menggunakan buybackPrice sebagai sell_price
+            'buyback_price' => $buybackPrice,
+            'last_update' => $lastUpdate,
+        ];
+    }
+
+    /**
+     * Menambahkan nilai tertentu ke harga string.
+     *
+     * @param string|null $priceString
+     * @param int $amountToAdd
+     * @return string
+     */
+    private function addToPrice(?string $priceString, int $amountToAdd): string
+    {
+        if (!$priceString || $priceString === '-') {
+            return 'Rp\u00a0' . number_format($amountToAdd, 0, ',', '.');
+        }
+
+        // Ekstrak angka dari string harga
+        $numericValue = (int) preg_replace('/[^0-9]/', '', $priceString);
+        
+        // Tambahkan nilai
+        $newValue = $numericValue + $amountToAdd;
+        
+        // Format kembali ke string harga
+        return 'Rp\u00a0' . number_format($newValue, 0, ',', '.');
     }
 
     public function customerAllOrders(): View

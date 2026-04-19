@@ -610,6 +610,27 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('management-login', SysUserManagementController::class)
             ->names('management-login')
             ->parameters(['management-login' => 'user']);
+
+        // WP Settings Routes
+        Route::prefix('wp-settings')->name('wp-settings.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\WpSettingsController::class, 'index'])->name('index');
+            Route::post('/', [\App\Http\Controllers\Admin\WpSettingsController::class, 'save'])->name('save');
+            Route::post('/test-connection', [\App\Http\Controllers\Admin\WpSettingsController::class, 'testConnection'])->name('test-connection');
+            Route::post('/sync-now', [\App\Http\Controllers\Admin\WpSettingsController::class, 'syncNow'])->name('sync-now');
+
+            Route::post('/gold-prices/sync', [\App\Http\Controllers\Admin\WpSettingsController::class, 'syncGoldPrice'])->name('gold-prices.sync');
+            Route::post('/gold-prices', [\App\Http\Controllers\Admin\WpSettingsController::class, 'storeGoldPrice'])->name('gold-prices.store');
+
+            Route::get('/floating-price', [\App\Http\Controllers\Admin\WpSettingsController::class, 'floatingPriceIndex'])->name('floating-price.index');
+            Route::post('/floating-price', [\App\Http\Controllers\Admin\WpSettingsController::class, 'floatingPriceStore'])->name('floating-price.store');
+            Route::put('/floating-price/{id}', [\App\Http\Controllers\Admin\WpSettingsController::class, 'floatingPriceUpdate'])->name('floating-price.update');
+            Route::delete('/floating-price/{id}', [\App\Http\Controllers\Admin\WpSettingsController::class, 'floatingPriceDestroy'])->name('floating-price.destroy');
+
+            Route::get('/etalase-emas', [\App\Http\Controllers\Admin\WpSettingsController::class, 'etalaseEmasIndex'])->name('etalase-emas.index');
+            Route::post('/etalase-emas', [\App\Http\Controllers\Admin\WpSettingsController::class, 'etalaseEmasStore'])->name('etalase-emas.store');
+            Route::put('/etalase-emas/{id}', [\App\Http\Controllers\Admin\WpSettingsController::class, 'etalaseEmasUpdate'])->name('etalase-emas.update');
+            Route::delete('/etalase-emas/{id}', [\App\Http\Controllers\Admin\WpSettingsController::class, 'etalaseEmasDestroy'])->name('etalase-emas.destroy');
+        });
     });
 });
 
