@@ -31,7 +31,7 @@ class WpSettingsController extends Controller
         if (!$goldPrice) {
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal sinkronisasi harga emas',
+                'message' => $service->getLastError() ?? 'Gagal sinkronisasi harga emas',
             ], 500);
         }
 
