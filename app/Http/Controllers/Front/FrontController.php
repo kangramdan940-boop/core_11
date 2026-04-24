@@ -868,8 +868,6 @@ class FrontController extends Controller
                 'master_customer.full_name',
                 'master_customer.kota',
                 DB::raw("COALESCE(master_gramasi_emas.nama, CONCAT(ROUND(trans_po.total_gram, 1), 'gr')) as produk"),
-                'trans_po.total_amount',
-                'trans_po.status',
                 'trans_po.created_at',
             ])->limit(30)->get();
 
@@ -893,20 +891,10 @@ class FrontController extends Controller
                 'master_customer.full_name',
                 'master_customer.kota',
                 DB::raw("COALESCE(master_gold_ready_stock.nama_produk, CONCAT(master_gold_ready_stock.brand, ' ', ROUND(master_gold_ready_stock.gramasi, 1), 'gr')) as produk"),
-                'trans_ready.total_amount',
-                'trans_ready.status',
                 'trans_ready.created_at',
             ])->limit(30)->get();
 
-            $statusLabels = [
-                'paid'          => 'Pembayaran Dikonfirmasi',
-                'processing'    => 'Sedang Diproses',
-                'ready_at_agen' => 'Siap Dikirim',
-                'shipped'       => 'Dalam Pengiriman',
-                'completed'     => 'Selesai',
-            ];
-
-            $results = $poItems->merge($readyItems)->map(function ($item) use ($statusLabels) {
+            $results = $poItems->merge($readyItems)->map(function ($item) {
                 $name       = $item->full_name ?? 'Seseorang';
                 $maskedName = mb_substr($name, 0, 3) . '***';
                 $createdAt  = \Illuminate\Support\Carbon::parse($item->created_at);
@@ -916,10 +904,7 @@ class FrontController extends Controller
                     'nama'       => $maskedName,
                     'kota'       => $item->kota ?? '',
                     'produk'     => $item->produk ?? 'Emas',
-                    'total'      => 'Rp ' . number_format((float) $item->total_amount, 0, ',', '.'),
-                    'status'     => $statusLabels[$item->status] ?? $item->status,
-                    'waktu'      => $createdAt->diffForHumans(),
-                    'trigger_at' => $createdAt->format('H:i:s'), // jam:menit:detik untuk compare di JS
+                    'trigger_at' => $createdAt->format('H:i:s'),
                 ];
             })->values()->toArray();
 
