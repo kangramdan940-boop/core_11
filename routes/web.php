@@ -56,6 +56,7 @@ use Illuminate\Support\Facades\Crypt;
 // FRONT HOME
 // ====================================
 Route::get('/', [FrontController::class, 'home']);
+Route::get('/katalog-produk', [FrontController::class, 'katalogProduk'])->name('katalog.produk');
 Route::get('/pemesanan-emas-belum-tersedia', function () {
     return view('front.order-unavailable');
 })->name('order.unavailable');
@@ -128,6 +129,7 @@ Route::prefix('customer')->name('customer.')->group(function () {
         Route::get('/ready/{stock}', [CustomerReadyController::class, 'stock'])->name('ready.stock');
         Route::get('/ready/{stock}/buy', [CustomerReadyController::class, 'buy'])->name('ready.buy');
         Route::post('/ready', [CustomerReadyController::class, 'store'])->name('ready.store');
+        Route::post('/ready/cart-checkout', [CustomerReadyController::class, 'cartCheckout'])->name('ready.cart-checkout');
         Route::get('/ready-trans/{ready}', [CustomerReadyController::class, 'show'])->name('ready.show');
         Route::post('/ready-trans/{ready}/confirm-payment', [CustomerReadyController::class, 'confirmPayment'])->name('ready.confirm-payment');
 

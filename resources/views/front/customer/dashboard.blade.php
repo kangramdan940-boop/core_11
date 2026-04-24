@@ -56,24 +56,18 @@
         </a>
 
         <div class="right">
-           
-            <!-- <a class="box-icon" href="#notification" data-bs-toggle="offcanvas" aria-controls="offcanvasBottom">
+             <a class="box-icon" href="#" onclick="toggleDashCartDrawer(); return false;" style="position:relative;">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 6.44043V9.77043" stroke="#1A1528" stroke-width="1.5" stroke-miterlimit="10"
-                        stroke-linecap="round" />
-                    <path
-                        d="M12.0199 2C8.3399 2 5.3599 4.98 5.3599 8.66V10.76C5.3599 11.44 5.0799 12.46 4.7299 13.04L3.4599 15.16C2.6799 16.47 3.2199 17.93 4.6599 18.41C9.4399 20 14.6099 20 19.3899 18.41C20.7399 17.96 21.3199 16.38 20.5899 15.16L19.3199 13.04C18.9699 12.46 18.6899 11.43 18.6899 10.76V8.66C18.6799 5 15.6799 2 12.0199 2Z"
-                        stroke="#1A1528" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" />
-                    <path
-                        d="M15.3299 18.8203C15.3299 20.6503 13.8299 22.1503 11.9999 22.1503C11.0899 22.1503 10.2499 21.7703 9.64992 21.1703C9.04992 20.5703 8.66992 19.7303 8.66992 18.8203"
-                        stroke="#1A1528" stroke-width="1.5" stroke-miterlimit="10" />
+                    <path d="M2 2h1.74c1.08 0 1.93.93 1.84 2l-.83 9.96a2.145 2.145 0 0 0 2.14 2.36h10.89c1.04 0 1.96-.76 2.1-1.79l.8-5.56c.14-1.15-.75-2.14-1.91-2.14H5.82" stroke="#1A1528" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M16.25 22a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5ZM8.25 22a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5Z" stroke="#1A1528" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-            </a> -->
+                <span class="dash-cart-badge" id="dashCartBadge" style="display:none;"></span>
+            </a>
                 <a href="#" class="box-icon logout-btn" onclick="event.preventDefault(); if (window.confirm('Anda yakin ingin logout?')) { document.getElementById('logoutForm').submit(); }" title="Logout">
                     <svg width="24" height="24" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 3h5a1 1 0 011 1v9a1 1 0 01-1 1H6" stroke="#1A1528" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8.5h6M5 6l-2.5 2.5L5 11" stroke="#1A1528" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </a>
                 <form id="logoutForm" action="{{ route('customer.logout') }}" method="POST" style="display:none;">
-                    @csrf
+
                 </form>
         </div>
     </div>
@@ -354,6 +348,314 @@
     });
     </script>
     @endif
+
+    <!-- Cart Drawer -->
+    <style>
+        .dash-cart-badge {
+            position:absolute; top:-4px; right:-4px;
+            background:#e74c3c; color:#fff;
+            font-size:10px; font-weight:700;
+            min-width:18px; height:18px; line-height:18px;
+            text-align:center; border-radius:50%;
+        }
+        .dc-overlay {
+            position:fixed; inset:0; background:rgba(0,0,0,.4);
+            z-index:9998; opacity:0; visibility:hidden; transition:all .3s;
+        }
+        .dc-overlay.active { opacity:1; visibility:visible; }
+        .dc-drawer {
+            position:fixed; top:0; right:-380px;
+            width:360px; max-width:90vw; height:100%;
+            background:#fff; z-index:9999;
+            box-shadow:-4px 0 20px rgba(0,0,0,.15);
+            transition:right .3s; display:flex; flex-direction:column;
+            font-family:'Poppins',sans-serif;
+        }
+        .dc-drawer.active { right:0; }
+        .dc-header {
+            display:flex; align-items:center; justify-content:space-between;
+            padding:16px 20px; border-bottom:1px solid #eee;
+        }
+        .dc-header h4 { margin:0; font-size:16px; font-weight:700; color:#333; }
+        .dc-header h4 i { margin-right:8px; color:#dcb73f; }
+        .dc-close { background:none; border:none; font-size:22px; color:#999; cursor:pointer; }
+        .dc-close:hover { color:#333; }
+        .dc-body { flex:1; overflow-y:auto; padding:16px 20px; }
+        .dc-empty { text-align:center; color:#aaa; padding:40px 0; font-size:14px; }
+        .dc-empty i { display:block; font-size:40px; margin-bottom:12px; }
+        .dc-item { display:flex; gap:12px; padding:12px 0; border-bottom:1px solid #f0f0f0; }
+        .dc-item-img { width:56px; height:56px; border-radius:8px; overflow:hidden; flex-shrink:0; background:#f5f5f5; }
+        .dc-item-img img { width:100%; height:100%; object-fit:cover; }
+        .dc-item-info { flex:1; min-width:0; }
+        .dc-item-name { font-size:13px; font-weight:600; color:#333; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .dc-item-price { font-size:13px; font-weight:700; color:#dcb73f; margin-top:2px; }
+        .dc-item-qty { display:flex; align-items:center; gap:8px; margin-top:6px; }
+        .dc-item-qty button {
+            width:24px; height:24px; border:1px solid #ddd; border-radius:4px;
+            background:#fafafa; cursor:pointer; font-size:14px;
+            display:flex; align-items:center; justify-content:center;
+        }
+        .dc-item-qty button:hover { background:#f0f0f0; }
+        .dc-item-qty span { font-size:13px; font-weight:600; min-width:20px; text-align:center; }
+        .dc-item-rm { background:none; border:none; color:#e74c3c; font-size:14px; cursor:pointer; align-self:flex-start; padding:0; margin-top:2px; }
+        .dc-item-rm:hover { color:#c0392b; }
+        .dc-footer { padding:16px 20px; border-top:1px solid #eee; }
+        .dc-total { display:flex; justify-content:space-between; font-size:15px; font-weight:700; color:#333; margin-bottom:12px; }
+        .dc-total span:last-child { color:#dcb73f; }
+        .dc-checkout {
+            display:block; width:100%; padding:12px; border:none; border-radius:25px;
+            background:#dcb73f; color:#fff; font-size:14px; font-weight:700;
+            cursor:pointer; text-align:center; text-transform:uppercase; letter-spacing:1px;
+        }
+        .dc-checkout:hover { background:#c9a636; }
+        .dc-checkout:disabled { background:#ccc; cursor:not-allowed; }
+
+        /* Shipping form step */
+        .dc-step { display:none; flex-direction:column; flex:1; overflow:hidden; }
+        .dc-step.active { display:flex; }
+        .dc-form-group { margin-bottom:14px; }
+        .dc-form-group label { display:block; font-size:12px; font-weight:600; color:#555; margin-bottom:4px; }
+        .dc-form-group input, .dc-form-group textarea, .dc-form-group select {
+            width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:8px;
+            font-size:13px; font-family:inherit; outline:none; transition:border-color .2s;
+        }
+        .dc-form-group input:focus, .dc-form-group textarea:focus, .dc-form-group select:focus { border-color:#dcb73f; }
+        .dc-form-group textarea { resize:vertical; min-height:60px; }
+        .dc-back-btn {
+            background:none; border:1px solid #ddd; border-radius:25px; padding:10px;
+            width:100%; font-size:13px; font-weight:600; cursor:pointer; margin-bottom:10px;
+            color:#555; transition:all .2s;
+        }
+        .dc-back-btn:hover { border-color:#dcb73f; color:#dcb73f; }
+        .dc-addr-card {
+            border:1px solid #eee; border-radius:10px; padding:12px; margin-bottom:10px;
+            cursor:pointer; transition:all .2s; position:relative;
+        }
+        .dc-addr-card:hover, .dc-addr-card.selected { border-color:#dcb73f; background:#fffdf5; }
+        .dc-addr-card.selected::after {
+            content:'✓'; position:absolute; top:10px; right:12px;
+            color:#dcb73f; font-weight:700; font-size:16px;
+        }
+        .dc-addr-name { font-size:13px; font-weight:600; color:#333; }
+        .dc-addr-detail { font-size:12px; color:#777; margin-top:2px; }
+        .dc-divider { text-align:center; color:#aaa; font-size:12px; margin:16px 0; position:relative; }
+        .dc-divider::before, .dc-divider::after {
+            content:''; position:absolute; top:50%; width:40%; height:1px; background:#eee;
+        }
+        .dc-divider::before { left:0; }
+        .dc-divider::after { right:0; }
+    </style>
+
+    <div class="dc-overlay" id="dcOverlay" onclick="toggleDashCartDrawer()"></div>
+    <div class="dc-drawer" id="dcDrawer">
+        <div class="dc-header">
+            <h4><i class="icon-shopping-cart"></i> Keranjang</h4>
+            <button class="dc-close" onclick="toggleDashCartDrawer()">&times;</button>
+        </div>
+
+        <!-- Step 1: Cart Items -->
+        <div class="dc-step active" id="dcStepCart">
+            <div class="dc-body" id="dcBody">
+                <div class="dc-empty"><i class="icon-shopping-bag"></i>Keranjang masih kosong</div>
+            </div>
+            <div class="dc-footer" id="dcFooter" style="display:none;">
+                <div class="dc-total">
+                    <span>Total</span>
+                    <span id="dcTotal">Rp 0</span>
+                </div>
+                <button class="dc-checkout" onclick="dcShowShipping()">
+                    <i class="icon-arrow-right"></i> Lanjut ke Pengiriman
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 2: Shipping / Address -->
+        <div class="dc-step" id="dcStepShipping">
+            <div class="dc-body" style="padding:16px 20px;">
+                <button class="dc-back-btn" onclick="dcBackToCart()">← Kembali ke Keranjang</button>
+
+                @if(($customerAddresses ?? collect())->count())
+                <p style="font-size:13px;font-weight:600;color:#333;margin-bottom:10px;">Pilih Alamat Tersimpan</p>
+                @foreach($customerAddresses as $addr)
+                <div class="dc-addr-card" data-addr-id="{{ $addr->id }}" onclick="dcSelectAddr(this, {{ $addr->id }})">
+                    <div class="dc-addr-name">{{ $addr->name }} &middot; {{ $addr->phone }}</div>
+                    <div class="dc-addr-detail">{{ is_array($addr->lines) ? implode(', ', $addr->lines) : $addr->lines }}, {{ $addr->city }}</div>
+                    @if($addr->tag)<div class="dc-addr-detail" style="color:#dcb73f;">{{ $addr->tag }}</div>@endif
+                </div>
+                @endforeach
+                <div class="dc-divider" id="dcDivider">atau isi manual</div>
+                @endif
+
+                <div id="dcNewAddrForm">
+                    <div class="dc-form-group">
+                        <label>Nama Penerima *</label>
+                        <input type="text" id="dcShipName" value="{{ $customer->full_name ?? '' }}" placeholder="Nama lengkap penerima">
+                    </div>
+                    <div class="dc-form-group">
+                        <label>No. Telepon *</label>
+                        <input type="text" id="dcShipPhone" value="{{ $customer->phone_wa ?? '' }}" placeholder="08xxxxxxxxxx">
+                    </div>
+                    <div class="dc-form-group">
+                        <label>Alamat Lengkap *</label>
+                        <textarea id="dcShipAddress" placeholder="Jalan, RT/RW, Kelurahan, Kecamatan"></textarea>
+                    </div>
+                    <div class="dc-form-group">
+                        <label>Kota *</label>
+                        <input type="text" id="dcShipCity" placeholder="Kota / Kabupaten">
+                    </div>
+                    <div class="dc-form-group">
+                        <label>Catatan (opsional)</label>
+                        <textarea id="dcShipNote" placeholder="Catatan untuk penjual" style="min-height:40px;"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="dc-footer">
+                <button class="dc-checkout" id="dcCheckoutBtn" onclick="dcDoCheckout()">
+                    <i class="icon-arrow-right"></i> Selesaikan Pembayaran
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function(){
+        var CART_KEY = 'jj_cart';
+        var selectedAddrId = null;
+
+        function getCart(){ try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; } catch(e){ return []; } }
+        function saveCart(c){ localStorage.setItem(CART_KEY, JSON.stringify(c)); }
+        function fmtRp(n){ return 'Rp ' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
+
+        window.toggleDashCartDrawer = function(){
+            var o = document.getElementById('dcOverlay'), d = document.getElementById('dcDrawer');
+            if(d.classList.contains('active')){
+                o.classList.remove('active'); d.classList.remove('active'); document.body.style.overflow='';
+                dcBackToCart();
+            } else {
+                o.classList.add('active'); d.classList.add('active'); document.body.style.overflow='hidden';
+            }
+        };
+        window.dcChangeQty = function(id, delta){
+            var cart = getCart();
+            for(var i=0;i<cart.length;i++){
+                if(cart[i].id===id){ cart[i].qty+=delta; if(cart[i].qty<=0) cart.splice(i,1); else if(cart[i].qty>cart[i].maxStok) cart[i].qty=cart[i].maxStok; break; }
+            }
+            saveCart(cart); dcRender();
+        };
+        window.dcRemove = function(id){
+            saveCart(getCart().filter(function(i){ return i.id!==id; })); dcRender();
+        };
+
+        window.dcShowShipping = function(){
+            document.getElementById('dcStepCart').classList.remove('active');
+            document.getElementById('dcStepShipping').classList.add('active');
+        };
+        window.dcBackToCart = function(){
+            document.getElementById('dcStepShipping').classList.remove('active');
+            document.getElementById('dcStepCart').classList.add('active');
+        };
+        window.dcSelectAddr = function(el, id){
+            var cards = document.querySelectorAll('.dc-addr-card');
+            for(var i=0;i<cards.length;i++) cards[i].classList.remove('selected');
+            el.classList.add('selected');
+            selectedAddrId = id;
+            // Hide manual form
+            var form = document.getElementById('dcNewAddrForm');
+            var divider = document.getElementById('dcDivider');
+            if(form) form.style.display = 'none';
+            if(divider) divider.innerHTML = '<a href="#" onclick="dcShowManualForm(); return false;" style="color:#dcb73f;text-decoration:none;font-weight:600;">Gunakan alamat baru</a>';
+        };
+        window.dcShowManualForm = function(){
+            selectedAddrId = null;
+            var cards = document.querySelectorAll('.dc-addr-card');
+            for(var i=0;i<cards.length;i++) cards[i].classList.remove('selected');
+            var form = document.getElementById('dcNewAddrForm');
+            var divider = document.getElementById('dcDivider');
+            if(form) form.style.display = 'block';
+            if(divider) divider.innerHTML = 'atau isi manual';
+        };
+
+        function dcRender(){
+            var cart=getCart(), body=document.getElementById('dcBody'), footer=document.getElementById('dcFooter'),
+                badge=document.getElementById('dashCartBadge'), tc=0, tp=0;
+            for(var i=0;i<cart.length;i++){ tc+=cart[i].qty; tp+=cart[i].qty*cart[i].price; }
+            if(tc>0){ badge.textContent=tc>99?'99+':tc; badge.style.display='inline-block'; }
+            else { badge.style.display='none'; }
+            if(!cart.length){ body.innerHTML='<div class="dc-empty"><i class="icon-shopping-bag" style="font-size:40px;display:block;margin-bottom:12px;"></i>Keranjang masih kosong</div>'; footer.style.display='none'; return; }
+            var h='';
+            for(var i=0;i<cart.length;i++){
+                var c=cart[i];
+                h+='<div class="dc-item"><div class="dc-item-img"><img src="'+c.image+'" alt="'+c.name+'"></div>'
+                  +'<div class="dc-item-info"><div class="dc-item-name">'+c.name+'</div><div class="dc-item-price">'+fmtRp(c.price)+'</div>'
+                  +'<div class="dc-item-qty"><button onclick="dcChangeQty('+c.id+',-1)">&minus;</button><span>'+c.qty+'</span><button onclick="dcChangeQty('+c.id+',1)">+</button></div></div>'
+                  +'<button class="dc-item-rm" onclick="dcRemove('+c.id+')"><i class="icon-trash-2"></i></button></div>';
+            }
+            body.innerHTML=h; footer.style.display='block';
+            document.getElementById('dcTotal').textContent=fmtRp(tp);
+        }
+        dcRender();
+
+        window.dcDoCheckout = function(){
+            var cart = getCart();
+            if(!cart.length){ alert('Keranjang kosong.'); return; }
+
+            // Build payload
+            var payload = { items: [] };
+            for(var i=0;i<cart.length;i++){
+                payload.items.push({ id: cart[i].id, qty: cart[i].qty });
+            }
+
+            if(selectedAddrId){
+                payload.address_id = selectedAddrId;
+            } else {
+                var nm = document.getElementById('dcShipName').value.trim();
+                var ph = document.getElementById('dcShipPhone').value.trim();
+                var ad = document.getElementById('dcShipAddress').value.trim();
+                var ct = document.getElementById('dcShipCity').value.trim();
+                if(!nm || !ph || !ad || !ct){
+                    alert('Silakan pilih alamat tersimpan atau isi semua field alamat pengiriman.');
+                    return;
+                }
+                payload.shipping_name = nm;
+                payload.shipping_phone = ph;
+                payload.shipping_address = ad;
+                payload.shipping_city = ct;
+            }
+            payload.catatan = (document.getElementById('dcShipNote').value || '').trim();
+
+            var btn = document.getElementById('dcCheckoutBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="icon-loader"></i> Memproses...';
+
+            fetch('{{ route("customer.ready.cart-checkout") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, data: d }; }); })
+            .then(function(res){
+                if(res.ok && res.data.status){
+                    localStorage.removeItem(CART_KEY);
+                    window.location.href = res.data.data.redirect_url;
+                } else {
+                    var msg = res.data.message || res.data.error || 'Checkout gagal. Silakan coba lagi.';
+                    alert(msg);
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="icon-arrow-right"></i> Selesaikan Pembayaran';
+                }
+            })
+            .catch(function(err){
+                alert('Terjadi kesalahan: ' + err.message);
+                btn.disabled = false;
+                btn.innerHTML = '<i class="icon-arrow-right"></i> Selesaikan Pembayaran';
+            });
+        };
+    })();
+    </script>
 
 </body>
 

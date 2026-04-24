@@ -15,6 +15,9 @@ use App\Models\TransReady;
 use App\Models\TransPaymentLog;
 use App\Models\TransReadyLog;
 use App\Models\MasterAgen;
+use App\Models\TransKeranjang;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class CustomerReadyController extends Controller
 {
@@ -143,6 +146,145 @@ class CustomerReadyController extends Controller
         return redirect()
             ->route('customer.ready.show', ['ready' => encrypt((string) $ready->id)])
             ->with('success', 'Transaksi emas ready dibuat, status: pending_payment.');
+    }
+
+    /**
+     * Cart checkout — menerima items dari localStorage, membuat TransKeranjang + TransReady.
+     */
+    public function cartCheckout(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $data = $request->validate([
+            'items'            => ['required', 'array', 'min:1'],
+            'items.*.id'       => ['required', 'integer', 'exists:master_gold_ready_stock,id'],
+            'items.*.qty'      => ['required', 'integer', 'min:1'],
+            'address_id'       => ['nullable', 'integer', 'exists:master_customer_address,id'],
+            'shipping_name'    => ['required_without:address_id', 'nullable', 'string', 'max:150'],
+            'shipping_phone'   => ['required_without:address_id', 'nullable', 'string', 'max:50'],
+            'shipping_address' => ['required_without:address_id', 'nullable', 'string', 'max:500'],
+            'shipping_city'    => ['required_without:address_id', 'nullable', 'string', 'max:100'],
+            'catatan'          => ['nullable', 'string'],
+        ]);
+
+        $customer = MasterCustomer::where('sys_user_id', Auth::id())->firstOrFail();
+
+        // Resolve address
+        $address = null;
+        $shipping = [];
+        if (!empty($data['address_id'])) {
+            $address = \App\Models\MasterCustomerAddress::where('id', (int) $data['address_id'])
+                ->where('sys_user_id', (int) Auth::id())
+                ->firstOrFail();
+            $shipping = [
+                'name'        => $address->name ?? null,
+                'phone'       => $address->phone ?? null,
+                'address'     => is_array($address->lines) ? implode(', ', $address->lines) : ($address->lines ?? ''),
+                'city'        => $address->city ?? null,
+                'province'    => null,
+                'postal_code' => null,
+            ];
+        } else {
+            // Create new address
+            $address = \App\Models\MasterCustomerAddress::create([
+                'sys_user_id' => (int) Auth::id(),
+                'name'        => $data['shipping_name'],
+                'phone'       => $data['shipping_phone'],
+                'lines'       => [$data['shipping_address']],
+                'city'        => $data['shipping_city'],
+                'tag'         => 'checkout',
+            ]);
+            $shipping = [
+                'name'        => $data['shipping_name'],
+                'phone'       => $data['shipping_phone'],
+                'address'     => $data['shipping_address'],
+                'city'        => $data['shipping_city'],
+                'province'    => null,
+                'postal_code' => null,
+            ];
+        }
+
+        $kodeKeranjang = 'KRG-READY-' . date('Ymd-His') . '-' . Str::upper(Str::random(6));
+
+        $keranjang = TransKeranjang::create([
+            'kode_keranjang'      => $kodeKeranjang,
+            'ongkos_kirim'        => 0,
+            'id_alamat_pengiriman'=> (int) $address->id,
+            'created_by'          => (int) Auth::id(),
+            'expires_at'          => now()->addMinutes(30),
+            'status_kadaluarsa'   => 'active',
+            'status_order'        => 'perlu_dibayar',
+            'catatan'             => $data['catatan'] ?? '',
+        ]);
+
+        $created = [];
+
+        DB::transaction(function () use ($data, $customer, $keranjang, $shipping, &$created) {
+            foreach ($data['items'] as $it) {
+                $stock = MasterGoldReadyStock::findOrFail((int) $it['id']);
+
+                if (!$stock->is_active || (int) $stock->stok < (int) $it['qty']) {
+                    abort(422, 'Stok tidak tersedia atau tidak cukup: ' . ($stock->nama_produk ?? $stock->brand));
+                }
+
+                $hargaJualSatuan = (float) ($stock->harga_jual_fix ?? $stock->harga_jual_minimal ?? 0);
+                if ($hargaJualSatuan <= 0) {
+                    abort(422, 'Harga jual belum diatur: ' . ($stock->nama_produk ?? $stock->brand));
+                }
+
+                $produkId = null;
+                $gramasi = MasterGramasiEmas::where('gramasi', $stock->gramasi)->first();
+                if ($gramasi) {
+                    $produk = MasterProdukDanLayanan::where('id_gramasi', (int) $gramasi->id)
+                        ->where('status', 'active')
+                        ->orderBy('urutan')
+                        ->first();
+                    $produkId = $produk?->id ? (int) $produk->id : null;
+                }
+
+                $agenId = $stock->master_agen_id ? (int) $stock->master_agen_id : null;
+
+                $attrs = TransReady::buildAttributesForDraft(
+                    customerId: (int) $customer->id,
+                    agenId: $agenId,
+                    produkId: $produkId,
+                    readyStockId: (int) $stock->id,
+                    qty: (int) $it['qty'],
+                    hargaJualSatuan: $hargaJualSatuan,
+                    deliveryType: 'ship',
+                    shipping: $shipping,
+                    catatan: $data['catatan'] ?? null,
+                    shippingCost: 0.0
+                );
+                $attrs['id_keranjang'] = (int) $keranjang->id;
+                if ($agenId) {
+                    $attrs['rekening_nomor'] = optional(MasterAgen::find($agenId))->rekening_nomor;
+                }
+
+                $baseInt = (int) floor((float) ($attrs['total_amount'] ?? 0));
+                $attempts = 0;
+                do {
+                    $unique = mt_rand(100, 999);
+                    $attrs['total_amount'] = (float) number_format($baseInt + $unique, 2, '.', '');
+                    $attempts++;
+                } while ($attempts < 5 && TransReady::where('total_amount', $attrs['total_amount'])->exists());
+
+                $ready = TransReady::create($attrs);
+                $created[] = [
+                    'id'          => (int) $ready->id,
+                    'kode_trans'  => (string) $ready->kode_trans,
+                    'totalAmount' => (float) $ready->total_amount,
+                ];
+            }
+        });
+
+        return response()->json([
+            'status' => true,
+            'data'   => [
+                'keranjang_id'   => (int) $keranjang->id,
+                'kode_keranjang' => (string) $keranjang->kode_keranjang,
+                'readies'        => $created,
+                'redirect_url'   => route('customer.ready.show', ['ready' => encrypt((string) $created[0]['id'])]),
+            ],
+        ]);
     }
 
     public function show(string $ready)

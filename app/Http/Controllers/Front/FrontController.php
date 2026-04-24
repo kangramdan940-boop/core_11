@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Models\MasterGoldReadyStock;
 use App\Models\MasterHomeSlider;
 use App\Models\MasterMenuHomeCustomer;
 use App\Models\MasterProdukDanLayanan;
@@ -50,10 +51,10 @@ class FrontController extends Controller
             ->limit(4)
             ->get(['id', 'icon', 'brand', 'harga', 'buyback']);
 
-        $etalaseReady = DB::table('wp_etalase_emas')
-            ->where('code', 'emas_ready')
-            ->orderBy('id')
-            ->get(['id', 'brand', 'berat', 'harga', 'stok', 'status']);
+        $etalaseReady = MasterGoldReadyStock::where('is_active', true)
+            ->orderBy('brand')
+            ->orderBy('gramasi')
+            ->get();
 
         $etalasePreorder = DB::table('wp_etalase_emas')
             ->where('code', 'emas_preorder')
@@ -65,6 +66,31 @@ class FrontController extends Controller
             ->orderBy('id')
             ->get(['id', 'brand', 'berat', 'buyback', 'stok', 'status']);
 
+        $featuredProducts = MasterGoldReadyStock::where('is_active', true)
+            ->where('stok', '>', 0)
+            ->orderByDesc('jumlah_terjual')
+            ->limit(10)
+            ->get();
+
+        // Portfolio stats
+        $totalUsers = DB::table('sys_user')->count();
+        $totalTransPo = DB::table('trans_po')
+            ->where('status', '!=', 'cancelled')
+            ->count();
+        $totalTransReady = DB::table('trans_ready')
+            ->where('status', '!=', 'cancelled')
+            ->count();
+        $totalTransaksi = $totalTransPo + $totalTransReady;
+
+        $gramPo = (float) DB::table('trans_po')
+            ->where('status', '!=', 'cancelled')
+            ->sum(DB::raw('COALESCE(total_gram, 0) * COALESCE(qty, 1)'));
+        $gramReady = (float) DB::table('trans_ready')
+            ->join('master_gold_ready_stock', 'trans_ready.master_gold_ready_stock_id', '=', 'master_gold_ready_stock.id')
+            ->where('trans_ready.status', '!=', 'cancelled')
+            ->sum(DB::raw('COALESCE(master_gold_ready_stock.gramasi, 0) * COALESCE(trans_ready.qty, 1)'));
+        $totalGramTerjual = $gramPo + $gramReady;
+
         return view('front.home', [
             'slides' => $slides,
             'goldPrice' => $goldPrice,
@@ -72,6 +98,74 @@ class FrontController extends Controller
             'etalaseReady' => $etalaseReady,
             'etalasePreorder' => $etalasePreorder,
             'etalaseBuyback' => $etalaseBuyback,
+            'featuredProducts' => $featuredProducts,
+            'statPengguna' => $totalUsers,
+            'statTransaksi' => $totalTransaksi,
+            'statGramTerjual' => $totalGramTerjual,
+        ]);
+    }
+
+    public function katalogProduk(): View
+    {
+        $query = MasterGoldReadyStock::where('is_active', true);
+
+        // Filter brand
+        if (request()->filled('brand')) {
+            $brands = (array) request('brand');
+            $query->whereIn('brand', $brands);
+        }
+
+        // Filter gramasi
+        if (request()->filled('gramasi')) {
+            $gramasiList = (array) request('gramasi');
+            $query->whereIn('gramasi', $gramasiList);
+        }
+
+        // Search
+        if (request()->filled('q')) {
+            $q = request('q');
+            $query->where(function ($sub) use ($q) {
+                $sub->where('nama_produk', 'like', "%{$q}%")
+                    ->orWhere('brand', 'like', "%{$q}%")
+                    ->orWhere('kode_item', 'like', "%{$q}%");
+            });
+        }
+
+        // Sort
+        switch (request('sort', 'terbaru')) {
+            case 'harga_asc':
+                $query->orderBy('harga_jual_fix', 'asc');
+                break;
+            case 'harga_desc':
+                $query->orderBy('harga_jual_fix', 'desc');
+                break;
+            case 'nama_asc':
+                $query->orderBy('nama_produk', 'asc');
+                break;
+            default:
+                $query->orderByDesc('id');
+                break;
+        }
+
+        $products = $query->paginate(20)->withQueryString();
+
+        // For filter sidebar
+        $allBrands = MasterGoldReadyStock::where('is_active', true)
+            ->whereNotNull('brand')
+            ->distinct()
+            ->orderBy('brand')
+            ->pluck('brand');
+
+        $allGramasi = MasterGoldReadyStock::where('is_active', true)
+            ->whereNotNull('gramasi')
+            ->distinct()
+            ->orderBy('gramasi')
+            ->pluck('gramasi');
+
+        return view('front.katalog-produk', [
+            'products'   => $products,
+            'allBrands'  => $allBrands,
+            'allGramasi' => $allGramasi,
         ]);
     }
 
@@ -275,7 +369,11 @@ class FrontController extends Controller
                 ->sum('gramasi')
             : 0.0;
 
-        return view('front.customer.dashboard', compact('customer', 'orders', 'readyOrders', 'contracts', 'menus', 'produk', 'poGramTotal', 'readyGramTotal', 'cicilanGramTotal'));
+        $customerAddresses = \App\Models\MasterCustomerAddress::where('sys_user_id', auth()->id())
+            ->orderByDesc('id')
+            ->get();
+
+        return view('front.customer.dashboard', compact('customer', 'orders', 'readyOrders', 'contracts', 'menus', 'produk', 'poGramTotal', 'readyGramTotal', 'cicilanGramTotal', 'customerAddresses'));
     }
 
     /**
@@ -411,16 +509,24 @@ class FrontController extends Controller
     {
         $customer = \App\Models\MasterCustomer::where('sys_user_id', auth()->id())->first();
         $orders = $customer
-            ? \App\Models\TransPo::where('master_customer_id', $customer->id)->orderByDesc('id')->get()
+            ? \App\Models\TransPo::with('keranjang')->where('master_customer_id', $customer->id)->orderByDesc('id')->get()
             : collect();
         $readyOrders = $customer
-            ? \App\Models\TransReady::where('master_customer_id', $customer->id)->orderByDesc('id')->get()
+            ? \App\Models\TransReady::with(['readyStock', 'keranjang'])->where('master_customer_id', $customer->id)->orderByDesc('id')->get()
             : collect();
         $contracts = $customer
             ? \App\Models\TransCicilan::where('master_customer_id', $customer->id)->orderByDesc('id')->get()
             : collect();
 
-        return view('front.customer.all-order', compact('customer', 'orders', 'readyOrders', 'contracts'));
+        // Group ready orders: with keranjang vs without
+        $readyGrouped = $readyOrders->filter(fn($r) => $r->id_keranjang)->groupBy('id_keranjang');
+        $readySingle = $readyOrders->filter(fn($r) => !$r->id_keranjang);
+
+        // Group PO orders: with keranjang vs without
+        $poGrouped = $orders->filter(fn($o) => $o->id_keranjang)->groupBy('id_keranjang');
+        $poSingle = $orders->filter(fn($o) => !$o->id_keranjang);
+
+        return view('front.customer.all-order', compact('customer', 'orders', 'readyOrders', 'contracts', 'readyGrouped', 'readySingle', 'poGrouped', 'poSingle'));
     }
 
     public function customerProductDanLayanan(): View
