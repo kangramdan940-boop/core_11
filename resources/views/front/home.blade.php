@@ -473,6 +473,44 @@
         @media (max-width: 767px) {
             .fp-cart-btn { font-size: 11px; padding: 6px 0; margin-top: 8px; }
         }
+        /* ===== Hero Benefits Toggle ===== */
+        .hero-benefits-toggle {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            color: #999;
+            padding: 0 0 8px;
+            margin: 0 0 0 auto;
+            transition: color .3s;
+        }
+        .hero-benefits-toggle:hover { color: #666; }
+        .hero-benefits-toggle i { font-size: 13px; }
+
+        .hero-benefits-section.minimized .hero-benefits-wrap {
+            padding: 10px 16px;
+        }
+        .hero-benefits-section.minimized .hero-benefits {
+            display: none;
+        }
+        .hero-benefits-section.minimized .hero-benefits-toggle {
+            padding: 0;
+            margin: 0 auto;
+            color: #dcb73f;
+        }
+        .hero-benefits-section.minimized .hero-benefits-toggle:hover {
+            color: #c9a636;
+        }
+
+        @media (max-width: 767px) {
+            .hero-benefits-toggle { font-size: 10px; padding: 0 0 6px; }
+            .hero-benefits-toggle i { font-size: 12px; }
+        }
+
         /* ===== Floating WhatsApp Button ===== */
         .wa-float {
             position: fixed;
@@ -680,9 +718,12 @@
     <!-- ***** Welcome Area End ***** -->
 
     <!-- ***** Benefits Section Start ***** -->
-    <section class="hero-benefits-section">
+    <section class="hero-benefits-section" id="heroBenefitsSection">
         <div class="hero-benefits-wrap">
-            <div class="hero-benefits">
+            <button class="hero-benefits-toggle" id="heroBenefitsToggle" onclick="toggleHeroBenefits()" aria-label="Sembunyikan harga emas">
+                <i class="fa fa-eye-slash"></i> <span>Sembunyikan</span>
+            </button>
+            <div class="hero-benefits" id="heroBenefitsContent">
                 @php
                     $defaultIcons = ['fa fa-certificate', 'fa fa-star', 'fa fa-diamond', 'fa fa-bank'];
                 @endphp
@@ -1451,6 +1492,20 @@ Berlokasi di Bekasi, kami juga melayani buyback dengan harga menarik, serta sela
        class="wa-float" target="_blank" rel="noopener" aria-label="Chat WhatsApp">
         <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16.004 2.667A13.26 13.26 0 0 0 2.87 19.932L1.333 30.667l11.01-1.49A13.26 13.26 0 1 0 16.004 2.667Zm0 24.29a11.01 11.01 0 0 1-5.61-1.536l-.402-.24-4.17.564.558-4.084-.262-.417a11.03 11.03 0 1 1 9.886 5.713Zm6.044-8.254c-.332-.166-1.963-.969-2.268-1.08-.305-.11-.527-.166-.749.167-.222.332-.86 1.08-1.054 1.302-.194.222-.388.25-.72.083-.332-.166-1.402-.517-2.67-1.648-.987-.88-1.653-1.967-1.847-2.3-.194-.332-.02-.512.146-.677.15-.149.332-.388.499-.582.166-.194.222-.333.332-.555.111-.222.056-.416-.028-.583-.083-.166-.749-1.804-1.026-2.47-.27-.648-.545-.56-.749-.57l-.638-.012a1.224 1.224 0 0 0-.888.417c-.305.332-1.165 1.138-1.165 2.775s1.193 3.22 1.359 3.442c.166.222 2.347 3.582 5.688 5.024.795.343 1.415.548 1.899.702.798.253 1.524.218 2.098.132.64-.095 1.963-.803 2.24-1.578.278-.775.278-1.44.194-1.578-.083-.139-.305-.222-.638-.389Z"/></svg>
     </a>
+
+    <script>
+    function toggleHeroBenefits() {
+        var section = document.getElementById('heroBenefitsSection');
+        var btn = document.getElementById('heroBenefitsToggle');
+        var isMinimized = section.classList.toggle('minimized');
+
+        if (isMinimized) {
+            btn.innerHTML = '<i class="fa fa-eye"></i> <span>Tampilkan Harga</span>';
+        } else {
+            btn.innerHTML = '<i class="fa fa-eye-slash"></i> <span>Sembunyikan</span>';
+        }
+    }
+    </script>
 
 </body>
 </html>
