@@ -68,7 +68,7 @@ class FrontController extends Controller
 
         $featuredProducts = MasterGoldReadyStock::where('is_active', true)
             ->where('stok', '>', 0)
-            ->orderByDesc('jumlah_terjual')
+            ->orderBy('gramasi', 'asc')
             ->limit(10)
             ->get();
 

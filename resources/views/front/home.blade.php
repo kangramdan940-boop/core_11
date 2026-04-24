@@ -1206,32 +1206,21 @@ Berlokasi di Bekasi, kami juga melayani buyback dengan harga menarik, serta sela
                 $fp.find('.owl-stage-outer').children().unwrap();
                 $fp.find('.owl-nav, .owl-dots').remove();
 
-                // Adjust settings based on product count
-                var shouldLoop = totalItems > 5;
-                var showNav = totalItems > 5;
-                var showDots = totalItems > 5;
-                var autoplay = totalItems > 5;
-
-                var desktopItems = Math.min(totalItems, 5);
-                var tabletItems  = Math.min(totalItems, 4);
-                var smallItems   = Math.min(totalItems, 3);
-                var mobileItems  = Math.min(totalItems, 2);
-
                 // Re-initialize with our settings
                 $fp.owlCarousel({
-                    loop: shouldLoop,
+                    loop: totalItems > 2,
                     margin: 20,
-                    nav: showNav,
-                    dots: showDots,
-                    autoplay: autoplay,
+                    nav: true,
+                    dots: true,
+                    autoplay: totalItems > 2,
                     autoplayTimeout: 4000,
                     autoplayHoverPause: true,
                     navText: ['<i class="fa fa-chevron-left"></i>', '<i class="fa fa-chevron-right"></i>'],
                     responsive: {
-                        0:    { items: mobileItems, margin: 10 },
-                        768:  { items: smallItems, margin: 15 },
-                        992:  { items: tabletItems, margin: 20 },
-                        1200: { items: desktopItems, margin: 20 }
+                        0:    { items: 2, margin: 10, nav: true, dots: true },
+                        768:  { items: 3, margin: 15 },
+                        992:  { items: 4, margin: 20 },
+                        1200: { items: Math.min(totalItems, 5), margin: 20 }
                     }
                 });
             }
