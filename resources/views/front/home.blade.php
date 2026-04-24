@@ -1278,9 +1278,18 @@ Berlokasi di Bekasi, kami juga melayani buyback dengan harga menarik, serta sela
                 <span>Total</span>
                 <span id="cartDrawerTotal">Rp 0</span>
             </div>
-            <button class="fp-cart-btn" onclick="alert('Silakan login untuk melanjutkan checkout'); return false;">
-                <i class="fa fa-arrow-right"></i> Checkout
-            </button>
+            @auth
+                <button class="fp-cart-btn" onclick="window.location.href='{{ route('customer.dashboard') }}'">
+                    <i class="fa fa-arrow-right"></i> Checkout
+                </button>
+            @else
+                <button class="fp-cart-btn" onclick="alert('Silakan login untuk melanjutkan checkout'); return false;">
+                    <i class="fa fa-arrow-right"></i> Checkout
+                </button>
+                <button class="fp-cart-btn fp-cart-btn-wa" onclick="checkoutViaWhatsApp(); return false;" style="margin-top:8px; background:#25D366;">
+                    <i class="fa fa-whatsapp"></i> Transaksi tanpa Login
+                </button>
+            @endauth
         </div>
     </div>
 
@@ -1411,6 +1420,40 @@ Berlokasi di Bekasi, kami juga melayani buyback dengan harga menarik, serta sela
 
         // Init on page load
         renderCart();
+
+        window.checkoutViaWhatsApp = function() {
+            var cart = getCart();
+            if (cart.length === 0) {
+                alert('Keranjang masih kosong.');
+                return;
+            }
+
+            var totalPrice = 0;
+            var lines = [];
+            lines.push('Halo, saya ingin melakukan transaksi tanpa melakukan pendaftaran di web jajanemas, tolong di bantu.');
+            lines.push('');
+            lines.push('Berikut adalah transaksi yang akan saya lakukan:');
+            lines.push('================================');
+            for (var i = 0; i < cart.length; i++) {
+                var c = cart[i];
+                var subtotal = c.qty * c.price;
+                totalPrice += subtotal;
+                lines.push(
+                    (i + 1) + '. *' + c.name + '*'
+                    + '\n   Harga: ' + formatRp(c.price)
+                    + '\n   Jumlah: ' + c.qty
+                    + '\n   Subtotal: ' + formatRp(subtotal)
+                );
+            }
+            lines.push('================================');
+            lines.push('*Total: ' + formatRp(totalPrice) + '*');
+            lines.push('');
+            lines.push('Bagaimana saya bisa melakukan transaksi selanjutnya? Terima kasih 🙏');
+
+            var message = lines.join('\n');
+            var url = 'https://wa.me/6282210259995?text=' + encodeURIComponent(message);
+            window.open(url, '_blank');
+        };
     })();
     </script>
 
