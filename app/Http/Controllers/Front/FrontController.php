@@ -9,6 +9,7 @@ use App\Models\MasterHomeSlider;
 use App\Models\MasterMenuHomeCustomer;
 use App\Models\MasterProdukDanLayanan;
 use App\Models\TransPo;
+use App\Models\TransReady;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -817,6 +818,128 @@ class FrontController extends Controller
             'assignments' => $assignments,
             'mobilitiesByPo' => $mobilitiesByPo,
             'date' => $d,
+        ]);
+    }
+
+    /**
+     * API: Load transaksi social-proof ke session.
+     *
+     * - Pertama kali / session expired → query DB ambil transaksi yang TIME(created_at)
+     *   ada di rentang +30 menit s/d +1 jam dari jam:menit sekarang, simpan ke session.
+     * - Selanjutnya → langsung return dari session tanpa query DB.
+     * - Session di-refresh otomatis setelah 1 jam (force=1 dari JS).
+     */
+    public function socialProofTransactions(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $forceRefresh = $request->boolean('force');
+        $sessionKey   = 'social_proof_data';
+        $sessionTsKey = 'social_proof_ts';
+
+        $sessionTs = session($sessionTsKey);
+        $needRefresh = $forceRefresh
+            || !session()->has($sessionKey)
+            || !$sessionTs
+            || (now()->diffInMinutes(\Illuminate\Support\Carbon::parse($sessionTs)) >= 60);
+
+        if ($needRefresh) {
+            $now       = now();
+            $timeFrom  = $now->copy()->subMinutes(30)->format('H:i:s');
+            $timeTo    = $now->copy()->addMinutes(30)->format('H:i:s');
+            $wrapsOver = $timeFrom > $timeTo; // misal 23:45 → 00:15
+
+            // --- trans_po ---
+            $poQuery = DB::table('trans_po')
+                ->join('master_customer', 'trans_po.master_customer_id', '=', 'master_customer.id')
+                ->leftJoin('master_produk_dan_layanan', 'trans_po.id_master_produk_dan_layanan', '=', 'master_produk_dan_layanan.id')
+                ->leftJoin('master_gramasi_emas', 'master_produk_dan_layanan.id_gramasi', '=', 'master_gramasi_emas.id')
+                ->whereIn('trans_po.status', ['paid', 'processing', 'ready_at_agen', 'shipped', 'completed']);
+
+            if ($wrapsOver) {
+                $poQuery->where(function ($q) use ($timeFrom, $timeTo) {
+                    $q->whereRaw("TIME(trans_po.created_at) >= ?", [$timeFrom])
+                      ->orWhereRaw("TIME(trans_po.created_at) <= ?", [$timeTo]);
+                });
+            } else {
+                $poQuery->whereRaw("TIME(trans_po.created_at) BETWEEN ? AND ?", [$timeFrom, $timeTo]);
+            }
+
+            $poItems = $poQuery->select([
+                DB::raw("'po' as tipe"),
+                'master_customer.full_name',
+                'master_customer.kota',
+                DB::raw("COALESCE(master_gramasi_emas.nama, CONCAT(ROUND(trans_po.total_gram, 1), 'gr')) as produk"),
+                'trans_po.total_amount',
+                'trans_po.status',
+                'trans_po.created_at',
+            ])->limit(30)->get();
+
+            // --- trans_ready ---
+            $readyQuery = DB::table('trans_ready')
+                ->join('master_customer', 'trans_ready.master_customer_id', '=', 'master_customer.id')
+                ->leftJoin('master_gold_ready_stock', 'trans_ready.master_gold_ready_stock_id', '=', 'master_gold_ready_stock.id')
+                ->whereIn('trans_ready.status', ['paid', 'shipped', 'completed']);
+
+            if ($wrapsOver) {
+                $readyQuery->where(function ($q) use ($timeFrom, $timeTo) {
+                    $q->whereRaw("TIME(trans_ready.created_at) >= ?", [$timeFrom])
+                      ->orWhereRaw("TIME(trans_ready.created_at) <= ?", [$timeTo]);
+                });
+            } else {
+                $readyQuery->whereRaw("TIME(trans_ready.created_at) BETWEEN ? AND ?", [$timeFrom, $timeTo]);
+            }
+
+            $readyItems = $readyQuery->select([
+                DB::raw("'ready' as tipe"),
+                'master_customer.full_name',
+                'master_customer.kota',
+                DB::raw("COALESCE(master_gold_ready_stock.nama_produk, CONCAT(master_gold_ready_stock.brand, ' ', ROUND(master_gold_ready_stock.gramasi, 1), 'gr')) as produk"),
+                'trans_ready.total_amount',
+                'trans_ready.status',
+                'trans_ready.created_at',
+            ])->limit(30)->get();
+
+            $statusLabels = [
+                'paid'          => 'Pembayaran Dikonfirmasi',
+                'processing'    => 'Sedang Diproses',
+                'ready_at_agen' => 'Siap Dikirim',
+                'shipped'       => 'Dalam Pengiriman',
+                'completed'     => 'Selesai',
+            ];
+
+            $results = $poItems->merge($readyItems)->map(function ($item) use ($statusLabels) {
+                $name       = $item->full_name ?? 'Seseorang';
+                $maskedName = mb_substr($name, 0, 3) . '***';
+                $createdAt  = \Illuminate\Support\Carbon::parse($item->created_at);
+
+                return [
+                    'tipe'       => $item->tipe,
+                    'nama'       => $maskedName,
+                    'kota'       => $item->kota ?? '',
+                    'produk'     => $item->produk ?? 'Emas',
+                    'total'      => 'Rp ' . number_format((float) $item->total_amount, 0, ',', '.'),
+                    'status'     => $statusLabels[$item->status] ?? $item->status,
+                    'waktu'      => $createdAt->diffForHumans(),
+                    'trigger_at' => $createdAt->format('H:i:s'), // jam:menit:detik untuk compare di JS
+                ];
+            })->values()->toArray();
+
+            session([$sessionKey => $results, $sessionTsKey => $now->toIso8601String()]);
+
+            return response()->json([
+                'source'     => 'db',
+                'fetched_at' => $now->toIso8601String(),
+                'range'      => $timeFrom . ' - ' . $timeTo,
+                'count'      => count($results),
+                'data'       => $results,
+            ]);
+        }
+
+        // Return dari session
+        return response()->json([
+            'source'     => 'session',
+            'fetched_at' => session($sessionTsKey),
+            'count'      => count(session($sessionKey, [])),
+            'data'       => session($sessionKey, []),
         ]);
     }
 }

@@ -538,6 +538,117 @@
             .wa-float { width: 50px; height: 50px; bottom: 18px; right: 18px; }
             .wa-float svg { width: 24px; height: 24px; }
         }
+
+        /* ===== Social Proof Popup ===== */
+        .social-proof-container {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            z-index: 99998;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+            overflow: visible;
+        }
+        .social-proof-popup {
+            pointer-events: auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,.15);
+            padding: 14px 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            width: 340px;
+            max-width: calc(100vw - 40px);
+            transform: translateY(-20px);
+            opacity: 0;
+            visibility: hidden;
+            transition: transform .4s cubic-bezier(.22,1,.36,1), opacity .4s ease, visibility 0s .4s;
+            border-left: 4px solid #dcb73f;
+            position: relative;
+        }
+        .social-proof-popup.show {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+            transition: transform .4s cubic-bezier(.22,1,.36,1), opacity .4s ease, visibility 0s 0s;
+        }
+        .social-proof-popup.hide {
+            transform: translateY(-20px);
+            opacity: 0;
+            visibility: hidden;
+            transition: transform .4s ease, opacity .4s ease, visibility 0s .4s;
+        }
+        .social-proof-icon {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f1c40f, #e67e22);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 18px;
+        }
+        .social-proof-body { flex: 1; min-width: 0; }
+        .social-proof-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 2px;
+            line-height: 1.3;
+        }
+        .social-proof-desc {
+            font-size: 11.5px;
+            color: #666;
+            margin: 0 0 4px;
+            line-height: 1.4;
+        }
+        .social-proof-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 10px;
+            color: #999;
+        }
+        .social-proof-badge {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #2e7d32;
+            font-size: 9px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 10px;
+            text-transform: uppercase;
+            letter-spacing: .3px;
+        }
+        .social-proof-close {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: #bbb;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+        }
+        .social-proof-close:hover { color: #666; }
+        @media (max-width: 767px) {
+            .social-proof-container {
+                top: 70px;
+                right: 10px;
+                left: 10px;
+            }
+            .social-proof-popup {
+                min-width: unset;
+                max-width: 100%;
+            }
+        }
     </style>
 
 </head>
@@ -1505,6 +1616,99 @@ Berlokasi di Bekasi, kami juga melayani buyback dengan harga menarik, serta sela
             btn.innerHTML = '<i class="fa fa-eye-slash"></i> <span>Sembunyikan</span>';
         }
     }
+    </script>
+
+    <!-- Social Proof Popup Container -->
+    <div class="social-proof-container" id="socialProofContainer"></div>
+
+    <script>
+    (function(){
+        var container = document.getElementById('socialProofContainer');
+        var sessionData = [];
+        var shownTriggers = {};
+        var queue = [];
+        var isShowing = false;
+        var sessionFetchedAt = null;
+        var SESSION_LIFETIME = 60 * 60 * 1000;
+
+        function formatIcon(tipe) {
+            return tipe === 'ready' ? 'fa-check-circle' : 'fa-shopping-cart';
+        }
+
+        function showNext() {
+            if (queue.length === 0) { isShowing = false; return; }
+            isShowing = true;
+            var item = queue.shift();
+
+            var popup = document.createElement('div');
+            popup.className = 'social-proof-popup';
+            popup.innerHTML =
+                '<div class="social-proof-icon"><i class="fa ' + formatIcon(item.tipe) + '"></i></div>' +
+                '<div class="social-proof-body">' +
+                    '<div class="social-proof-title">' + item.nama + (item.kota ? ' dari ' + item.kota : '') + '</div>' +
+                    '<div class="social-proof-desc">Membeli <strong>' + item.produk + '</strong></div>' +
+                    '<div class="social-proof-meta">' +
+                        '<span class="social-proof-badge"><i class="fa fa-check"></i> Terkonfirmasi</span>' +
+                    '</div>' +
+                '</div>' +
+                '<button class="social-proof-close" onclick="this.parentElement.classList.remove(\'show\');this.parentElement.classList.add(\'hide\');var el=this.parentElement;setTimeout(function(){el.remove()},500)">&times;</button>';
+
+            container.appendChild(popup);
+            setTimeout(function(){ popup.classList.add('show'); }, 50);
+
+            setTimeout(function(){
+                popup.classList.remove('show');
+                popup.classList.add('hide');
+                setTimeout(function(){ popup.remove(); }, 500);
+                setTimeout(showNext, 800);
+            }, 5000);
+        }
+
+        function fetchSession(force) {
+            var url = '/api/social-proof' + (force ? '?force=1' : '');
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.setRequestHeader('Accept', 'application/json');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    try {
+                        var resp = JSON.parse(xhr.responseText);
+                        sessionData = resp.data || [];
+                        sessionFetchedAt = new Date().getTime();
+                        shownTriggers = {};
+                    } catch(e) {}
+                }
+            };
+            xhr.send();
+        }
+
+        function checkTriggers() {
+            if (sessionData.length === 0) return;
+            var now = new Date();
+            var currentTime = ('0' + now.getHours()).slice(-2) + ':' +
+                              ('0' + now.getMinutes()).slice(-2) + ':' +
+                              ('0' + now.getSeconds()).slice(-2);
+
+            for (var i = 0; i < sessionData.length; i++) {
+                var item = sessionData[i];
+                var triggerKey = item.trigger_at + '_' + i;
+                if (item.trigger_at === currentTime && !shownTriggers[triggerKey]) {
+                    shownTriggers[triggerKey] = true;
+                    queue.push(item);
+                }
+            }
+            if (queue.length > 0 && !isShowing) showNext();
+        }
+
+        function checkSessionRefresh() {
+            if (!sessionFetchedAt) return;
+            if (new Date().getTime() - sessionFetchedAt >= SESSION_LIFETIME) fetchSession(true);
+        }
+
+        setTimeout(function(){ fetchSession(false); }, 2000);
+        setInterval(checkTriggers, 1000);
+        setInterval(checkSessionRefresh, 5 * 60 * 1000);
+    })();
     </script>
 
 </body>

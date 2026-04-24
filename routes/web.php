@@ -56,6 +56,7 @@ use Illuminate\Support\Facades\Crypt;
 // FRONT HOME
 // ====================================
 Route::get('/', [FrontController::class, 'home']);
+Route::get('/api/social-proof', [FrontController::class, 'socialProofTransactions'])->name('social-proof');
 Route::get('/katalog-produk', [FrontController::class, 'katalogProduk'])->name('katalog.produk');
 Route::get('/pemesanan-emas-belum-tersedia', function () {
     return view('front.order-unavailable');
