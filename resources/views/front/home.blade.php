@@ -356,6 +356,36 @@
         }
         .fp-cart-btn-disabled:hover { opacity: 1; transform: none; }
 
+        /* ===== Small Cart Button (Etalase Table) ===== */
+        .fp-cart-btn.fp-cart-btn-sm {
+            display: inline-block;
+            width: auto;
+            margin-top: 0;
+            padding: 5px 14px;
+            font-size: 11px;
+            white-space: nowrap;
+            border-radius: 20px;
+        }
+        .fp-cart-btn.fp-cart-btn-sm.fp-cart-btn-wa {
+            background: #25D366;
+            color: #fff;
+        }
+        .fp-cart-btn.fp-cart-btn-sm.fp-cart-btn-wa:hover {
+            background: #1da851;
+        }
+        .fp-cart-btn.fp-cart-btn-sm.fp-cart-btn-po {
+            background: #3b7ddd;
+            color: #fff;
+            text-decoration: none;
+        }
+        .fp-cart-btn.fp-cart-btn-sm.fp-cart-btn-po:hover {
+            background: #2f65b5;
+        }
+        @media (max-width: 575px) {
+            .fp-cart-btn.fp-cart-btn-sm { padding: 4px 8px; font-size: 10px; }
+            .fp-cart-btn.fp-cart-btn-sm .jj-btn-label { display: none; }
+        }
+
         /* ===== Cart Drawer ===== */
         .cart-drawer-overlay {
             position: fixed; inset: 0;
@@ -1006,6 +1036,7 @@
                     <table class="jj-table">
                         <thead>
                             <tr>
+                                <th>Aksi</th>
                                 <th>Brand</th>
                                 <th>Berat</th>
                                 <th>Harga</th>
@@ -1023,8 +1054,26 @@
                                     $stok = (int) ($row->stok ?? 0);
                                     $status = $stok > 0 ? 'Ready' : 'Habis';
                                     $statusClass = $stok > 0 ? 'jj-status-ready' : 'jj-status-empty';
+
+                                    $etalaseImages = $row->images ?? [];
+                                    $etalaseFirstImage = is_array($etalaseImages) && count($etalaseImages) > 0 ? $etalaseImages[0] : null;
+                                    $etalaseImageUrl = $etalaseFirstImage
+                                        ? (str_starts_with($etalaseFirstImage, 'http') ? $etalaseFirstImage : asset($etalaseFirstImage))
+                                        : asset('assets/images/no-image.png');
+                                    $etalaseNama = $row->nama_produk ?? ($brand . ' ' . ($row->gramasi ?? '') . 'gr');
                                 @endphp
                                 <tr>
+                                    <td>
+                                        @if($stok >= 1)
+                                        <button class="fp-cart-btn fp-cart-btn-sm" onclick="addToCart({{ $row->id }}, '{{ addslashes($etalaseNama) }}', {{ $harga }}, '{{ $etalaseImageUrl }}', {{ $stok }}); return false;">
+                                            <i class="fa fa-cart-plus"></i> <span class="jj-btn-label">Keranjang</span>
+                                        </button>
+                                        @else
+                                        <button class="fp-cart-btn fp-cart-btn-sm fp-cart-btn-disabled" disabled>
+                                            <i class="fa fa-times-circle"></i> <span class="jj-btn-label">Habis</span>
+                                        </button>
+                                        @endif
+                                    </td>
                                     <td><span class="jj-badge {{ $badgeClass }}">{{ $brand }}</span></td>
                                     <td>{{ $row->gramasi ?? '-' }} gr</td>
                                     <td>Rp {{ number_format($harga, 0, ',', '.') }}</td>
@@ -1033,7 +1082,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center">Data belum tersedia</td>
+                                    <td colspan="6" class="text-center">Data belum tersedia</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -1058,11 +1107,11 @@
                     <table class="jj-table">
                         <thead>
                             <tr>
+                                <th>Aksi</th>
                                 <th>Brand</th>
                                 <th>Berat</th>
                                 <th>Harga PO</th>
                                 <th>Estimasi</th>
-                                <th>Min. Order</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1073,18 +1122,27 @@
                                     $badgeClass = str_contains($brandLower, 'antam') ? 'jj-badge-gold' : (str_contains($brandLower, 'bsi') ? 'jj-badge-blue' : 'jj-badge-silver');
                                     $harga = (int) ($row->harga ?? 0);
                                     $estimasi = (string) ($row->stok ?? '-');
-                                    $minOrder = (string) ($row->status ?? '-');
                                 @endphp
                                 <tr>
+                                    <td>
+                                        @auth
+                                        <a href="{{ route('customer.dashboard') }}" class="fp-cart-btn fp-cart-btn-sm fp-cart-btn-po">
+                                            <i class="fa fa-shopping-bag"></i> <span class="jj-btn-label">Transaksi</span>
+                                        </a>
+                                        @else
+                                        <a href="{{ route('customer.login') }}" class="fp-cart-btn fp-cart-btn-sm fp-cart-btn-po">
+                                            <i class="fa fa-sign-in"></i> <span class="jj-btn-label">Transaksi</span>
+                                        </a>
+                                        @endauth
+                                    </td>
                                     <td><span class="jj-badge {{ $badgeClass }}">{{ $brand }}</span></td>
                                     <td>{{ $row->berat ?? '-' }}</td>
                                     <td>Rp {{ number_format($harga, 0, ',', '.') }}</td>
-                                    <td>{{ $estimasi }}</td>
-                                    <td>{{ $minOrder }}</td>
+                                    <td> 30-45 hari</td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center">Data belum tersedia</td>
+                                    <td colspan="6" class="text-center">Data belum tersedia</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -1109,6 +1167,7 @@
                     <table class="jj-table">
                         <thead>
                             <tr>
+                                <th>Aksi</th>
                                 <th>Brand</th>
                                 <th>Berat</th>
                                 <th>Harga Buyback</th>
@@ -1125,17 +1184,24 @@
                                     $hargaBuyback = (int) ($row->buyback ?? 0);
                                     $syarat = (string) ($row->stok ?? '-');
                                     $proses = (string) ($row->status ?? '-');
+                                    $beratBuyback = (string) ($row->berat ?? '-');
                                 @endphp
                                 <tr>
+                                    <td>
+                                        <button class="fp-cart-btn fp-cart-btn-sm fp-cart-btn-wa"
+                                            onclick="buybackWhatsApp('{{ addslashes($brand) }}', '{{ addslashes($beratBuyback) }}', '{{ number_format($hargaBuyback, 0, ',', '.') }}'); return false;">
+                                            <i class="fa fa-whatsapp"></i> <span class="jj-btn-label">Jual</span>
+                                        </button>
+                                    </td>
                                     <td><span class="jj-badge {{ $badgeClass }}">{{ $brand }}</span></td>
-                                    <td>{{ $row->berat ?? '-' }}</td>
+                                    <td>{{ $beratBuyback }}</td>
                                     <td>Rp {{ number_format($hargaBuyback, 0, ',', '.') }}</td>
                                     <td>{{ $syarat }}</td>
                                     <td>{{ $proses }}</td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center">Data belum tersedia</td>
+                                    <td colspan="6" class="text-center">Data belum tersedia</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -1143,7 +1209,7 @@
                 </div>
             </div>
             <div class="jj-modal-footer">
-                <small><i class="fa fa-info-circle"></i> Harga buyback update setiap hari &bull; Kondisi emas harus mulus dan bersertifikat</small>
+                <small><i class="fa fa-info-circle"></i>Buyback di lakukan dengan cara langsung ke lokasi jajanemas atau dikirim online ke alamat jajanemas terlebih dahulu</small>
             </div>
         </div>
     </div>
@@ -1590,6 +1656,24 @@ Berlokasi di Bekasi, kami juga melayani buyback dengan harga menarik, serta sela
             lines.push('*Total: ' + formatRp(totalPrice) + '*');
             lines.push('');
             lines.push('Bagaimana saya bisa melakukan transaksi selanjutnya? Terima kasih 🙏');
+
+            var message = lines.join('\n');
+            var url = 'https://wa.me/6282210259995?text=' + encodeURIComponent(message);
+            window.open(url, '_blank');
+        };
+
+        window.buybackWhatsApp = function(brand, berat, harga) {
+            var lines = [];
+            lines.push('Halo Jajan Emas 👋');
+            lines.push('');
+            lines.push('Saya ingin menjual emas saya dengan detail berikut:');
+            lines.push('================================');
+            lines.push('*Brand:* ' + brand);
+            lines.push('*Berat:* ' + berat);
+            lines.push('*Harga Buyback:* Rp ' + harga);
+            lines.push('================================');
+            lines.push('');
+            lines.push('Mohon informasi prosedur dan langkah selanjutnya untuk proses buyback. Terima kasih 🙏');
 
             var message = lines.join('\n');
             var url = 'https://wa.me/6282210259995?text=' + encodeURIComponent(message);
