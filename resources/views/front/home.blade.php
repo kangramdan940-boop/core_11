@@ -390,7 +390,7 @@
         .cart-drawer-overlay {
             position: fixed; inset: 0;
             background: rgba(0,0,0,.4);
-            z-index: 9998;
+            z-index: 100000;
             opacity: 0;
             visibility: hidden;
             transition: all .3s ease;
@@ -404,7 +404,7 @@
             max-width: 90vw;
             height: 100%;
             background: #fff;
-            z-index: 9999;
+            z-index: 100001;
             box-shadow: -4px 0 20px rgba(0,0,0,.15);
             transition: right .3s ease;
             display: flex;
