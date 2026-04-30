@@ -1171,8 +1171,6 @@
                                 <th>Brand</th>
                                 <th>Berat</th>
                                 <th>Harga Buyback</th>
-                                <th>Syarat</th>
-                                <th>Proses</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1196,8 +1194,6 @@
                                     <td><span class="jj-badge {{ $badgeClass }}">{{ $brand }}</span></td>
                                     <td>{{ $beratBuyback }}</td>
                                     <td>Rp {{ number_format($hargaBuyback, 0, ',', '.') }}</td>
-                                    <td>{{ $syarat }}</td>
-                                    <td>{{ $proses }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -1490,7 +1486,7 @@ Berlokasi di Bekasi, kami juga melayani buyback dengan harga menarik, serta sela
                     <i class="fa fa-arrow-right"></i> Checkout
                 </button>
             @else
-                <button class="fp-cart-btn" onclick="alert('Silakan login untuk melanjutkan checkout'); return false;">
+                <button class="fp-cart-btn" onclick="window.location.href='{{ route('customer.login') }}'">
                     <i class="fa fa-arrow-right"></i> Checkout
                 </button>
                 <button class="fp-cart-btn fp-cart-btn-wa" onclick="checkoutViaWhatsApp(); return false;" style="margin-top:8px; background:#25D366;">
