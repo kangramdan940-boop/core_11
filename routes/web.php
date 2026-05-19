@@ -31,6 +31,7 @@ use App\Http\Controllers\Admin\TransKeranjangController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\LoginManagementController;
+use App\Http\Controllers\Admin\UserPushTokenController;
 use App\Http\Controllers\Admin\SysUserManagementController;
 use App\Http\Controllers\Admin\MasterAssetController;
 use App\Http\Controllers\Admin\MasterPaymentSettingController;
@@ -594,6 +595,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/login-management/{user}/kick', [LoginManagementController::class, 'kick'])
             ->name('login-management.kick')
             ->middleware('admin');
+
+        // Push Notification Tokens
+        Route::prefix('push-tokens')->name('push-tokens.')->middleware('admin')->group(function () {
+            Route::get('/', [UserPushTokenController::class, 'index'])->name('index');
+            Route::delete('/{pushToken}', [UserPushTokenController::class, 'destroy'])->name('destroy');
+            Route::patch('/{pushToken}/toggle-active', [UserPushTokenController::class, 'toggleActive'])->name('toggle-active');
+        });
 
         /*
         |--------------------------------------------------------------------------

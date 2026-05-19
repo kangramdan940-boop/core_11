@@ -35,5 +35,7 @@ Route::prefix('v1')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\V
 
     Route::get('/customers/portfolio/summary', [\App\Http\Controllers\Api\PortfolioApiController::class, 'summary'])->name('customer.portfolio.summary');
     Route::get('/customers/notifications', [\App\Http\Controllers\Api\NotificationApiController::class, 'index'])->name('customer.notifications');
+    Route::post('/customers/push-token', [\App\Http\Controllers\Api\PushTokenApiController::class, 'store'])->name('customer.push-token.store');
+    Route::delete('/customers/push-token', [\App\Http\Controllers\Api\PushTokenApiController::class, 'destroy'])->name('customer.push-token.destroy');
     Route::post('/customers/auth/logout', [\App\Http\Controllers\Api\CustomerAuthApiController::class, 'logout'])->name('customer.auth.logout');
 });

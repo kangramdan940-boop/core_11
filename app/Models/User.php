@@ -62,4 +62,17 @@ class User extends Authenticatable
     {
         return $this->hasMany(SysNotification::class, 'sys_user_id');
     }
+
+    public function pushTokens()
+    {
+        return $this->hasMany(UserPushToken::class, 'sys_user_id');
+    }
+
+    /**
+     * Ambil semua expo push token yang aktif untuk user ini.
+     */
+    public function activePushTokens()
+    {
+        return $this->pushTokens()->where('is_active', true);
+    }
 }
