@@ -44,7 +44,7 @@
                         <th>Status</th>
                         <th>Terakhir Digunakan</th>
                         <th>Terdaftar</th>
-                        <th style="width:100px;">Aksi</th>
+                        <th style="width:150px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -83,6 +83,16 @@
                             <td>{{ $item->created_at->format('Y-m-d H:i') }}</td>
                             <td>
                                 <div class="hstack gap-2 fs-15">
+                                    {{-- Test Notification --}}
+                                    <button type="button"
+                                            class="btn icon-btn-sm btn-light-info test-notif-btn"
+                                            title="Test Notification"
+                                            data-token="{{ $item->expo_push_token }}"
+                                            data-user="{{ $item->user ? $item->user->name : 'Unknown' }}">
+                                        <i class="ri-send-plane-line"></i>
+                                    </button>
+
+                                    {{-- Toggle Active --}}
                                     <form action="{{ route('admin.push-tokens.toggle-active', $item) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('PATCH')
@@ -90,6 +100,8 @@
                                             <i class="{{ $item->is_active ? 'ri-toggle-line' : 'ri-toggle-fill' }}"></i>
                                         </button>
                                     </form>
+
+                                    {{-- Delete --}}
                                     <a href="#" class="btn icon-btn-sm btn-light-danger delete-item"
                                        data-action="{{ route('admin.push-tokens.destroy', $item) }}"
                                        data-label="{{ $item->user ? $item->user->name : 'Token #'.$item->id }}">
@@ -117,11 +129,79 @@
             </div>
         @endif
     </div>
+
+    {{-- Modal Test Notification --}}
+    <div class="modal fade" id="testNotifModal" tabindex="-1" aria-labelledby="testNotifModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="testNotifModalLabel">
+                        <i class="ri-send-plane-line me-2"></i>Test Push Notification
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info d-flex align-items-center mb-3">
+                        <i class="ri-information-line me-2 fs-5"></i>
+                        <span>Mengirim ke: <strong id="modal-target-user"></strong></span>
+                    </div>
+
+                    <form id="testNotifForm">
+                        <input type="hidden" id="notif_expo_push_token" name="expo_push_token">
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="notif_title" class="form-label">Title <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="notif_title" name="title" value="🚀 Notifikasi Baru" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="notif_subtitle" class="form-label">Subtitle</label>
+                                <input type="text" class="form-control" id="notif_subtitle" name="subtitle" placeholder="Optional subtitle">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="notif_body" class="form-label">Body <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="notif_body" name="body" rows="3" required>Ini adalah test notifikasi dari admin panel.</textarea>
+                        </div>
+
+                        <hr>
+                        <p class="text-muted small mb-2"><i class="ri-database-2-line me-1"></i> Custom Data (opsional)</p>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="notif_data_screen" class="form-label">Screen (navigasi)</label>
+                                <input type="text" class="form-control" id="notif_data_screen" name="data_screen" placeholder="e.g. Home, OrderDetail">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="notif_data_type" class="form-label">Type</label>
+                                <input type="text" class="form-control" id="notif_data_type" name="data_type" placeholder="e.g. TEST_NOTIF, ORDER_UPDATE">
+                            </div>
+                        </div>
+                    </form>
+
+                    {{-- Response area --}}
+                    <div id="notif-response" class="d-none mt-3">
+                        <hr>
+                        <label class="form-label fw-semibold">Response dari Expo:</label>
+                        <pre class="bg-light p-3 rounded small" id="notif-response-body" style="max-height:200px;overflow:auto;"></pre>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-primary" id="sendTestNotifBtn">
+                        <i class="ri-send-plane-fill me-1"></i> Kirim Notifikasi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('js')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Delete confirmation
             document.querySelectorAll('.delete-item').forEach(function(btn) {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -141,6 +221,77 @@
                     }).then((result) => {
                         if (result.isConfirmed) form.submit();
                     });
+                });
+            });
+
+            // Test Notification Modal
+            const testNotifModal = new bootstrap.Modal(document.getElementById('testNotifModal'));
+
+            document.querySelectorAll('.test-notif-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    const token = this.getAttribute('data-token');
+                    const user = this.getAttribute('data-user');
+
+                    document.getElementById('notif_expo_push_token').value = token;
+                    document.getElementById('modal-target-user').textContent = user + ' (' + token + ')';
+                    document.getElementById('notif-response').classList.add('d-none');
+                    document.getElementById('notif-response-body').textContent = '';
+
+                    testNotifModal.show();
+                });
+            });
+
+            // Send Test Notification
+            document.getElementById('sendTestNotifBtn').addEventListener('click', function() {
+                const btn = this;
+                const form = document.getElementById('testNotifForm');
+                const formData = new FormData(form);
+
+                // Validate required fields
+                const title = formData.get('title');
+                const body = formData.get('body');
+                if (!title || !body) {
+                    Swal.fire({ icon: 'warning', title: 'Validasi', text: 'Title dan Body wajib diisi.', confirmButtonText: 'OK' });
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Mengirim...';
+
+                const payload = {};
+                formData.forEach((value, key) => {
+                    if (value) payload[key] = value;
+                });
+
+                fetch("{{ route('admin.push-tokens.send-test') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const responseDiv = document.getElementById('notif-response');
+                    const responseBody = document.getElementById('notif-response-body');
+
+                    responseDiv.classList.remove('d-none');
+                    responseBody.textContent = JSON.stringify(data, null, 2);
+
+                    if (data.status) {
+                        Swal.fire({ icon: 'success', title: 'Berhasil', text: data.message, confirmButtonText: 'OK' });
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Gagal', text: data.message, confirmButtonText: 'OK' });
+                    }
+                })
+                .catch(error => {
+                    Swal.fire({ icon: 'error', title: 'Error', text: 'Terjadi kesalahan: ' + error.message, confirmButtonText: 'OK' });
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="ri-send-plane-fill me-1"></i> Kirim Notifikasi';
                 });
             });
 

@@ -601,6 +601,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/', [UserPushTokenController::class, 'index'])->name('index');
             Route::delete('/{pushToken}', [UserPushTokenController::class, 'destroy'])->name('destroy');
             Route::patch('/{pushToken}/toggle-active', [UserPushTokenController::class, 'toggleActive'])->name('toggle-active');
+            Route::post('/send-test', [UserPushTokenController::class, 'sendTestNotification'])->name('send-test');
         });
 
         /*
