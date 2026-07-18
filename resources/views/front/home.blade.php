@@ -828,28 +828,7 @@
                 </div>
 
                 <!-- Portfolio Stats -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="portfolio-stats-wrap">
-                            <div class="portfolio-stats">
-                                <div class="portfolio-stat-item">
-                                    <span class="portfolio-stat-number">{{ number_format($statPengguna ?? 0, 0, ',', '.') }}+</span>
-                                    <span class="portfolio-stat-label">Pengguna</span>
-                                </div>
-                                <div class="portfolio-stat-divider"></div>
-                                <div class="portfolio-stat-item">
-                                    <span class="portfolio-stat-number">{{ number_format($statTransaksi ?? 0, 0, ',', '.') }}+</span>
-                                    <span class="portfolio-stat-label">Transaksi</span>
-                                </div>
-                                <div class="portfolio-stat-divider"></div>
-                                <div class="portfolio-stat-item">
-                                    <span class="portfolio-stat-number">{{ number_format($statGramTerjual ?? 0, 3, ',', '.') }}g</span>
-                                    <span class="portfolio-stat-label">Gram Terjual</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                
             </div>
         </div>
         <!-- ***** Header Text End ***** -->
