@@ -5,6 +5,7 @@
             [ 'type' => 'link', 'icon' => 'ri-home-3-line', 'text' => 'Dashboard', 'url' => route('admin.dashboard'), 'routeIs' => 'admin.dashboard' ],
             [ 'type' => 'link', 'icon' => 'ri-file-chart-line', 'text' => 'Laporan Keuangan', 'url' => route('admin.reports.index'), 'routeIs' => 'admin.reports.*' ],
             [ 'type' => 'link', 'icon' => 'ri-mail-send-line', 'text' => 'Email Logs', 'url' => route('admin.email-logs.index'), 'routeIs' => 'admin.email-logs.*' ],
+            [ 'type' => 'link', 'icon' => 'ri-exchange-dollar-line', 'text' => 'Buyback', 'url' => route('admin.master.buyback.index'), 'routeIs' => 'admin.master.buyback.*' ],
             [ 'type' => 'link', 'icon' => 'ri-receipt-line', 'text' => 'Payment Log', 'url' => route('admin.trans.payment-logs.index'), 'routeIs' => 'admin.trans.payment-logs.*' ],
 
  [ 'type' => 'title', 'text' => 'Transaksi' ],
@@ -15,6 +16,7 @@
             [ 'type' => 'link', 'icon' => 'ri-calculator-line', 'text' => 'Kalkulator FIFO', 'url' => route('admin.trans.fifo-calculator'), 'routeIs' => 'admin.trans.fifo-calculator' ],
             [ 'type' => 'link', 'icon' => 'ri-shopping-bag-3-line', 'text' => 'Produk & Layanan', 'url' => route('admin.master.produk-layanan.index'), 'routeIs' => 'admin.master.produk-layanan.*' ],
             [ 'type' => 'link', 'icon' => 'ri-flashlight-line', 'text' => 'Emas Ready', 'url' => route('admin.trans.ready.index'), 'routeIs' => 'admin.trans.ready.*' ],
+            [ 'type' => 'link', 'icon' => 'ri-exchange-funds-line', 'text' => 'Transaksi Buyback', 'url' => route('admin.trans.buyback.index'), 'routeIs' => 'admin.trans.buyback.*' ],
             [ 'type' => 'link', 'icon' => 'ri-flashlight-fill', 'text' => 'Flash Sale Order', 'url' => route('admin.trans.flash-sale-orders.index'), 'routeIs' => 'admin.trans.flash-sale-orders.*' ],
             [ 'type' => 'title', 'text' => 'Cicilan' ],
             [ 'type' => 'group', 'icon' => 'ri-hand-coin-line', 'text' => 'Cicilan', 'children' => [

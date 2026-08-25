@@ -823,6 +823,63 @@
                                 <div class="hero-price-source">Price: {{ $goldPrice->source ?? 'Jajan Emas' }}</div>
                             </div>
                         </div>
+
+                        <div class="hero-price-card hero-price-card--buyback">
+                            <div class="hero-price-card-top">
+                                <div class="hero-price-card-heading">
+                                    <div class="hero-price-card-icon" aria-hidden="true">
+                                        <i class="fa fa-exchange"></i>
+                                    </div>
+                                    <div class="hero-price-card-heading-text">
+                                        <div class="hero-price-card-title">Buyback Emas di Jajan Emas</div>
+                                        <div class="hero-price-card-subtitle">Harga beli kembali</div>
+                                    </div>
+                                </div>
+                                <div class="hero-live-badge">
+                                    <span class="hero-live-dot" aria-hidden="true"></span>
+                                    Live
+                                </div>
+                            </div>
+
+                            <div class="hero-price-card-price">
+                                <span class="hero-price-currency">Rp</span>
+                                <span class="hero-price-value">
+                                    @if(!empty($goldPrice?->buyback_price))
+                                        {{ number_format((float) $goldPrice->buyback_price, 0, ',', '.') }}
+                                    @else
+                                       -
+                                    @endif
+                                </span>
+                                <span class="hero-price-unit">/ gram</span>
+                            </div>
+
+                            <div class="hero-price-card-meta">
+                                <div class="hero-price-change">
+                                    Harga Jual:
+                                    <span class="hero-price-change-note">@if(!empty($goldPrice?->buy_price))
+                                            Rp {{ number_format((float) $goldPrice->buy_price, 0, ',', '.') }}
+                                        @else
+                                            -
+                                        @endif
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="hero-price-card-footer">
+                                <div class="hero-price-time">
+                                    <i class="fa fa-calendar" aria-hidden="true"></i>
+                                    @if(!empty($goldPrice?->price_date))
+                                        {{ \Illuminate\Support\Carbon::parse($goldPrice->price_date)->format('d M Y') }}
+                                        @if(!empty($goldPrice?->last_updated))
+                                            &bull; {{ \Illuminate\Support\Carbon::parse($goldPrice->last_updated)->format('H:i') }} WIB
+                                        @endif
+                                    @else
+                                        {{ date('d M Y') }} &bull; {{ date('H:i') }} WIB
+                                    @endif
+                                </div>
+                                <div class="hero-price-source">Price: {{ $goldPrice->source ?? 'Jajan Emas' }}</div>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-lg-6 d-none d-lg-block"></div>
                 </div>
@@ -1162,16 +1219,24 @@
                                     $syarat = (string) ($row->stok ?? '-');
                                     $proses = (string) ($row->status ?? '-');
                                     $beratBuyback = (string) ($row->berat ?? '-');
+                                    $beratDisplay = $beratBuyback;
+                                    if ($beratBuyback !== '-' && !preg_match('/gr|gram/i', $beratBuyback)) {
+                                        $beratDisplay = $beratBuyback . ' gram';
+                                    }
+                                @endphp
+                                @php
+                                    $buybackHref = Auth::check()
+                                        ? route('customer.buyback.create', ['ref' => encrypt((string) ($row->id ?? ''))])
+                                        : route('customer.login');
                                 @endphp
                                 <tr>
                                     <td>
-                                        <button class="fp-cart-btn fp-cart-btn-sm fp-cart-btn-wa"
-                                            onclick="buybackWhatsApp('{{ addslashes($brand) }}', '{{ addslashes($beratBuyback) }}', '{{ number_format($hargaBuyback, 0, ',', '.') }}'); return false;">
-                                            <i class="fa fa-whatsapp"></i> <span class="jj-btn-label">Jual</span>
-                                        </button>
+                                        <a href="{{ $buybackHref }}" class="fp-cart-btn fp-cart-btn-sm">
+                                            <i class="fa fa-exchange"></i> <span class="jj-btn-label">Jual</span>
+                                        </a>
                                     </td>
                                     <td><span class="jj-badge {{ $badgeClass }}">{{ $brand }}</span></td>
-                                    <td>{{ $beratBuyback }}</td>
+                                    <td>{{ $beratDisplay }}</td>
                                     <td>Rp {{ number_format($hargaBuyback, 0, ',', '.') }}</td>
                                 </tr>
                             @empty
@@ -1184,7 +1249,7 @@
                 </div>
             </div>
             <div class="jj-modal-footer">
-                <small><i class="fa fa-info-circle"></i>Buyback di lakukan dengan cara langsung ke lokasi jajanemas atau dikirim online ke alamat jajanemas terlebih dahulu</small>
+                <small><i class="fa fa-info-circle"></i> Klik "Jual" untuk mengajukan buyback online. Harga final ditetapkan setelah emas diverifikasi (datang ke lokasi atau kirim ke Jajan Emas).</small>
             </div>
         </div>
     </div>

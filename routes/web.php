@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\TransPaymentLogController;
 use App\Http\Controllers\Admin\TransPoController;
 use App\Http\Controllers\Admin\TransCicilanController;
 use App\Http\Controllers\Admin\TransReadyController;
+use App\Http\Controllers\Admin\TransBuybackController;
 use App\Http\Controllers\Admin\TransCicilanEmasController;
 use App\Http\Controllers\Admin\TransCicilanPaymentController;
 use App\Http\Controllers\Admin\TransCicilanAkadController;
@@ -42,6 +43,7 @@ use App\Http\Controllers\Front\CustomerAuthController;
 use App\Http\Controllers\Front\MitraAuthController;
 use App\Http\Controllers\Front\CustomerPoController;
 use App\Http\Controllers\Front\CustomerReadyController;
+use App\Http\Controllers\Front\CustomerBuybackController;
 use App\Http\Controllers\Front\CustomerCicilanController;
 use App\Http\Controllers\Front\FrontController;
 
@@ -133,6 +135,14 @@ Route::prefix('customer')->name('customer.')->group(function () {
         Route::post('/ready/cart-checkout', [CustomerReadyController::class, 'cartCheckout'])->name('ready.cart-checkout');
         Route::get('/ready-trans/{ready}', [CustomerReadyController::class, 'show'])->name('ready.show');
         Route::post('/ready-trans/{ready}/confirm-payment', [CustomerReadyController::class, 'confirmPayment'])->name('ready.confirm-payment');
+
+        // Buyback (jual emas ke jajanemas)
+        Route::get('/buyback', [CustomerBuybackController::class, 'index'])->name('buyback.index');
+        Route::get('/buyback/create', [CustomerBuybackController::class, 'create'])->name('buyback.create');
+        Route::post('/buyback', [CustomerBuybackController::class, 'store'])->name('buyback.store');
+        Route::get('/buyback/{buyback}', [CustomerBuybackController::class, 'show'])->name('buyback.show');
+        Route::post('/buyback/{buyback}/approve', [CustomerBuybackController::class, 'approve'])->name('buyback.approve');
+        Route::post('/buyback/{buyback}/cancel', [CustomerBuybackController::class, 'cancel'])->name('buyback.cancel');
 
         // Cicilan
         Route::get('/cicilan', [CustomerCicilanController::class, 'index'])->name('cicilan.index');
@@ -328,6 +338,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->names('gold-prices')
                 ->parameters([
                     'gold-prices' => 'price',
+                ]);
+
+            // Buyback (wp_etalase_emas dengan code=buyback)
+            Route::resource('buyback', \App\Http\Controllers\Admin\MasterBuybackController::class)
+                ->except(['show'])
+                ->names('buyback')
+                ->parameters([
+                    'buyback' => 'id',
                 ]);
 
             Route::resource('faktur', MasterFakturController::class)
@@ -547,6 +565,22 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->name('ready.cancel-pending-all');
             Route::get('/ready/invoice/bulk/pdf', [TransReadyController::class, 'invoiceBulkPdf'])
                 ->name('ready.invoice.bulk.pdf');
+
+            // Buyback (jual emas dari customer)
+            Route::get('/buyback', [TransBuybackController::class, 'index'])
+                ->name('buyback.index');
+            Route::get('/buyback/{id}', [TransBuybackController::class, 'show'])
+                ->whereNumber('id')
+                ->name('buyback.show');
+            Route::post('/buyback/{id}/set-price', [TransBuybackController::class, 'setPrice'])
+                ->whereNumber('id')
+                ->name('buyback.set-price');
+            Route::post('/buyback/{id}/pay', [TransBuybackController::class, 'pay'])
+                ->whereNumber('id')
+                ->name('buyback.pay');
+            Route::post('/buyback/{id}/status', [TransBuybackController::class, 'updateStatus'])
+                ->whereNumber('id')
+                ->name('buyback.update-status');
 
             // Flash Sale Orders
             Route::resource('flash-sale-orders', TransFlashSaleOrderController::class)

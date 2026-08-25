@@ -342,6 +342,9 @@ class FrontController extends Controller
         $contracts = $customer
             ? \App\Models\TransCicilan::where('master_customer_id', $customer->id)->orderByDesc('id')->limit(10)->get()
             : collect();
+        $buybacks = $customer
+            ? \App\Models\TransBuyback::where('master_customer_id', $customer->id)->orderByDesc('id')->limit(10)->get()
+            : collect();
         $menus = MasterMenuHomeCustomer::orderBy('id')->get();
         $produk = MasterProdukDanLayanan::orderBy('urutan')->limit(5)->get();
 
@@ -374,7 +377,7 @@ class FrontController extends Controller
             ->orderByDesc('id')
             ->get();
 
-        return view('front.customer.dashboard', compact('customer', 'orders', 'readyOrders', 'contracts', 'menus', 'produk', 'poGramTotal', 'readyGramTotal', 'cicilanGramTotal', 'customerAddresses'));
+        return view('front.customer.dashboard', compact('customer', 'orders', 'readyOrders', 'contracts', 'buybacks', 'menus', 'produk', 'poGramTotal', 'readyGramTotal', 'cicilanGramTotal', 'customerAddresses'));
     }
 
     /**
@@ -518,6 +521,9 @@ class FrontController extends Controller
         $contracts = $customer
             ? \App\Models\TransCicilan::where('master_customer_id', $customer->id)->orderByDesc('id')->get()
             : collect();
+        $buybacks = $customer
+            ? \App\Models\TransBuyback::where('master_customer_id', $customer->id)->orderByDesc('id')->get()
+            : collect();
 
         // Group ready orders: with keranjang vs without
         $readyGrouped = $readyOrders->filter(fn($r) => $r->id_keranjang)->groupBy('id_keranjang');
@@ -527,7 +533,7 @@ class FrontController extends Controller
         $poGrouped = $orders->filter(fn($o) => $o->id_keranjang)->groupBy('id_keranjang');
         $poSingle = $orders->filter(fn($o) => !$o->id_keranjang);
 
-        return view('front.customer.all-order', compact('customer', 'orders', 'readyOrders', 'contracts', 'readyGrouped', 'readySingle', 'poGrouped', 'poSingle'));
+        return view('front.customer.all-order', compact('customer', 'orders', 'readyOrders', 'contracts', 'buybacks', 'readyGrouped', 'readySingle', 'poGrouped', 'poSingle'));
     }
 
     public function customerProductDanLayanan(): View

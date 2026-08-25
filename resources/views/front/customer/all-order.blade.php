@@ -118,6 +118,11 @@
         .ao-badge-cancelled       { background:#f8d7da; color:#721c24; }
         .ao-badge-active          { background:#d1ecf1; color:#0c5460; }
         .ao-badge-unknown         { background:#e2e3e5; color:#383d41; }
+        /* Buyback statuses */
+        .ao-badge-pending_review  { background:#fff3cd; color:#856404; }
+        .ao-badge-priced          { background:#d1ecf1; color:#0c5460; }
+        .ao-badge-approved        { background:#cce5ff; color:#004085; }
+        .ao-badge-rejected        { background:#f8d7da; color:#721c24; }
 
         /* ===== Empty ===== */
         .ao-empty { text-align:center; color:#aaa; padding:60px 20px; }
@@ -155,7 +160,9 @@
             <div class="mt-24 mb-100pc">
 
                 @php
-                    $totalTrans = ($orders->count() + $readyOrders->count() + $contracts->count());
+                    $buybacks = $buybacks ?? collect();
+                    $buybackCount = $buybacks->count();
+                    $totalTrans = ($orders->count() + $readyOrders->count() + $contracts->count() + $buybackCount);
 
                     // Collect all statuses for counting
                     $allStatuses = collect();
@@ -186,6 +193,11 @@
                         </div>
                         @endif
                     @endforeach
+                    @if($buybackCount > 0)
+                        <div class="ao-tab" data-filter="buyback" onclick="aoFilter(this)">
+                            Pengajuan Buyback<span class="ao-tab-count">{{ $buybackCount }}</span>
+                        </div>
+                    @endif
                 </div>
 
                 {{-- Empty state --}}
@@ -342,6 +354,34 @@
                                     <div class="ao-single-sub">{{ optional($c->created_at)->format('d M Y') ?? '-' }}</div>
                                 </div>
                                 <span class="ao-badge ao-badge-{{ strtolower($c->status) }}">{{ strtoupper(str_replace('_', ' ', $c->status)) }}</span>
+                            </a>
+                        @endforeach
+                    @endif
+
+                    {{-- ===== BUYBACK ===== --}}
+                    @if($buybackCount > 0)
+                        @php
+                            $bbLabel = [
+                                'pending_review' => 'Menunggu Verifikasi',
+                                'priced'         => 'Menunggu Persetujuan',
+                                'approved'       => 'Disetujui',
+                                'paid'           => 'Dana Ditransfer',
+                                'completed'      => 'Selesai',
+                                'rejected'       => 'Ditolak',
+                                'cancelled'      => 'Dibatalkan',
+                            ];
+                        @endphp
+                        <div class="ao-section-title ao-section" data-section="buyback">🔄 Pengajuan Buyback</div>
+                        @foreach($buybacks as $b)
+                            <a href="{{ route('customer.buyback.show', ['buyback' => encrypt((string)$b->id)]) }}" class="ao-single ao-filterable" data-statuses="buyback {{ strtolower($b->status) }}" data-section="buyback">
+                                <div class="ao-single-icon" style="display:flex;align-items:center;justify-content:center;background:#eef7f0;">
+                                    <i class="fa fa-exchange" style="color:#1a7f37;font-size:18px;"></i>
+                                </div>
+                                <div class="ao-single-info">
+                                    <div class="ao-single-title">{{ $b->brand ?? 'Buyback' }} · {{ number_format((float)$b->berat_gram, 3) }}gr × {{ $b->qty }}</div>
+                                    <div class="ao-single-sub">{{ $b->kode_trans }} · Rp {{ number_format((float)$b->total_amount, 0, ',', '.') }} · {{ optional($b->created_at)->format('d M Y') ?? '-' }}</div>
+                                </div>
+                                <span class="ao-badge ao-badge-{{ strtolower($b->status) }}">{{ strtoupper(str_replace('_', ' ', $bbLabel[$b->status] ?? $b->status)) }}</span>
                             </a>
                         @endforeach
                     @endif

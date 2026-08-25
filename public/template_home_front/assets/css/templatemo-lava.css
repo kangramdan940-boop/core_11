@@ -742,6 +742,36 @@ welcome
   margin-bottom: 22px;
 }
 
+.hero-price-card--buyback {
+  background: linear-gradient(135deg, #0f2f4a 0%, #16456b 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.hero-price-card--buyback .hero-price-card-title {
+  color: #ffffff;
+}
+
+.hero-price-card--buyback .hero-price-card-subtitle,
+.hero-price-card--buyback .hero-price-card-footer,
+.hero-price-card--buyback .hero-price-unit,
+.hero-price-card--buyback .hero-price-change-note {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.hero-price-card--buyback .hero-price-card-icon {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+}
+
+.hero-price-card--buyback .hero-price-currency,
+.hero-price-card--buyback .hero-price-value {
+  color: #ffffff;
+}
+
+.hero-price-card--buyback .hero-price-card-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
 .hero-price-card-top {
   display: flex;
   align-items: center;
