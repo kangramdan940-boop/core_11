@@ -50,6 +50,21 @@
 
     <!-- Produk Unggulan Styles -->
     <style>
+        /* ===== Buyback card clickable + CTA ===== */
+        .hero-price-card--buyback { transition: transform .15s ease, box-shadow .2s ease; }
+        .hero-price-card--buyback:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(0,0,0,.28); }
+        .hero-price-card--buyback:focus-visible { outline: 2px solid #2ecc71; outline-offset: 2px; }
+        .hero-buyback-cta {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; margin-top: 14px; padding: 11px 16px;
+            border: 1px solid rgba(46,204,113,.55); border-radius: 12px;
+            background: rgba(46,204,113,.14); color: #eafff2;
+            font-size: 13.5px; font-weight: 700; letter-spacing: .01em;
+            cursor: pointer; transition: background .2s ease, border-color .2s ease;
+        }
+        .hero-buyback-cta:hover { background: rgba(46,204,113,.26); border-color: rgba(46,204,113,.85); }
+        .hero-buyback-cta i { font-size: 14px; }
+
         /* ===== Portfolio Stats ===== */
         .portfolio-stats-wrap {
             margin-top: 40px;
@@ -824,7 +839,10 @@
                             </div>
                         </div>
 
-                        <div class="hero-price-card hero-price-card--buyback">
+                        <div class="hero-price-card hero-price-card--buyback" role="button" tabindex="0"
+                            style="cursor:pointer;"
+                            onclick="openModal('modal-buyback')"
+                            onkeypress="if(event.key==='Enter'){openModal('modal-buyback');}">
                             <div class="hero-price-card-top">
                                 <div class="hero-price-card-heading">
                                     <div class="hero-price-card-icon" aria-hidden="true">
@@ -879,6 +897,12 @@
                                 </div>
                                 <div class="hero-price-source">Price: {{ $goldPrice->source ?? 'Jajan Emas' }}</div>
                             </div>
+
+                            <button type="button" class="hero-buyback-cta"
+                                onclick="event.stopPropagation(); openModal('modal-buyback');">
+                                <i class="fa fa-list-alt" aria-hidden="true"></i>
+                                Lihat Harga Buyback Hari Ini
+                            </button>
                         </div>
                     </div>
                     <div class="col-lg-6 d-none d-lg-block"></div>
