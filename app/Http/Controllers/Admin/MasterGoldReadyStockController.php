@@ -172,4 +172,31 @@ class MasterGoldReadyStockController extends Controller
             ->route('admin.master.ready-stocks.index')
             ->with('success', 'Semua stok emas ready berhasil diaktifkan.');
     }
+
+    public function bulkUpdateHargaJualFix(Request $request)
+    {
+        $data = $request->validate([
+            'items'                    => ['required', 'array', 'min:1'],
+            'items.*.id'               => ['required', 'integer', 'exists:master_gold_ready_stock,id'],
+            'items.*.harga_jual_fix'   => ['nullable', 'numeric', 'min:0'],
+        ]);
+
+        $updated = 0;
+
+        foreach ($data['items'] as $item) {
+            $harga = $item['harga_jual_fix'];
+            $harga = ($harga === '' || $harga === null) ? null : (float) $harga;
+
+            $affected = MasterGoldReadyStock::where('id', (int) $item['id'])
+                ->update(['harga_jual_fix' => $harga]);
+
+            $updated += $affected;
+        }
+
+        return response()->json([
+            'success' => true,
+            'updated' => $updated,
+            'message' => "Harga jual fix berhasil diperbarui untuk {$updated} data.",
+        ]);
+    }
 }

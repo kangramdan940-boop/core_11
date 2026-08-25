@@ -16,8 +16,6 @@
                     <th>Kode Item</th>
                     <th>Brand</th>
                     <th>Gramasi (g)</th>
-                    <th>Agen</th>
-                    <th>Kondisi</th>
                     <th>Status</th>
                     <th>Stok</th>
                     <th>Aktif</th>
@@ -32,8 +30,6 @@
                         <td class="text-center"><span class="badge bg-light text-dark border text-uppercase">{{ $s->kode_item }}</span></td>
                         <td class="text-uppercase">{{ $s->brand }}</td>
                         <td class="text-end">{{ number_format((float)$s->gramasi, 3, ',', '.') }}</td>
-                        <td>{{ optional($s->agen)->name ?? '-' }}</td>
-                        <td>{{ ucfirst($s->kondisi_barang) }}</td>
                         <td class="text-center">
                             @if($s->status === 'available')
                                 <span class="badge rounded-pill bg-success">Available</span>
@@ -51,7 +47,9 @@
                                 <span class="badge bg-secondary">Nonaktif</span>
                             @endif
                         </td>
-                        <td>{{ $s->harga_jual_fix !== null ? number_format((float)$s->harga_jual_fix, 2, ',', '.') : '-' }}</td>
+                        <td class="harga-jual-fix-cell" data-id="{{ $s->id }}" data-value="{{ $s->harga_jual_fix !== null ? (float)$s->harga_jual_fix : '' }}">
+                            <span class="harga-jual-fix-display fs-5 fw-semibold">{{ $s->harga_jual_fix !== null ? 'Rp ' . number_format((float)$s->harga_jual_fix, 0, ',', '.') : '-' }}</span>
+                        </td>
                         <td>
                             <div class="hstack gap-2 fs-15">
                                 <a href="{{ route('admin.master.ready-stocks.edit', $s) }}" class="btn icon-btn-sm btn-light-primary">
@@ -80,6 +78,27 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/select/1.6.0/css/select.dataTables.min.css">
     <link href="https://cdn.jsdelivr.net/npm/jquery-datatables-checkboxes@1.3.0/css/dataTables.checkboxes.min.css" rel="stylesheet">
+    <style>
+        .harga-float-bar {
+            position: fixed;
+            right: 1.5rem;
+            bottom: 1.5rem;
+            z-index: 1050;
+            display: flex;
+            gap: .75rem;
+        }
+        .harga-float-bar.d-none { display: none !important; }
+        .harga-float-bar .btn {
+            border-radius: .75rem;
+            box-shadow: 0 .5rem 1.5rem rgba(0, 0, 0, .18);
+        }
+        .harga-float-bar #bulkCancelHargaBtn {
+            background-color: #fff;
+        }
+        .harga-float-bar #bulkCancelHargaBtn:hover {
+            background-color: #6c757d;
+        }
+    </style>
 @endsection
 
 @section('js')
@@ -98,8 +117,9 @@
             const dt = $('#goldReadyTable').DataTable({
                 responsive: false,
                 scrollX: true,
-                lengthMenu: [10, 20, 50],
-                pageLength: 10,
+                paging: false,
+                pageLength: -1,
+                lengthChange: false,
                 ordering: true,
                 order: [[0, 'desc']],
                 columnDefs: [
@@ -112,17 +132,11 @@
                     't' +
                     '<"card-footer d-flex flex-column align-items-center gap-2"' +
                     '<"row w-100 align-items-center g-2"' +
-                        '<"col-12 col-md-5 d-flex align-items-center justify-content-md-start justify-content-center gap-2"l i>' +
-                        '<"col-12 col-md-7 d-flex justify-content-md-end justify-content-center"p>' +
+                        '<"col-12 d-flex align-items-center justify-content-center gap-2"i>' +
                     '>>',
                 language: {
-                    sLengthMenu: '_MENU_ ',
                     search: '',
-                    searchPlaceholder: 'Search Files',
-                    paginate: {
-                        next: '<i class="ri-arrow-right-s-line"></i>',
-                        previous: '<i class="ri-arrow-left-s-line"></i>'
-                    }
+                    searchPlaceholder: 'Search Files'
                 }
             });
 
@@ -150,9 +164,12 @@
                     '<form id="bulkActivateForm" action="{{ route('admin.master.ready-stocks.activate-all') }}" method="POST" class="d-inline">'+
                         '<input type="hidden" name="_token" value="{{ csrf_token() }}">'+
                     '</form>'+
+                    '<button type="button" id="bulkEditHargaBtn" class="btn btn-outline-primary"><i class="ri-pencil-line me-1"></i> Edit Harga Jual Fix</button>'+
                     '<button type="button" id="bulkDeactivateBtn" class="btn btn-outline-danger"><i class="ri-close-circle-line me-1"></i> Nonaktifkan Semua</button>'+
                     '<button type="button" id="bulkActivateBtn" class="btn btn-outline-success"><i class="ri-check-line me-1"></i> Aktifkan Semua</button>'+
                 '</div>';
+
+                setupBulkHargaEdit(dt);
                 document.getElementById('bulkDeactivateBtn')?.addEventListener('click', function () {
                     Swal.fire({
                         title: 'Nonaktifkan Semua?',
@@ -183,6 +200,126 @@
                         if (result.isConfirmed) {
                             document.getElementById('bulkActivateForm')?.submit();
                         }
+                    });
+                });
+            }
+
+            function setupBulkHargaEdit(dt) {
+                const editBtn = document.getElementById('bulkEditHargaBtn');
+                const bulkUrl = "{{ route('admin.master.ready-stocks.bulk-update-harga-jual-fix') }}";
+                const csrf = "{{ csrf_token() }}";
+                if (!editBtn) return;
+
+                // Floating action bar (bottom-right), only visible while editing
+                let floatBar = document.getElementById('hargaFloatBar');
+                if (!floatBar) {
+                    floatBar = document.createElement('div');
+                    floatBar.id = 'hargaFloatBar';
+                    floatBar.className = 'harga-float-bar d-none';
+                    floatBar.innerHTML =
+                        '<button type="button" id="bulkCancelHargaBtn" class="btn btn-outline-secondary btn-lg"><i class="ri-close-line me-1"></i> Batal</button>' +
+                        '<button type="button" id="bulkSaveHargaBtn" class="btn btn-success btn-lg"><i class="ri-save-line me-1"></i> Simpan Harga</button>';
+                    document.body.appendChild(floatBar);
+                }
+                const saveBtn = document.getElementById('bulkSaveHargaBtn');
+                const cancelBtn = document.getElementById('bulkCancelHargaBtn');
+                if (!saveBtn || !cancelBtn) return;
+
+                function formatNumber(val) {
+                    if (val === '' || val === null || isNaN(val)) return '-';
+                    return 'Rp ' + Number(val).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                }
+
+                function formatWithSeparator(digits) {
+                    if (digits === '') return '';
+                    return Number(digits).toLocaleString('id-ID', { maximumFractionDigits: 0 });
+                }
+
+                function enterEditMode() {
+                    document.querySelectorAll('#goldReadyTable td.harga-jual-fix-cell').forEach(function (cell) {
+                        const raw = cell.getAttribute('data-value') || '';
+                        const digits = raw !== '' ? String(Math.round(parseFloat(raw))) : '';
+                        cell.innerHTML =
+                            '<div class="input-group input-group-lg" style="min-width: 200px;">' +
+                                '<span class="input-group-text fw-semibold">Rp</span>' +
+                                '<input type="text" inputmode="numeric" class="form-control harga-jual-fix-input fs-5" value="' + formatWithSeparator(digits) + '">' +
+                            '</div>';
+                    });
+
+                    document.querySelectorAll('#goldReadyTable .harga-jual-fix-input').forEach(function (input) {
+                        input.addEventListener('input', function () {
+                            const digits = this.value.replace(/\D/g, '');
+                            this.value = formatWithSeparator(digits);
+                        });
+                    });
+
+                    editBtn.classList.add('d-none');
+                    floatBar.classList.remove('d-none');
+                }
+
+                function exitEditMode() {
+                    document.querySelectorAll('#goldReadyTable td.harga-jual-fix-cell').forEach(function (cell) {
+                        const value = cell.getAttribute('data-value') || '';
+                        cell.innerHTML = '<span class="harga-jual-fix-display fs-5 fw-semibold">' + formatNumber(value) + '</span>';
+                    });
+                    floatBar.classList.add('d-none');
+                    editBtn.classList.remove('d-none');
+                }
+
+                editBtn.addEventListener('click', enterEditMode);
+                cancelBtn.addEventListener('click', exitEditMode);
+
+                saveBtn.addEventListener('click', function () {
+                    const items = [];
+                    document.querySelectorAll('#goldReadyTable td.harga-jual-fix-cell').forEach(function (cell) {
+                        const id = cell.getAttribute('data-id');
+                        const input = cell.querySelector('.harga-jual-fix-input');
+                        if (!id || !input) return;
+                        const digits = input.value.replace(/\D/g, '');
+                        items.push({ id: parseInt(id, 10), harga_jual_fix: digits === '' ? null : digits });
+                    });
+
+                    if (items.length === 0) { exitEditMode(); return; }
+
+                    saveBtn.disabled = true;
+                    cancelBtn.disabled = true;
+
+                    fetch(bulkUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrf,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ items: items })
+                    })
+                    .then(function (res) { return res.json().then(function (b) { return { ok: res.ok, body: b }; }); })
+                    .then(function (r) {
+                        saveBtn.disabled = false;
+                        cancelBtn.disabled = false;
+                        if (!r.ok || !r.body || !r.body.success) {
+                            const msg = (r.body && r.body.message) ? r.body.message : 'Gagal memperbarui harga jual fix.';
+                            Swal.fire({ title: 'Gagal', text: msg, icon: 'error' });
+                            return;
+                        }
+                        // sync data-value with new inputs before exiting
+                        document.querySelectorAll('#goldReadyTable td.harga-jual-fix-cell').forEach(function (cell) {
+                            const input = cell.querySelector('.harga-jual-fix-input');
+                            if (input) cell.setAttribute('data-value', input.value.replace(/\D/g, ''));
+                        });
+                        exitEditMode();
+                        Swal.fire({
+                            title: 'Berhasil',
+                            text: r.body.message || 'Harga jual fix berhasil diperbarui.',
+                            icon: 'success',
+                            timer: 1800,
+                            showConfirmButton: false
+                        });
+                    })
+                    .catch(function () {
+                        saveBtn.disabled = false;
+                        cancelBtn.disabled = false;
+                        Swal.fire({ title: 'Gagal', text: 'Terjadi kesalahan jaringan.', icon: 'error' });
                     });
                 });
             }
